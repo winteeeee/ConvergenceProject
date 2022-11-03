@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum Authority implements EnumInterface {
-    ADMIN(0, "관리자"),
-    OWNER(1, "점주"),
-    USER(2, "사용자");
+public enum Status implements EnumInterface {
+    ACCEPT(0, "수락"),
+    REJECT(1, "거절"),
+    HOLD(2, "보류");
 
     private static final Map<Integer, String> CODE_MAP = Collections.unmodifiableMap(
-            Stream.of(values()).collect(Collectors.toMap(Authority::getCode, Authority::name))
+            Stream.of(values()).collect(Collectors.toMap(Status::getCode, Status::name))
     );
 
     public static Authority of(int code) {
@@ -23,7 +23,7 @@ public enum Authority implements EnumInterface {
     private final int code;
     private final String title;
 
-    Authority(int code, String title) {
+    Status(int code, String title) {
         this.code = code;
         this.title = title;
     }
