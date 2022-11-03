@@ -16,8 +16,8 @@ public enum Status implements EnumInterface {
             Stream.of(values()).collect(Collectors.toMap(Status::getCode, Status::name))
     );
 
-    public static Authority of(int code) {
-        return Authority.valueOf(CODE_MAP.get(code));
+    public static Status of(int code) {
+        return Status.valueOf(CODE_MAP.get(code));
     }
 
     private final int code;
