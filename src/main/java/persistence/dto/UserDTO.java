@@ -12,10 +12,10 @@ public class UserDTO {
     private Authority authority;
     private String address;
 
-    public UserDTO(String id, String pw, Authority authority, String address) {
+    public UserDTO(String id, String pw, int authority, String address) {
         this.id = id;
         this.pw = pw;
-        this.authority = authority;
+        this.authority = Authority.of(authority);
         this.address = address;
     }
 }
