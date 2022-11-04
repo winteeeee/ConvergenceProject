@@ -16,9 +16,9 @@ public class StoreRegistDTO {
     private String address;
     private String user_id;     // FK
 
-    public StoreRegistDTO(long id, Status status, String comment, String name, String tag, String phone, String address, String user_id) {
+    public StoreRegistDTO(long id, int status, String comment, String name, String tag, String phone, String address, String user_id) {
         this.id = id;
-        this.status = status;
+        this.status = Status.of(status);
         this.comment = comment;
         this.name = name;
         this.tag = tag;
