@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PooledDataSource {
-/*    private static BasicDataSource basicDS;
+    private static BasicDataSource basicDS;
 
     static {
         try {
@@ -34,5 +34,5 @@ public class PooledDataSource {
 
     public static DataSource getDataSource() {
         return basicDS;
-    }*/
+    }
 }
