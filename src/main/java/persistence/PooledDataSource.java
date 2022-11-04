@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class PooledDataSource {
+public class PooledDataSource { // TODO 강의자료 소스임 삭제 및 수정 예정
     private static BasicDataSource basicDS;
 
     static {
