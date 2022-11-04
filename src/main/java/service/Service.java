@@ -2,7 +2,7 @@ package service;
 
 import java.util.List;
 
-public class Service {
+public class Service {/*
     private final DAO boardDAO;
 
     public Service(DAO boardDAO) {
@@ -12,5 +12,5 @@ public class Service {
     public List<DTO> findAll() {
         List<DTO> all = dao.findAll();
         return all;
-    }
+    }*/
 }
