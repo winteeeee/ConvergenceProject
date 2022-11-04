@@ -1,16 +1,18 @@
 package network;
+import sharing.RootDTO;
+import java.util.*;
 
 public class Protocol {
     private byte type;
     private byte code;
     private int dataLength;
-    private Object data;
+    private RootDTO data;
 
-    public Protocol(byte t, byte c, int dL, Object d) {
+    public Protocol(byte t, byte c, RootDTO d) {
         type = t;
         code = c;
-        dataLength = dL;
         data = d;
+        Date a = new Date();
     }
 
     public byte getType() {
@@ -41,12 +43,36 @@ public class Protocol {
         dataLength = dL;
     }
 
-    public void setData(Object d) {
+    public void setData(RootDTO d) {
         data = d;
     }
 
-    public void setData(int dL, Object d) {
+    public void setData(int dL, RootDTO d) {
         dataLength = dL;
         data = d;
+    }
+
+    public byte[] getBytes() {
+        int resultArrayLength = 0;
+        byte[] dataByteArray = data.getBytes();
+        dataLength = dataByteArray.length;
+        byte[] typeAndCodeByteArray = RootDTO.bitsToByteArray(type, code);
+        byte[] dataLengthByteArray = RootDTO.intToByteArray(dataLength);
+        resultArrayLength = (typeAndCodeByteArray.length + dataLengthByteArray.length + dataByteArray.length);
+
+        byte[] resultArray = new byte[resultArrayLength];
+        for (int i = 0; i < resultArrayLength; i++) {
+            if (0 <= i && i < typeAndCodeByteArray.length) {
+                resultArray[i] = typeAndCodeByteArray[i];
+            }
+            else if (typeAndCodeByteArray.length <= i && i < dataLengthByteArray.length) {
+                resultArray[i] = dataLengthByteArray[i - typeAndCodeByteArray.length];
+            }
+            else {
+                resultArray[i] = dataByteArray[i - typeAndCodeByteArray.length - dataLengthByteArray.length];
+            }
+        }
+
+        return resultArray;
     }
 }
