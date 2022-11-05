@@ -53,25 +53,18 @@ public class Protocol {
     }
 
     public byte[] getBytes() {
-        int resultArrayLength = 0;
         byte[] dataByteArray = data.getBytes();
         dataLength = dataByteArray.length;
         byte[] typeAndCodeByteArray = RootDTO.bitsToByteArray(type, code);
         byte[] dataLengthByteArray = RootDTO.intToByteArray(dataLength);
-        resultArrayLength = (typeAndCodeByteArray.length + dataLengthByteArray.length + dataByteArray.length);
 
+        int resultArrayLength = typeAndCodeByteArray.length + dataLengthByteArray.length + dataByteArray.length;
         byte[] resultArray = new byte[resultArrayLength];
-        for (int i = 0; i < resultArrayLength; i++) {
-            if (0 <= i && i < typeAndCodeByteArray.length) {
-                resultArray[i] = typeAndCodeByteArray[i];
-            }
-            else if (typeAndCodeByteArray.length <= i && i < dataLengthByteArray.length) {
-                resultArray[i] = dataLengthByteArray[i - typeAndCodeByteArray.length];
-            }
-            else {
-                resultArray[i] = dataByteArray[i - typeAndCodeByteArray.length - dataLengthByteArray.length];
-            }
-        }
+
+        int pos = 0;
+        System.arraycopy(resultArray, pos, typeAndCodeByteArray, 0, typeAndCodeByteArray.length); pos += typeAndCodeByteArray.length;
+        System.arraycopy(resultArray, pos, dataLengthByteArray, 0, dataLengthByteArray.length); pos += dataLengthByteArray.length;
+        System.arraycopy(resultArray, pos, dataByteArray, 0, dataByteArray.length); pos += dataByteArray.length;
 
         return resultArray;
     }
