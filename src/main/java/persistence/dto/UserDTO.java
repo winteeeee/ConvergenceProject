@@ -3,10 +3,11 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Authority;
+import sharing.RootDTO;
 
 @Getter
 @Setter
-public class UserDTO {
+public class UserDTO implements RootDTO {
     private String id;
     private String pw;
     private Authority authority;
