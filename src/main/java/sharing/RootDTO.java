@@ -1,77 +1,69 @@
 package sharing;
+import network.Serializer;
+import persistence.dto.StoreDTO;
 import persistence.enums.EnumInterface;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public interface RootDTO {
-    public static byte[] bitsToByteArray(byte val1, byte val2) {
-        return new byte[] {
-                (byte)((0xff & val1) << 8*1),
-                (byte)((0xff & val2) << 8*0)
-        };
+    default byte[] getBytes() {
+        ArrayList<Byte> result = new ArrayList<>();
+        Field[] classMembers = this.getClass().getDeclaredFields();
+        for(int i = 0; i < classMembers.length; i++) {
+            classMembers[i].setAccessible(true);
+            String type = classMembers[i].getType().toString();
+
+            byte[] arr = new byte[0];
+            try {
+                Object memberVal = classMembers[i].get(this);
+                if (type.equals("int")) {
+                    arr = Serializer.intToByteArray((int)memberVal);
+                }
+
+                else if (type.equals("long")) {
+                    arr = Serializer.longToByteArray((long)memberVal);
+                }
+
+                else {
+                    if (type.contains("String")) {
+                        arr = ((String)memberVal).getBytes();
+
+                        int stringLength = arr.length;
+                        byte[] stringLengthByteArray = Serializer.intToByteArray(stringLength);
+                        for(int j = 0; j < stringLengthByteArray.length; j++) {
+                            result.add(stringLengthByteArray[j]);
+                        }
+                    }
+
+                    else if (type.contains("LocalDateTime")) {
+                        arr = Serializer.dateToByteArray((LocalDateTime)memberVal);
+
+                        int dateLength = arr.length;
+                        byte[] dateLengthByteArray = Serializer.intToByteArray(dateLength);
+                        for(int j = 0; j < dateLengthByteArray.length; j++) {
+                            result.add(dateLengthByteArray[j]);
+                        }
+                    }
+
+                    else if (type.contains("enums")) {
+                        arr = Serializer.enumToByteArray((EnumInterface)memberVal);
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            for(int j = 0; j < arr.length; j++) {
+                result.add(arr[j]);
+            }
+        }
+
+        byte[] returnArray = new byte[result.size()];
+        for(int i = 0; i < result.size(); i++) {
+            returnArray[i] = result.get(i);
+        }
+
+        return returnArray;
     }
-
-    public static byte[] intToByteArray(int val) {
-        return new byte[] {
-                (byte)((val >> 8*3) & 0xff),
-                (byte)((val >> 8*2) & 0xff),
-                (byte)((val >> 8*1) & 0xff),
-                (byte)((val >> 8*0) & 0xff)
-        };
-    }
-
-    public static byte[] longToByteArray(long val) {
-        return new byte[] {
-                (byte)((val >> 8*7) & 0xff),
-                (byte)((val >> 8*6) & 0xff),
-                (byte)((val >> 8*5) & 0xff),
-                (byte)((val >> 8*4) & 0xff),
-                (byte)((val >> 8*3) & 0xff),
-                (byte)((val >> 8*2) & 0xff),
-                (byte)((val >> 8*1) & 0xff),
-                (byte)((val >> 8*0) & 0xff)
-        };
-    }
-
-    public static byte[] dateToByteArray(LocalDateTime val) {
-        //년,월,일,시,분
-        byte[] yearByteArray = intToByteArray(val.getYear());
-        byte[] monthByteArray = intToByteArray(val.getMonth().getValue());
-        byte[] dayByteArray = intToByteArray(val.getDayOfMonth());
-        byte[] hourByteArray = intToByteArray(val.getHour());
-        byte[] minuteByteArray = intToByteArray(val.getMinute());
-
-        int resultArrayLength = yearByteArray.length + monthByteArray.length + dayByteArray.length + hourByteArray.length + minuteByteArray.length;
-        byte[] resultArray = new byte[resultArrayLength];
-
-        int pos = 0;
-        System.arraycopy(resultArray, pos, yearByteArray, 0, yearByteArray.length); pos += yearByteArray.length;
-        System.arraycopy(resultArray, pos, monthByteArray, 0, monthByteArray.length); pos += monthByteArray.length;
-        System.arraycopy(resultArray, pos, dayByteArray, 0, dayByteArray.length); pos += dayByteArray.length;
-        System.arraycopy(resultArray, pos, hourByteArray, 0, hourByteArray.length); pos += hourByteArray.length;
-        System.arraycopy(resultArray, pos, minuteByteArray, 0, minuteByteArray.length); pos += minuteByteArray.length;
-
-        return resultArray;
-    }
-
-    public static byte[] enumToByteArray(EnumInterface val) {
-        String name = val.getName();
-        int code = val.getCode();
-        String title = val.getTitle();
-
-        byte[] nameByteArray = name.getBytes();
-        byte[] codeByteArray = intToByteArray(code);
-        byte[] titleByteArray = title.getBytes();
-
-        int resultArrayLength = nameByteArray.length + codeByteArray.length + titleByteArray.length;
-        byte[] resultArray = new byte[resultArrayLength];
-
-        int pos = 0;
-        System.arraycopy(resultArray, pos, nameByteArray, 0, nameByteArray.length); pos += nameByteArray.length;
-        System.arraycopy(resultArray, pos, codeByteArray, 0, codeByteArray.length); pos += codeByteArray.length;
-        System.arraycopy(resultArray, pos, titleByteArray, 0, titleByteArray.length); pos += titleByteArray.length;
-
-        return resultArray;
-    }
-
-    public byte[] getBytes();
 }

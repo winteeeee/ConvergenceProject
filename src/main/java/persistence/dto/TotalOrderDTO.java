@@ -2,11 +2,13 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import sharing.RootDTO;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class TotalOrderDTO {
+public class TotalOrderDTO implements RootDTO {
     private long id;
     private LocalDateTime regdate;
     private String address;
