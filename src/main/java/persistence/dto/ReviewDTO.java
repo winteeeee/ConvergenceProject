@@ -21,4 +21,8 @@ public class ReviewDTO extends DTO {
         this.upper_review_id = upper_review_id;
         this.user_id = user_id;
     }
+
+    public ReviewDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

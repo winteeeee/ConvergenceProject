@@ -21,4 +21,8 @@ public class MenuDTO extends DTO {
         this.store_id = store_id;
         this.ghost_review_id = ghost_review_id;
     }
+
+    public MenuDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

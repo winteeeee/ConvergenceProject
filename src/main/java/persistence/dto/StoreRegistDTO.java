@@ -26,4 +26,8 @@ public class StoreRegistDTO extends DTO {
         this.address = address;
         this.user_id = user_id;
     }
+
+    public StoreRegistDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }
