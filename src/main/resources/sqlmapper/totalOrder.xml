@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.TotalOrderMapper">
+    <resultMap id="result" type="persistence.dto.TotalOrderDTO">
+        <result property="id" column="id"/>
+        <result property="regdate" column="regdate"/>
+        <result property="address" column="address"/>
+        <result property="total_price" column="total_price"/>
+        <result property="user_id" column="user_id"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="result">
+        SELECT * FROM total_order
+    </select>
+</mapper>
