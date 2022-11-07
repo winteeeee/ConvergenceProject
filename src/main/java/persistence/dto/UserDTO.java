@@ -18,4 +18,8 @@ public class UserDTO extends DTO {
         this.authority = Authority.of(authority);
         this.address = address;
     }
+
+    public UserDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

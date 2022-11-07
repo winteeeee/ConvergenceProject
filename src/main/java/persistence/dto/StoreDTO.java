@@ -25,4 +25,8 @@ public class StoreDTO extends DTO {
         this.user_id = user_id;
         this.carry_sale = carry_sale;
     }
+
+    public StoreDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }
