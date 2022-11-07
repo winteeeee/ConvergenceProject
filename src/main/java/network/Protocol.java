@@ -1,52 +1,166 @@
 package network;
+import lombok.Getter;
+import lombok.Setter;
+import persistence.dto.DTO;
 
+@Getter
+@Setter
 public class Protocol {
     private byte type;
     private byte code;
     private int dataLength;
-    private Object data;
+    private DTO data;
 
-    public Protocol(byte t, byte c, int dL, Object d) {
+    public Protocol(byte t, byte c, int dL, DTO d) {
         type = t;
         code = c;
         dataLength = dL;
         data = d;
     }
 
-    public byte getType() {
-        return type;
+    public byte[] getBytes() {
+        byte[] dataByteArray = data.getBytes();
+        dataLength = dataByteArray.length;
+        byte[] typeAndCodeByteArray = Serializer.bitsToByteArray(type, code);
+        byte[] dataLengthByteArray = Serializer.intToByteArray(dataLength);
+
+        int resultArrayLength = typeAndCodeByteArray.length + dataLengthByteArray.length + dataByteArray.length;
+        byte[] resultArray = new byte[resultArrayLength];
+
+        int pos = 0;
+        System.arraycopy(resultArray, pos, typeAndCodeByteArray, 0, typeAndCodeByteArray.length); pos += typeAndCodeByteArray.length;
+        System.arraycopy(resultArray, pos, dataLengthByteArray, 0, dataLengthByteArray.length); pos += dataLengthByteArray.length;
+        System.arraycopy(resultArray, pos, dataByteArray, 0, dataByteArray.length); pos += dataByteArray.length;
+
+        return resultArray;
     }
 
-    public byte getCode() {
-        return code;
+    private DTO byteArrayToData(byte type, byte code, byte[] arr) {
+        if (type == ProtocolType.REGISTER) {
+            if (code == ProtocolCode.STORE) {
+                return Deserializer.byteArrayToStoreDTO(arr);
+            }
+
+            else if (code == ProtocolCode.MENU) {
+                return Deserializer.byteArrayToMenuDTO(arr);
+            }
+
+            else if (code == ProtocolCode.ORDER) {
+                return Deserializer.byteArrayToOrderDTO(arr);
+            }
+
+            else if (code == ProtocolCode.REVIEW) {
+                return Deserializer.byteArrayToReviewDTO(arr);
+            }
+        }
+
+        else if (type == ProtocolType.MODIFICATION) {
+            if (code == ProtocolCode.MENU) {
+                return Deserializer.byteArrayToMenuDTO(arr);
+            }
+
+            else if (code == ProtocolCode.STORE_APPROVAL) {
+                return Deserializer.byteArrayToStoreDTO(arr);
+            }
+
+            else if (code == ProtocolCode.STORE_REFUSAL) {
+                return Deserializer.byteArrayToStoreDTO(arr);
+            }
+        }
+
+        else if (type == ProtocolType.DELETE) {
+            if (code == ProtocolCode.ORDER) {
+                return Deserializer.byteArrayToOrderDTO(arr);
+            }
+
+            else if (code == ProtocolCode.STORE) {
+                return Deserializer.byteArrayToStoreDTO(arr);
+            }
+
+            else if (code == ProtocolCode.MENU) {
+                return Deserializer.byteArrayToMenuDTO(arr);
+            }
+
+            else if (code == ProtocolCode.REVIEW) {
+                return Deserializer.byteArrayToReviewDTO(arr);
+            }
+        }
+
+        else if (type == ProtocolType.RESPONSE) {
+            if (code == ProtocolCode.REGISTER_REFUSAL) {
+
+            }
+
+            else if (code == ProtocolCode.REGISTER_SUSPENSION) {
+
+            }
+
+            else if (code == ProtocolCode.REGISTER_REFUSAL) {
+
+            }
+
+            else if (code == ProtocolCode.ORDER_APPROVAL) {
+
+            }
+
+            else if (code == ProtocolCode.ORDER_REFUSAL) {
+
+            }
+        }
+
+        else if (type == ProtocolType.SEARCH) {
+            if (code == ProtocolCode.STORE_SEARCH_BY_MENU) {
+
+            }
+
+            else if (code == ProtocolCode.STORE_SEARCH_BY_NAME) {
+
+            }
+
+            else if (code == ProtocolCode.ORDER_HISTORY) {
+
+            }
+
+            else if (code == ProtocolCode.MENU) {
+
+            }
+
+            else if (code == ProtocolCode.REVIEW_USER) {
+
+            }
+
+            else if (code == ProtocolCode.REVIEW_STROE) {
+
+            }
+
+            else if (code == ProtocolCode.ALL_LIST) {
+
+            }
+        }
+
+        try {
+            throw new Exception("타입과 코드가 맞지 않음");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    public int getDataLength() {
-        return dataLength;
-    }
+    public Protocol byteArrayToProtocol(byte[] arr) {
+        final int INT_LENGTH = 4;
 
-    public Object getData() {
-        return data;
-    }
+        int pos = 0;
+        byte type = arr[0];
+        byte code = arr[1];
+        pos += 2;
+        byte[] dataLengthByteArray = new byte[4];
+        System.arraycopy(dataLengthByteArray, 0, arr, pos, INT_LENGTH); pos += 4;
+        int dataLength = Deserializer.byteArrayToInt(dataLengthByteArray);
+        byte[] dataArray = new byte[dataLength];
+        System.arraycopy(dataArray, 0, arr, 2 + INT_LENGTH, dataLength); pos += dataLength;
+        DTO data = byteArrayToData(type, code, dataArray);
 
-    public void setType(byte t) {
-        type = t;
-    }
-
-    public void setCode(byte c) {
-        code = c;
-    }
-
-    public void setDataLength(int dL) {
-        dataLength = dL;
-    }
-
-    public void setData(Object d) {
-        data = d;
-    }
-
-    public void setData(int dL, Object d) {
-        dataLength = dL;
-        data = d;
+        return new Protocol(type, code, dataLength, data);
     }
 }

@@ -2,11 +2,12 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ReviewDTO {
+public class ReviewDTO extends DTO {
     private long id;
     private LocalDateTime regdate;
     private String contents;

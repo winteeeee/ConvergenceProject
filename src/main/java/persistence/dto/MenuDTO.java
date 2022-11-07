@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MenuDTO {
+public class MenuDTO extends DTO {
     private long id;
     private String name;
     private int price;

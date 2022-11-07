@@ -6,7 +6,7 @@ import persistence.enums.Authority;
 
 @Getter
 @Setter
-public class UserDTO {
+public class UserDTO extends DTO {
     private String id;
     private String pw;
     private Authority authority;

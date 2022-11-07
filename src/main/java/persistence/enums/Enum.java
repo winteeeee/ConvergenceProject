@@ -1,6 +1,6 @@
 package persistence.enums;
 
-public interface EnumInterface {
+public interface Enum {
     String getName();
     int getCode();
     String getTitle();

@@ -6,7 +6,7 @@ import persistence.enums.Status;
 
 @Getter
 @Setter
-public class MenuRegistDTO {
+public class MenuRegistDTO extends DTO {
     private long id;
     private Status status;
     private String comment;

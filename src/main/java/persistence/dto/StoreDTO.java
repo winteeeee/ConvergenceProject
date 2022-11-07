@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StoreDTO {
+public class StoreDTO extends DTO {
     private long id;
     private String name;
     private String tag;     // TODO 따로 테이블 구성할지 판단

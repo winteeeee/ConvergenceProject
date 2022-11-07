@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OptionDTO {
+public class OptionDTO extends DTO {
     private long id;
     private String name;
     private int price;
