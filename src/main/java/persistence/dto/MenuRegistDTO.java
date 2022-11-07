@@ -22,4 +22,8 @@ public class MenuRegistDTO extends DTO {
         this.price = price;
         this.store_id = store_id;
     }
+
+    public MenuRegistDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.UserMapper">
+    <resultMap id="result" type="persistence.dto.UserDTO">
+        <result property="id" column="id"/>
+        <result property="pw" column="pw"/>
+        <result property="authority" column="authority"/>
+        <result property="address" column="address"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="result">
+        SELECT * FROM user
+    </select>
+</mapper>
