@@ -1,11 +1,11 @@
-package persistence.dao;
+package dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import persistence.dto.OrderDTO;
+import persistence.dto.StoreDTO;
 
-public class OrderDAO {
+public class StoreDAO {
     private SqlSessionFactory sqlSessionFactory = null;
-    public OrderDAO(SqlSessionFactory sqlSessionFactory){
+    public StoreDAO(SqlSessionFactory sqlSessionFactory){
         this.sqlSessionFactory = sqlSessionFactory;
     }
 }

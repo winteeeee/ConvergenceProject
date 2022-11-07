@@ -1,11 +1,11 @@
-package persistence.dao;
+package dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import persistence.dto.ReviewDTO;
+import persistence.dto.MenuRegistDTO;
 
-public class ReviewDAO {
+public class MenuRegistDAO {
     private SqlSessionFactory sqlSessionFactory = null;
-    public ReviewDAO(SqlSessionFactory sqlSessionFactory){
+    public MenuRegistDAO(SqlSessionFactory sqlSessionFactory){
         this.sqlSessionFactory = sqlSessionFactory;
     }
 }

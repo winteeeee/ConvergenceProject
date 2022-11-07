@@ -1,11 +1,11 @@
-package persistence.dao;
+package dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import persistence.dto.StoreDTO;
+import persistence.dto.StoreRegistDTO;
 
-public class StoreDAO {
+public class StoreRegistDAO {
     private SqlSessionFactory sqlSessionFactory = null;
-    public StoreDAO(SqlSessionFactory sqlSessionFactory){
+    public StoreRegistDAO(SqlSessionFactory sqlSessionFactory){
         this.sqlSessionFactory = sqlSessionFactory;
     }
 }
