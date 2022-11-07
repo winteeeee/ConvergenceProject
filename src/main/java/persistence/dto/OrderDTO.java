@@ -31,4 +31,8 @@ public class OrderDTO extends DTO {
         this.total_order_id = total_order_id;
         this.store_id = store_id;
     }
+
+    public OrderDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

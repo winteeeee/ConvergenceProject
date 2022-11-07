@@ -35,4 +35,8 @@ public class StoreDTO extends DTO {
         this.user_id = user_id;
         this.ghost_review_id = ghost_review_id;
     }
+
+    public StoreDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }

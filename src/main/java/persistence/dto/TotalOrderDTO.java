@@ -21,4 +21,8 @@ public class TotalOrderDTO extends DTO {
         this.total_price = total_price;
         this.user_id = user_id;
     }
+
+    public TotalOrderDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }
