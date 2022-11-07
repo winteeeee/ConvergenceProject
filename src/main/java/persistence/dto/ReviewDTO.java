@@ -2,13 +2,12 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import sharing.RootDTO;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ReviewDTO implements RootDTO {
+public class ReviewDTO extends DTO {
     private long id;
     private LocalDateTime regdate;
     private String contents;

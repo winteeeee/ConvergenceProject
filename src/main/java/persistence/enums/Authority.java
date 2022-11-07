@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum Authority implements EnumInterface {
+public enum Authority implements Enum {
     ADMIN(0, "관리자"),
     OWNER(1, "점주"),
     USER(2, "사용자");

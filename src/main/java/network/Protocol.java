@@ -1,8 +1,7 @@
 package network;
 import lombok.Getter;
 import lombok.Setter;
-import persistence.dto.StoreDTO;
-import sharing.RootDTO;
+import persistence.dto.DTO;
 
 @Getter
 @Setter
@@ -10,9 +9,9 @@ public class Protocol {
     private byte type;
     private byte code;
     private int dataLength;
-    private RootDTO data;
+    private DTO data;
 
-    public Protocol(byte t, byte c, int dL, RootDTO d) {
+    public Protocol(byte t, byte c, int dL, DTO d) {
         type = t;
         code = c;
         dataLength = dL;
@@ -36,7 +35,7 @@ public class Protocol {
         return resultArray;
     }
 
-    private RootDTO byteArrayToData(byte type, byte code, byte[] arr) {
+    private DTO byteArrayToData(byte type, byte code, byte[] arr) {
         if (type == ProtocolType.REGISTER) {
             if (code == ProtocolCode.STORE) {
                 return Deserializer.byteArrayToStoreDTO(arr);
@@ -160,7 +159,7 @@ public class Protocol {
         int dataLength = Deserializer.byteArrayToInt(dataLengthByteArray);
         byte[] dataArray = new byte[dataLength];
         System.arraycopy(dataArray, 0, arr, 2 + INT_LENGTH, dataLength); pos += dataLength;
-        RootDTO data = byteArrayToData(type, code, dataArray);
+        DTO data = byteArrayToData(type, code, dataArray);
 
         return new Protocol(type, code, dataLength, data);
     }

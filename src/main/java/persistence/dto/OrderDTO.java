@@ -3,14 +3,13 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Status;
-import sharing.RootDTO;
 
 import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
-public class OrderDTO implements RootDTO {
+public class OrderDTO extends DTO {
     private long id;
     private LocalDateTime regdate;
     private String option;

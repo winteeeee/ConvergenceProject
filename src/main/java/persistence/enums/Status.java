@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum Status implements EnumInterface {
+public enum Status implements Enum {
     ACCEPT(0, "수락"),
     REJECT(1, "거절"),
     HOLD(2, "보류");

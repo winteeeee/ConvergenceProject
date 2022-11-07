@@ -3,11 +3,10 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Status;
-import sharing.RootDTO;
 
 @Getter
 @Setter
-public class StoreRegistDTO implements RootDTO {
+public class StoreRegistDTO extends DTO {
     private long id;
     private Status status;
     private String comment;
