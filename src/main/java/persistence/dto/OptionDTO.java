@@ -17,4 +17,8 @@ public class OptionDTO extends DTO {
         this.price = price;
         this.menu_id = menu_id;
     }
+
+    public OptionDTO(byte[] arr) {
+        setMembersByByteArray(arr);
+    }
 }
