@@ -11,15 +11,17 @@ public class UserDAO {
         this.sqlSessionFactory = sqlSessionFactory;
     }
 
-    public UserDTO findUserWithId(String id) {
-        UserDTO user = null;
+    public boolean findUser(String id) {
+        boolean isUser = false;
         SqlSession session = sqlSessionFactory.openSession();
         try{
-            user = session.selectOne("");
+            if(session.selectOne("mapper.UserMapper.쿼리명", id) != null) {
+                isUser = true;
+            }
         } finally {
             session.close();
         }
-        return user;
+        return isUser;
     }
 
     public void insertUser(String id, String pw, Authority authority, String address) {
@@ -32,10 +34,10 @@ public class UserDAO {
         }
     }
 
-    public void updateUser(UserDTO dto) {
+    public void updateUser(UserDTO user) {
         SqlSession session = sqlSessionFactory.openSession();
         try{
-            session.update("mapper.UserMapper.쿼리명", dto);
+            session.update("mapper.UserMapper.쿼리명", user);
         } finally {
             session.close();
         }
