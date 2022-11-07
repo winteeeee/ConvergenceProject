@@ -2,11 +2,10 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import sharing.RootDTO;
 
 @Getter
 @Setter
-public class MenuDTO implements RootDTO {
+public class MenuDTO extends DTO {
     private long id;
     private String name;
     private int price;

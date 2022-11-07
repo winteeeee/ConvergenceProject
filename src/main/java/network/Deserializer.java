@@ -4,7 +4,7 @@ import persistence.dto.MenuDTO;
 import persistence.dto.OrderDTO;
 import persistence.dto.ReviewDTO;
 import persistence.dto.StoreDTO;
-import sharing.RootDTO;
+import sharing.Serializable;
 import java.time.LocalDateTime;
 
 public class Deserializer {
@@ -55,7 +55,7 @@ public class Deserializer {
         return LocalDateTime.of(year, month, day, hour, minute);
     }
 
-    public static RootDTO byteArrayToStoreDTO(byte[] arr) {
+    public static Serializable byteArrayToStoreDTO(byte[] arr) {
         final int INT_LENGTH = 4;
         final int LONG_LENGTH = 8;
 
@@ -116,7 +116,7 @@ public class Deserializer {
         return new StoreDTO(id, name, tag, carry_price, phone, address, user_id, carry_sale);
     }
 
-    public static RootDTO byteArrayToMenuDTO(byte[] arr) {
+    public static Serializable byteArrayToMenuDTO(byte[] arr) {
         final int INT_LENGTH = 4;
         final int LONG_LENGTH = 8;
 
@@ -153,7 +153,7 @@ public class Deserializer {
         return new MenuDTO(id, name, price, sale, store_id, ghost_review_id);
     }
 
-    public static RootDTO byteArrayToOrderDTO(byte[] arr) {
+    public static Serializable byteArrayToOrderDTO(byte[] arr) {
         final int INT_LENGTH = 4;
         final int LONG_LENGTH = 8;
 
@@ -206,7 +206,7 @@ public class Deserializer {
         return new OrderDTO(id, regdate, option, price, status, comment, total_order_id, store_id);
     }
 
-    public static RootDTO byteArrayToReviewDTO(byte[] arr) {
+    public static Serializable byteArrayToReviewDTO(byte[] arr) {
         final int INT_LENGTH = 4;
         final int LONG_LENGTH = 8;
 

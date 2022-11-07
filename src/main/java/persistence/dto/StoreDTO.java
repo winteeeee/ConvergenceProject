@@ -2,11 +2,10 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import sharing.RootDTO;
 
 @Getter
 @Setter
-public class StoreDTO implements RootDTO {
+public class StoreDTO extends DTO {
     private long id;
     private String name;
     private String tag;     // TODO 따로 테이블 구성할지 판단

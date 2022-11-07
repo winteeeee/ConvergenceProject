@@ -1,13 +1,16 @@
-package sharing;
+package persistence.dto;
+
 import network.Serializer;
-import persistence.dto.StoreDTO;
-import persistence.enums.EnumInterface;
+import persistence.enums.Enum;
+import sharing.Serializable;
+
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public interface RootDTO {
-    default byte[] getBytes() {
+public abstract class DTO implements Serializable {
+    @Override
+    public byte[] getBytes() {
         ArrayList<Byte> result = new ArrayList<>();
         Field[] classMembers = this.getClass().getDeclaredFields();
         for(int i = 0; i < classMembers.length; i++) {
@@ -47,7 +50,7 @@ public interface RootDTO {
                     }
 
                     else if (type.contains("enums")) {
-                        arr = Serializer.enumToByteArray((EnumInterface)memberVal);
+                        arr = Serializer.enumToByteArray((Enum)memberVal);
                     }
                 }
             } catch (IllegalAccessException e) {

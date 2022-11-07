@@ -1,6 +1,6 @@
 package network;
 
-import persistence.enums.EnumInterface;
+import persistence.enums.Enum;
 
 import java.time.LocalDateTime;
 
@@ -50,7 +50,7 @@ public class Serializer {
         return resultArray;
     }
 
-    public static byte[] enumToByteArray(EnumInterface val) {
+    public static byte[] enumToByteArray(Enum val) {
         return intToByteArray(val.getCode());
     }
 }
