@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.ReviewMapper">
+    <resultMap id="result" type="ReviewDTO">
+        <result property="id" column="id"/>
+        <result property="regdate" column="regdate"/>
+        <result property="contents" column="contents"/>
+        <result property="upper_review_id" column="upper_review_id"/>
+        <result property="user_id" column="user_id"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into order (id, regdate, contents, upper_review_id, user_id)
+        values (#{id}, #{regdate}, #{contents}, #{upper_review_id}), #{user_id})
+    </insert>
+
+    <select id="selectAllForUser">
+        select * from review where user_id = #{user_id}
+    </select>
+</mapper>
