@@ -1,7 +1,6 @@
 package network;
 
 import persistence.enums.Enum;
-
 import java.time.LocalDateTime;
 
 public class Serializer {

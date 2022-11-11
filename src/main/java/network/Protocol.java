@@ -2,8 +2,6 @@ package network;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.dto.*;
-import sharing.Serializable;
-
 @Getter
 @Setter
 public class Protocol {
