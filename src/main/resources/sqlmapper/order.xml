@@ -9,26 +9,33 @@
         <result property="regdate" column="regdate"/>
         <result property="option" column="option"/>
         <result property="price" column="price"/>
-        <result property="status" column="status"/>
         <result property="comment" column="comment"/>
+        <result property="status" column="status"/>
+        <result property="menu_id" column="menu_id"/>
         <result property="total_order_id" column="total_order_id"/>
         <result property="store_id" column="store_id"/>
     </resultMap>
 
     <insert id="insert">
-        insert into order (id, regdate, option, price, status, comment, total_order_id, store_id)
-        values (#{id}, #{regdate}, #{option}, #{price}), #{status}, #{comment}), #{total_order_id}, #{store_id})
+        INSERT INTO order (regdate, option, price, comment, status, menu_id, total_order_id, store_id)
+        VALUES (#{regdate}, #{option}, #{price}), #{comment}, #{status}), #{menu_id}, #{total_order_id}, #{store_id})
     </insert>
 
-    <select id="selectAllForStore">
-        select * from order where store_id = #{store_id}
+    <select id="selectAllWithStore_id">
+        SELECT *
+        FROM order
+        WHERE store_id=#{store_id}
     </select>
 
-    <select id="selectAllForReview">
-        select * from order where total_order_id = #{total_order_id}
+    <select id="selectAllWithTotal_Order_id">
+        SELECT *
+        FROM order
+        WHERE total_order_id=#{total_order_id}
     </select>
 
-    <update id="update">
-
+    <update id="updateStatus">
+        UPDATE order
+        SET status=#{status}
+        WHERE store_id=#{store_id}
     </update>
 </mapper>

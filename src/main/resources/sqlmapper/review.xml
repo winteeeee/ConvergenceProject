@@ -6,18 +6,21 @@
 <mapper namespace="mapper.ReviewMapper">
     <resultMap id="result" type="ReviewDTO">
         <result property="id" column="id"/>
-        <result property="regdate" column="regdate"/>
         <result property="contents" column="contents"/>
-        <result property="upper_review_id" column="upper_review_id"/>
-        <result property="user_id" column="user_id"/>
+        <result property="regdate" column="regdate"/>
+        <result property="star_rating" column="star_rating"/>
+        <result property="user_pk" column="user_pk"/>
+        <result property="order_id" column="order_id"/>
     </resultMap>
 
-    <insert id="insert">
-        insert into order (id, regdate, contents, upper_review_id, user_id)
-        values (#{id}, #{regdate}, #{contents}, #{upper_review_id}), #{user_id})
+    <insert id="insertReview">
+        INSERT INTO review (id, regdate, contents, upper_review_id, user_id)
+        VALUES (#{id}, #{regdate}, #{contents}, #{upper_review_id}), #{user_id})
     </insert>
 
-    <select id="selectAllForUser">
-        select * from review where user_id = #{user_id}
+    <select id="selectAllWithUser_pk">
+        SELECT *
+        FROM review
+        WHERE user_id=#{user_id}
     </select>
 </mapper>

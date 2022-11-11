@@ -6,25 +6,33 @@
 <mapper namespace="mapper.MenuMapper">
     <resultMap id="result" type="MenuDTO">
         <result property="id" column="id"/>
+        <result property="group" column="id"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>
-        <result property="sale" column="sale"/>
+        <result property="stock" column="stock"/>
         <result property="store_id" column="store_id"/>
     </resultMap>
 
-    <insert id="insert">
-        insert into menu (id, name, price, sale, store_id) values (#{id}, #{name}, #{price}, #{sale}), #{store_id})
+    <insert id="insertMenu">
+        INSERT INTO menu (group, name, price, stock, store_id)
+        VALUES (#{group}, #{name}, #{price}, #{stock}), #{store_id})
     </insert>
 
-    <select id="selectAll">
-
+    <select id="selectAllWithStore_id">
+        SELECT *
+        FROM menu
+        WHERE store_id=#{store_id}
     </select>
 
-    <select id="selectOne">
-
+    <select id="selectOneWithId">
+        SELECT *
+        FROM menu
+        WHERE id=#{id}
     </select>
 
-    <update id="update">
-
+    <update id="updateNameAndPrice">
+        UPDATE menu
+        SET name=#{name}, price=#{price}
+        WHERE id=#{id}
     </update>
 </mapper>

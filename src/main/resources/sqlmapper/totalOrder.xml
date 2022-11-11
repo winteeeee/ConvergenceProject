@@ -9,15 +9,17 @@
         <result property="regdate" column="regdate"/>
         <result property="address" column="address"/>
         <result property="total_price" column="total_price"/>
-        <result property="user_id" column="user_id"/>
+        <result property="user_pk" column="user_pk"/>
     </resultMap>
 
-    <insert id="insert">
-        insert into order (id, regdate, address, total_price, user_id)
-        values (#{id}, #{regdate}, #{address}, #{total_price}), #{user_id})
+    <insert id="insertTotalOrder">
+        INSERT INTO total_order (regdate, address, total_price, user_pk)
+        VALUES (#{regdate}, #{address}, #{total_price}), #{user_pk})
     </insert>
 
-    <select id="selectAllForUser">
-        select * from totalOrder where user_id = #{user_id}
+    <select id="selectAllWithUser_pk">
+        SELECT *
+        FROM total_order
+        WHERE user_pk=#{user_pk}
     </select>
 </mapper>
