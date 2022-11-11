@@ -6,10 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public abstract class DAO<T> {
     private final SqlSessionFactory sqlSessionFactory;
-
     public DAO(SqlSessionFactory sqlSessionFactory) {
         this.sqlSessionFactory = sqlSessionFactory;
     }
