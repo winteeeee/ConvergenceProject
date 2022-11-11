@@ -2,7 +2,7 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import persistence.enums.Status;
+import persistence.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class OrderDTO extends DTO {
     private Long id;
-    private Status status;
+    private OrderStatus status;
     private LocalDateTime regdate;
     private String option;
     private Integer price;
@@ -24,7 +24,7 @@ public class OrderDTO extends DTO {
 
     public OrderDTO(Long id, Integer status, LocalDateTime regdate, String option, Integer price, String comment, Long menu_id, Long total_order_id, Long store_id) {
         this.id = id;
-        this.status = Status.of(status);
+        this.status = OrderStatus.of(status);
         this.regdate = regdate;
         this.option = option;
         this.price = price;
