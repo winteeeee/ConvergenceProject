@@ -8,18 +8,22 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ReviewDTO extends DTO {
-    private long id;
-    private LocalDateTime regdate;
+    private Long id;
     private String contents;
-    private long upper_review_id;   // FK
-    private String user_id;         // FK
+    private LocalDateTime regdate;
+    private Integer star_rating;
+    private Long user_pk;           // FK
+    private Long order_id;          // FK
 
-    public ReviewDTO(long id, LocalDateTime regdate, String contents, long upper_review_id, String user_id) {
+    public ReviewDTO() {  }
+
+    public ReviewDTO(Long id, String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long order_id) {
         this.id = id;
-        this.regdate = regdate;
         this.contents = contents;
-        this.upper_review_id = upper_review_id;
-        this.user_id = user_id;
+        this.regdate = regdate;
+        this.star_rating = star_rating;
+        this.user_pk = user_pk;
+        this.order_id = order_id;
     }
 
     public ReviewDTO(byte[] arr) {
