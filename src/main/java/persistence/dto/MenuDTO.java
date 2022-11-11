@@ -11,11 +11,11 @@ public class MenuDTO extends DTO {
     private String name;
     private Integer price;
     private Integer stock;
-    private Integer store_id;          // FK
+    private Long store_id;          // FK
 
     public MenuDTO() {  }
 
-    public MenuDTO(Long id, String group, String name, Integer price, Integer stock, Integer store_id) {
+    public MenuDTO(Long id, String group, String name, Integer price, Integer stock, Long store_id) {
         this.id = id;
         this.group = group;
         this.name = name;

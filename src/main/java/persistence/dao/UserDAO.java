@@ -1,6 +1,5 @@
 package persistence.dao;
 
-
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
@@ -12,7 +11,7 @@ import java.util.List;
 
 
 public class UserDAO extends DAO<UserDTO>{
-    private static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static UserDAO userDAO;
     static {
         if (userDAO == null) {
             userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
@@ -21,10 +20,8 @@ public class UserDAO extends DAO<UserDTO>{
     public static UserDAO getUserDAO() { return userDAO; }
 
 
-    private final String sqlMapperPath;
     private UserDAO(SqlSessionFactory sqlSessionFactory){
-        super(sqlSessionFactory);
-        sqlMapperPath = "mapper.UserMapper.";
+        super(sqlSessionFactory, "mapper.UserMapper.");
     }
 
 

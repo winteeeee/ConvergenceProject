@@ -6,14 +6,13 @@
 <mapper namespace="mapper.OptionMapper">
     <resultMap id="result" type="OptionDTO">
         <result property="id" column="id"/>
-        <result property="num" column="num"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>
         <result property="store_id" column="store_id"/>
     </resultMap>
 
     <insert id="insertOption">
-        INSERT INTO option (num, name, price, store_id)
-        VALUES (#{num}, #{name}, #{price}, #{store_id}))
+        INSERT INTO option (name, price, store_id)
+        VALUES (#{name}, #{price}, #{store_id}))
     </insert>
 </mapper>
