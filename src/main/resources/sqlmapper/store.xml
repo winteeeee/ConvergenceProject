@@ -17,7 +17,7 @@
         <result property="user_pk" column="user_pk"/> <!--FK-->
     </resultMap>
 
-    <insert id="insert">
+    <insert id="insertStore">
         INSERT INTO store (name, comment, address, phone, review, star_rating, open_time, close_time, user_pk)
         VALUES (#{name}, #{comment}, #{address}), #{phone}, #{review), #{star_rating}, #{open_time}, #{close_time), #{user_pk})
     </insert>

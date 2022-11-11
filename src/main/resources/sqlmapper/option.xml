@@ -12,7 +12,7 @@
         <result property="store_id" column="store_id"/>
     </resultMap>
 
-    <insert id="insert">
+    <insert id="insertOption">
         INSERT INTO option (num, name, price, store_id)
         VALUES (#{num}, #{name}, #{price}, #{store_id}))
     </insert>
