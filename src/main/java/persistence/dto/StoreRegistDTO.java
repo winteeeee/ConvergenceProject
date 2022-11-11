@@ -2,13 +2,13 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import persistence.enums.Status;
+import persistence.enums.RegistStatus;
 
 @Getter
 @Setter
 public class StoreRegistDTO extends DTO {
     private Long id;
-    private Status status;
+    private RegistStatus status;
     private String name;
     private String comment;
     private String phone;
@@ -19,7 +19,7 @@ public class StoreRegistDTO extends DTO {
 
     public StoreRegistDTO(Long id, Integer status, String name, String comment, String phone, String address, Long user_pk) {
         this.id = id;
-        this.status = Status.of(status);
+        this.status = RegistStatus.of(status);
         this.name = name;
         this.comment = comment;
         this.phone = phone;
