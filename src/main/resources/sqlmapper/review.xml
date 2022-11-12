@@ -15,10 +15,10 @@
 
     <insert id="insertReview">
         INSERT INTO review (contents, regdate, star_rating, user_pk, order_id)
-        VALUES (#{contents}, #{regdate}, #{star_rating}), #{user_pk}, #{order_id})
+        VALUES (#{contents}, #{regdate}, #{star_rating}, #{user_pk}, #{order_id})
     </insert>
 
-    <select id="selectAllWithUser_pk">
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM review
         WHERE user_pk=#{user_pk}

@@ -38,4 +38,8 @@ public class StoreRegistDTO extends DTO {
     public Integer getStatus() {
         return status.getCode();
     }
+
+    public RegistStatus getStatusEnum() {
+        return status;
+    }
 }

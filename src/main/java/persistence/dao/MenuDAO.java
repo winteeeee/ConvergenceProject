@@ -28,7 +28,7 @@ public class MenuDAO extends DAO<MenuDTO>{
     }
     @Override
     protected MenuDTO selectOne(SqlSession session, Object[] arg) {
-        return null;
+        return session.selectOne(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) {
@@ -42,9 +42,9 @@ public class MenuDAO extends DAO<MenuDTO>{
     protected int delete(SqlSession session, Object[] arg) { return 0; }
 
 
-    public int insertMenu(String group, String name, Integer price, Integer stock, Long store_id, List<Integer> options) {
+    public int insertMenu(String group_name, String name, Integer price, Integer stock, Long store_id, List<Integer> options) {
         String stmt = "insertMenu";
-        MenuDTO menuDTO = new MenuDTO(null, group, name, price, stock, store_id);
+        MenuDTO menuDTO = new MenuDTO(null, group_name, name, price, stock, store_id);
 
         // TODO menu_option_map 관련 함수 필요함. 또한, 여러 쿼리를 실행시키는 만큼 원자성을 지녀야 함
         return insert(stmt, menuDTO);

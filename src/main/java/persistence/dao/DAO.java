@@ -26,6 +26,7 @@ public abstract class DAO<T> {
         SqlSession session = sqlSessionFactory.openSession();
         try {
             dtos = selectList(session, arg);
+            session.commit();
         } finally {
             session.close();
         }
@@ -37,6 +38,7 @@ public abstract class DAO<T> {
         SqlSession session = sqlSessionFactory.openSession();
         try {
             dto = selectOne(session, arg);
+            session.commit();
         } finally {
             session.close();
         }
@@ -48,6 +50,7 @@ public abstract class DAO<T> {
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = insert(session, arg);
+            session.commit();
         } finally {
             session.close();
         }
@@ -59,6 +62,7 @@ public abstract class DAO<T> {
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = update(session, arg);
+            session.commit();
         } finally {
             session.close();
         }
@@ -70,6 +74,7 @@ public abstract class DAO<T> {
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = delete(session, arg);
+            session.commit();
         } finally {
             session.close();
         }

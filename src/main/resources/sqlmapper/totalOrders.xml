@@ -3,8 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mapper.TotalOrderMapper">
-    <resultMap id="result" type="TotalOrderDTO">
+<mapper namespace="mapper.TotalOrdersMapper">
+    <resultMap id="result" type="TotalOrdersDTO">
         <result property="id" column="id"/>
         <result property="regdate" column="regdate"/>
         <result property="address" column="address"/>
@@ -12,14 +12,14 @@
         <result property="user_pk" column="user_pk"/>
     </resultMap>
 
-    <insert id="insertTotalOrder">
-        INSERT INTO total_order (regdate, address, total_price, user_pk)
-        VALUES (#{regdate}, #{address}, #{total_price}), #{user_pk})
+    <insert id="insertTotalOrders">
+        INSERT INTO total_orders (regdate, address, total_price, user_pk)
+        VALUES (#{regdate}, #{address}, #{total_price}, #{user_pk})
     </insert>
 
     <select id="selectAllWithUser_pk">
         SELECT *
-        FROM total_order
+        FROM total_orders
         WHERE user_pk=#{user_pk}
     </select>
 </mapper>

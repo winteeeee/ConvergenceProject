@@ -5,22 +5,22 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OptionDTO extends DTO {
+public class DetailsDTO extends DTO {
     private Long id;
     private String name;
     private Integer price;
     private Long store_id;   // FK
 
-    public OptionDTO() {  }
+    public DetailsDTO() {  }
 
-    public OptionDTO(Long id, String name, Integer price, Long store_id) {
+    public DetailsDTO(Long id, String name, Integer price, Long store_id) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.store_id = store_id;
     }
 
-    public OptionDTO(byte[] arr) {
+    public DetailsDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
 }
