@@ -2,10 +2,14 @@ package persistence.dto;
 
 import network.Deserializer;
 import network.Serializer;
+
 import persistence.enums.Authority;
 import persistence.enums.Enum;
-import persistence.enums.Status;
+import persistence.enums.OrdersStatus;
+import persistence.enums.RegistStatus;
+
 import sharing.Serializable;
+
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -127,10 +131,15 @@ public abstract class DTO implements Serializable {
                     System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
                     memberVal = Authority.of(Deserializer.byteArrayToInt(codeByteArray));
                 }
-                else if (type.contains("Status")) {
+                else if (type.contains("OrderStatus")) {
                     byte[] codeByteArray = new byte[INT_LENGTH];
                     System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    memberVal = Status.of(Deserializer.byteArrayToInt(codeByteArray));
+                    memberVal = OrdersStatus.of(Deserializer.byteArrayToInt(codeByteArray));
+                }
+                else if (type.contains("RegistStatus")) {
+                    byte[] codeByteArray = new byte[INT_LENGTH];
+                    System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
+                    memberVal = RegistStatus.of(Deserializer.byteArrayToInt(codeByteArray));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

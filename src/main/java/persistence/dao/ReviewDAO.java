@@ -47,7 +47,7 @@ public class ReviewDAO extends DAO<ReviewDTO> {
     public List<ReviewDTO> selectAllWithUser_pk(Long user_pk) {
         String stmt = "selectAllWithUser_pk";
         ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setId(user_pk);
+        reviewDTO.setUser_pk(user_pk);
 
         return selectList(stmt, reviewDTO);
     }

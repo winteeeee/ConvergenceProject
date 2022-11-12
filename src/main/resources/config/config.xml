@@ -4,14 +4,21 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias alias="BoardDTO" type="persistence.dto.BoardDTO"/>
+        <typeAlias alias="MenuDTO" type="persistence.dto.MenuDTO"/>
+        <typeAlias alias="DetailsDTO" type="persistence.dto.DetailsDTO"/>
+        <typeAlias alias="OrdersDTO" type="persistence.dto.OrdersDTO"/>
+        <typeAlias alias="ReviewDTO" type="persistence.dto.ReviewDTO"/>
+        <typeAlias alias="StoreDTO" type="persistence.dto.StoreDTO"/>
+        <typeAlias alias="StoreRegistDTO" type="persistence.dto.StoreRegistDTO"/>
+        <typeAlias alias="TotalOrdersDTO" type="persistence.dto.TotalOrdersDTO"/>
+        <typeAlias alias="UserDTO" type="persistence.dto.UserDTO"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
             <!-- connecting to Local MySql -->
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/> <!--TODO 서버 열어서 원격으로 커넥션하는 법 찾아오기-->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="url" value="jdbc:mysql://localhost/mydb?characterEncoding=utf8&amp;serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>
                 <property name="username" value="root"/>
                 <property name="password" value="eoghks0014"/>
@@ -19,6 +26,13 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="sqlmapper/board.xml"/>
+        <mapper resource="sqlmapper/menu.xml"/>
+        <mapper resource="sqlmapper/details.xml"/>
+        <mapper resource="sqlmapper/orders.xml"/>
+        <mapper resource="sqlmapper/review.xml"/>
+        <mapper resource="sqlmapper/store.xml"/>
+        <mapper resource="sqlmapper/storeRegist.xml"/>
+        <mapper resource="sqlmapper/totalOrders.xml"/>
+        <mapper resource="sqlmapper/user.xml"/>
     </mappers>
 </configuration>

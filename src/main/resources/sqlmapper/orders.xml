@@ -3,39 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mapper.OrderMapper">
-    <resultMap id="result" type="OrderDTO">
+<mapper namespace="mapper.OrdersMapper">
+    <resultMap id="result" type="OrdersDTO">
         <result property="id" column="id"/>
         <result property="regdate" column="regdate"/>
-        <result property="option" column="option"/>
+        <result property="details" column="details"/>
         <result property="price" column="price"/>
         <result property="comment" column="comment"/>
         <result property="status" column="status"/>
         <result property="menu_id" column="menu_id"/>
-        <result property="total_order_id" column="total_order_id"/>
+        <result property="total_orders_id" column="total_orders_id"/>
         <result property="store_id" column="store_id"/>
     </resultMap>
 
-    <insert id="insertOrder">
-        INSERT INTO order (regdate, option, price, comment, status, menu_id, total_order_id, store_id)
-        VALUES (#{regdate}, #{option}, #{price}), #{comment}, #{status}), #{menu_id}, #{total_order_id}, #{store_id})
+    <insert id="insertOrders">
+        INSERT INTO orders (status, regdate, details, price, comment, menu_id, total_orders_id, store_id)
+        VALUES (#{status}, #{regdate}, #{details}, #{price}, #{comment}, #{menu_id}, #{total_orders_id}, #{store_id})
     </insert>
 
-    <select id="selectAllWithStore_id">
+    <select id="selectAllWithStore_id" resultMap="result">
         SELECT *
-        FROM order
+        FROM orders
         WHERE store_id=#{store_id}
     </select>
 
-    <select id="selectAllWithTotal_Order_id">
+    <select id="selectAllWithTotal_Orders_id" resultMap="result">
         SELECT *
-        FROM order
-        WHERE total_order_id=#{total_order_id}
+        FROM orders
+        WHERE total_orders_id=#{total_orders_id}
     </select>
 
     <update id="updateStatus">
-        UPDATE order
+        UPDATE orders
         SET status=#{status}
-        WHERE store_id=#{store_id}
+        WHERE id=#{id}
     </update>
 </mapper>

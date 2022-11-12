@@ -3,6 +3,7 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Authority;
+import persistence.enums.RegistStatus;
 
 @Getter
 @Setter
@@ -35,5 +36,9 @@ public class UserDTO extends DTO {
 
     public Integer getAuthority() {
         return authority.getCode();
+    }
+
+    public Authority getAuthorityEnum() {
+        return authority;
     }
 }

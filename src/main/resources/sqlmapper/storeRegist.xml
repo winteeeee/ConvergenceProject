@@ -16,7 +16,7 @@
 
     <insert id="insertRegistration">
         INSERT INTO store_regist (name, comment, address, phone, status, user_pk)
-        VALUES (#{name}, #{comment}, #{address}), #{phone}, #{status), #{user_pk})
+        VALUES (#{name}, #{comment}, #{address}), #{phone}, #{status}, #{user_pk})
     </insert>
 
     <select id="selectAll">
