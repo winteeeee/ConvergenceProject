@@ -19,37 +19,21 @@ public class UserDAO extends DAO<UserDTO>{
     }
     public static UserDAO getUserDAO() { return userDAO; }
 
-
     private UserDAO(SqlSessionFactory sqlSessionFactory){
         super(sqlSessionFactory, "mapper.UserMapper.");
     }
 
-
     @Override
     protected List<UserDTO> selectList(SqlSession session, Object[] arg) {
-        String stmt = (String) arg[0];
-        UserDTO user;
-
-        if (stmt.equals("selectAll")) {
-            return session.selectList(sqlMapperPath + stmt);
-        }
-        else {
-            user = (UserDTO) arg[1];
-            return session.selectList(sqlMapperPath + stmt, user);
-        }
+        return null;
     }
     @Override
     protected UserDTO selectOne(SqlSession session, Object[] arg) {
-        String stmt = (String) arg[0];
-        UserDTO user = (UserDTO) arg[1];
-
-        return session.selectOne(sqlMapperPath + stmt, user);
+        return null;
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) {
-        String stmt = (String) arg[0];
-        UserDTO user = (UserDTO) arg[1];
-        return session.insert(sqlMapperPath + stmt, user);
+        return session.insert(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int update(SqlSession session, Object[] arg) {
@@ -60,55 +44,9 @@ public class UserDAO extends DAO<UserDTO>{
         return 0;
     }
 
-
-
-    public List<UserDTO> selectAll() {
-        return selectList("selectAll");
-    }
-
-    public UserDTO findUserWithID(String id) {
-        UserDTO user = new UserDTO();
-        user.setId(id);
-
-        return selectOne("findWithID", user);
-    }
-
-    public int insertUser(String id, String pw, Authority authority, String name, Integer age) {
+    public int insertUser(Authority authority, String id, String pw, String name, Integer age) {
+        String stmt = "insertUser";
         UserDTO user = new UserDTO(null, authority.getCode(), id, pw, name, age);
-        return insert(user);
+        return insert(stmt, user);
     }
-
-/*
-    public void updateUser(UserDTO user) {
-        SqlSession session = sqlSessionFactory.openSession();
-        try{
-            session.update("mapper.UserMapper.쿼리명", user);
-        } finally {
-            session.close();
-        }
-    }
-
-    public UserDTO readOneUser(String id) {
-        UserDTO user = null;
-        SqlSession session = sqlSessionFactory.openSession();
-        try{
-            user = session.selectOne("mapper.UserMapper.쿼리명", id);
-        } finally {
-            session.close();
-        }
-        return user;
-    }
-
-    public List<UserDTO> readAllUser() {
-        List<UserDTO> list = null;
-        SqlSession session = sqlSessionFactory.openSession();
-        try{
-            list = session.selectList("mapper.UserMapper.쿼리명");
-        }
-        finally {
-            session.close();
-        }
-        return list;
-    }
-*/
 }

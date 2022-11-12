@@ -29,6 +29,8 @@ public class OrderDAO extends DAO<OrderDTO> {
         return session.selectList(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
+    protected OrderDTO selectOne(SqlSession session, Object[] arg) { return null; }
+    @Override
     protected int insert(SqlSession session, Object[] arg) {
         return session.insert(sqlMapperPath + arg[0], arg[1]);
     }
@@ -36,6 +38,8 @@ public class OrderDAO extends DAO<OrderDTO> {
     protected int update(SqlSession session, Object[] arg) {
         return session.update(sqlMapperPath + arg[0], arg[1]);
     }
+    @Override
+    protected int delete(SqlSession session, Object[] arg) { return 0; }
 
 
     public int insertOrder(LocalDateTime regdate, String option, Integer price, String comment, Long menu_id, Long total_order_id, Long store_id) {
@@ -64,7 +68,7 @@ public class OrderDAO extends DAO<OrderDTO> {
     public int updateStatus(OrderStatus status, Long store_id) {
         String stmt = "updateStatus";
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setStatus(status);
+        orderDTO.setStatus(status.getCode());
         orderDTO.setStore_id(store_id);
 
         return update(stmt, orderDTO);

@@ -15,21 +15,11 @@ public abstract class DAO<T> {
         this.sqlMapperPath = sqlMapperPath;
     }
 
-    protected List<T> selectList(SqlSession session, Object[] arg) {
-        return null;
-    }
-    protected T selectOne(SqlSession session, Object[] arg){
-        return null;
-    }
-    protected int insert(SqlSession session, Object[] arg) {
-        return 0;
-    }
-    protected int update(SqlSession session, Object[] arg) {
-        return 0;
-    }
-    protected int delete(SqlSession session, Object[] arg){
-        return 0;
-    }
+    protected abstract List<T> selectList(SqlSession session, Object[] arg);
+    protected abstract T selectOne(SqlSession session, Object[] arg);
+    protected abstract int insert(SqlSession session, Object[] arg);
+    protected abstract int update(SqlSession session, Object[] arg);
+    protected abstract int delete(SqlSession session, Object[] arg);
 
     protected List<T> selectList(Object... arg) {
         List<T> dtos = new ArrayList<>();
