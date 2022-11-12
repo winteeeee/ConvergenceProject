@@ -1,48 +1,72 @@
 package persistence.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import persistence.MyBatisConnectionFactory;
 import persistence.dto.StoreDTO;
 import persistence.dto.StoreRegistDTO;
 import persistence.enums.Authority;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-public class StoreDAO {
-    private SqlSessionFactory sqlSessionFactory = null;
+public class StoreDAO extends DAO<StoreDTO>{
+    private static StoreDAO storeDao;
+    static {
+        if (storeDao == null) {
+            storeDao = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+        }
+    }
+    public static StoreDAO getStoreDAO() { return storeDao; }
 
-    public StoreDAO(SqlSessionFactory sqlSessionFactory){
-        this.sqlSessionFactory = sqlSessionFactory;
+    private StoreDAO(SqlSessionFactory sqlSessionFactory) {
+        super(sqlSessionFactory, "mapper.StoreMapper.");
     }
 
-    /*public void insert(StoreRegistDTO storeRegist) {
-        SqlSession session = sqlSessionFactory.openSession();
-        StoreDTO store = new StoreDTO(); // storeRegist 에서 storeDTO 생성에 필요한 get
-        try{
-            session.selectList("", store);
-        } finally {
-            session.close();
+    @Override
+    protected List<StoreDTO> selectList(SqlSession session, Object[] arg) {
+        switch ((String) arg[0]) {
+            case "selectAll":
+                return session.selectList(sqlMapperPath + arg[0]);
+            case "selectAllWithUser_pk":
+                return session.selectList(sqlMapperPath + arg[0], arg[1]);
         }
-    }*/
+        return new ArrayList<StoreDTO>();
+    }
+    @Override
+    protected StoreDTO selectOne(SqlSession session, Object[] arg) {
+        return null;
+    }
+    @Override
+    protected int insert(SqlSession session, Object[] arg) {
+        return session.insert(sqlMapperPath + arg[0], arg[1]);
+    }
+    @Override
+    protected int update(SqlSession session, Object[] arg) {
+        return 0;
+    }
+    @Override
+    protected int delete(SqlSession session, Object[] arg) {
+        return 0;
+    }
+
+    public int insertStore(String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
+        String stmt = "insertStore";
+        StoreDTO storeDTO = new StoreDTO(null, name, comment, phone, address, review_count, star_rating, open_time, close_time, user_pk);
+
+        return insert(stmt, storeDTO);
+    }
 
     public List<StoreDTO> selectAll() {
-        SqlSession session = sqlSessionFactory.openSession();
-        List<StoreDTO> list = null;
-        try {
-            list = session.selectList("");
-        } finally {
-            session.close();
-        }
-        return list;
+        String stmt = "selectAll";
+        return selectList(stmt);
     }
 
-    public List<StoreDTO> selectAll(String user_id) {
-        SqlSession session = sqlSessionFactory.openSession();
-        List<StoreDTO> list = null;
-        try {
-            list = session.selectList("", user_id);
-        } finally {
-            session.close();
-        }
-        return list;
+    public List<StoreDTO> selectAllWithUser_pk(Long user_pk) {
+        String stmt = "selectAllWithUser_pk";
+        StoreDTO storeDTO = new StoreDTO();
+        storeDTO.setUser_pk(user_pk);
+
+        return selectList(stmt, storeDTO);
     }
 }

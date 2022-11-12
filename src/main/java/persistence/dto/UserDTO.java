@@ -28,4 +28,12 @@ public class UserDTO extends DTO {
     public UserDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
+
+    public void setAuthority(Integer authority) {
+        this.authority = Authority.of(authority);
+    }
+
+    public Integer getAuthority() {
+        return authority.getCode();
+    }
 }

@@ -8,11 +8,20 @@ import java.util.List;
 
 public abstract class DAO<T> {
     private final SqlSessionFactory sqlSessionFactory;
-    public DAO(SqlSessionFactory sqlSessionFactory) {
+    protected final String sqlMapperPath;
+
+    public DAO(SqlSessionFactory sqlSessionFactory, String sqlMapperPath) {
         this.sqlSessionFactory = sqlSessionFactory;
+        this.sqlMapperPath = sqlMapperPath;
     }
 
-    public List<T> selectList(Object... arg) {
+    protected abstract List<T> selectList(SqlSession session, Object[] arg);
+    protected abstract T selectOne(SqlSession session, Object[] arg);
+    protected abstract int insert(SqlSession session, Object[] arg);
+    protected abstract int update(SqlSession session, Object[] arg);
+    protected abstract int delete(SqlSession session, Object[] arg);
+
+    protected List<T> selectList(Object... arg) {
         List<T> dtos = new ArrayList<>();
         SqlSession session = sqlSessionFactory.openSession();
         try {
@@ -23,7 +32,7 @@ public abstract class DAO<T> {
         return dtos;
     }
 
-    public T selectOne(Object... arg) {
+    protected T selectOne(Object... arg) {
         T dto = null;
         SqlSession session = sqlSessionFactory.openSession();
         try {
@@ -34,7 +43,7 @@ public abstract class DAO<T> {
         return dto;
     }
 
-    public int insert(Object... arg) {
+    protected int insert(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
@@ -45,7 +54,7 @@ public abstract class DAO<T> {
         return sign;
     }
 
-    public int update(Object... arg) {
+    protected int update(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
@@ -56,7 +65,7 @@ public abstract class DAO<T> {
         return sign;
     }
 
-    public int delete(Object... arg) {
+    protected int delete(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
@@ -66,11 +75,4 @@ public abstract class DAO<T> {
         }
         return sign;
     }
-
-
-    protected abstract List<T> selectList(SqlSession session, Object[] arg);
-    protected abstract T selectOne(SqlSession session, Object[] arg);
-    protected abstract int insert(SqlSession session, Object[] arg);
-    protected abstract int update(SqlSession session, Object[] arg);
-    protected abstract int delete(SqlSession session, Object[] arg);
 }

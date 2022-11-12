@@ -37,4 +37,12 @@ public class OrderDTO extends DTO {
     public OrderDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
+
+    public void setStatus(Integer status) {
+        this.status = OrderStatus.of(status);
+    }
+
+    public Integer getStatus() {
+        return status.getCode();
+    }
 }
