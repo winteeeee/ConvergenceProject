@@ -17,6 +17,10 @@ public class Protocol {
         data = d;
     }
 
+    public Protocol(byte[] arr) {
+        byteArrayToProtocol(arr);
+    }
+
     public byte[] getBytes() {
         byte[] dataByteArray = data.getBytes();
         dataLength = dataByteArray.length;
@@ -40,12 +44,8 @@ public class Protocol {
                 return new StoreRegistDTO(arr);
             }
 
-            else if (code == ProtocolCode.MENU) {
-                return new MenuRegistDTO(arr);
-            }
-
             else if (code == ProtocolCode.ORDER) {
-                return new OrderDTO(arr);
+                return new DetailsDTO(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
@@ -58,16 +58,12 @@ public class Protocol {
                 return new MenuDTO(arr);
             }
 
-            else if (code == (ProtocolCode.MENU | ProtocolCode.REGIST)) {
-                return new MenuRegistDTO(arr);
-            }
-
             else if (code == ProtocolCode.OPTION) {
-                return new OptionDTO(arr);
+                return new DetailsDTO(arr);
             }
 
             else if (code == ProtocolCode.ORDER) {
-                return new OrderDTO(arr);
+                return new OrdersDTO(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
@@ -83,7 +79,7 @@ public class Protocol {
             }
 
             else if (code == ProtocolCode.TOTAL_ORDER) {
-                return new TotalOrderDTO(arr);
+                return new TotalOrdersDTO(arr);
             }
 
             else if (code == ProtocolCode.USER) {
