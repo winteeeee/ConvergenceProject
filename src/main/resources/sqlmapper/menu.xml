@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.MenuMapper">
+    <resultMap id="result" type="MenuDTO">
+        <result property="id" column="id"/>
+        <result property="group_name" column="group_name"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="stock" column="stock"/>
+        <result property="store_id" column="store_id"/>
+    </resultMap>
+
+    <insert id="insertMenu">
+        INSERT INTO menu (group_name, name, price, stock, store_id)
+        VALUES (#{group_name}, #{name}, #{price}, #{stock}, #{store_id})
+    </insert>
+
+    <select id="selectAllWithStore_id" resultMap="result">
+        SELECT *
+        FROM menu
+        WHERE store_id=#{store_id}
+    </select>
+
+    <select id="selectOneWithId" resultMap="result">
+        SELECT *
+        FROM menu
+        WHERE id=#{id}
+    </select>
+
+    <update id="updateNameAndPrice">
+        UPDATE menu
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="price != null">
+                price=#{price},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+</mapper>
