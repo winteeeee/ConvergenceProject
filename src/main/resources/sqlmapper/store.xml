@@ -8,9 +8,9 @@
         <result property="id" column="id"/> <!--PK, 자동 생성-->
         <result property="name" column="name"/>
         <result property="comment" column="comment"/>
-        <result property="address" column="address"/>
         <result property="phone" column="phone"/>
-        <result property="review" column="review"/>
+        <result property="address" column="address"/>
+        <result property="review_count" column="review_count"/>
         <result property="star_rating" column="star_rating"/>
         <result property="open_time" column="open_time"/>
         <result property="close_time" column="close_time"/>
@@ -18,16 +18,16 @@
     </resultMap>
 
     <insert id="insertStore">
-        INSERT INTO store (name, comment, address, phone, review, star_rating, open_time, close_time, user_pk)
-        VALUES (#{name}, #{comment}, #{address}), #{phone}, #{review), #{star_rating}, #{open_time}, #{close_time), #{user_pk})
+        INSERT INTO store (name, comment, phone, address, review_count, star_rating, open_time, close_time, user_pk)
+        VALUES (#{name}, #{comment}, #{phone}, #{address}, #{review_count}, #{star_rating}, #{open_time}, #{close_time}, #{user_pk})
     </insert>
 
-    <select id="selectAll">
+    <select id="selectAll" resultMap="result">
         SELECT *
         FROM store
     </select>
 
-    <select id="selectAllWithUser_pk">
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM store
         WHERE user_pk=#{user_pk}

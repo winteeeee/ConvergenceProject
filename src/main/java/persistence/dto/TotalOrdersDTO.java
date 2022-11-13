@@ -7,16 +7,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class TotalOrderDTO extends DTO {
+public class TotalOrdersDTO extends DTO {
     private Long id;
     private LocalDateTime regdate;
     private String address;
     private Integer total_price;
     private Long user_pk;     // FK
 
-    public TotalOrderDTO() {  }
+    public TotalOrdersDTO() {  }
 
-    public TotalOrderDTO(Long id, LocalDateTime regdate, String address, Integer total_price, Long user_pk) {
+    public TotalOrdersDTO(Long id, LocalDateTime regdate, String address, Integer total_price, Long user_pk) {
         this.id = id;
         this.regdate = regdate;
         this.address = address;
@@ -24,7 +24,7 @@ public class TotalOrderDTO extends DTO {
         this.user_pk = user_pk;
     }
 
-    public TotalOrderDTO(byte[] arr) {
+    public TotalOrdersDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
 }

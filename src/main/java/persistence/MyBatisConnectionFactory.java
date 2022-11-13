@@ -11,6 +11,10 @@ import java.io.Reader;
 public class MyBatisConnectionFactory {
     private static SqlSessionFactory sqlSessionFactory;
     static {
+        init();
+    }
+
+    private static void init() {
         try {
             String resource = "config/config.xml";
             Reader reader = Resources.getResourceAsReader(resource);
@@ -25,7 +29,11 @@ public class MyBatisConnectionFactory {
             iOException.printStackTrace();
         }
     }
+
     public static SqlSessionFactory getSqlSessionFactory() {
+        if (sqlSessionFactory == null) {
+            init();
+        }
         return sqlSessionFactory;
     }
 }

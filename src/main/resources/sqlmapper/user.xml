@@ -16,7 +16,7 @@
     </resultMap>
 
     <insert id="insertUser">
-        INSERT INTO user (id, pw, name, age, authority)
-        VALUES (#{id}, #{pw}, #{name}, #{age}, #{authority})
+        INSERT INTO user (authority, id, pw, name, age)
+        VALUES (#{authority}, #{id}, #{pw}, #{name}, #{age})
     </insert>
 </mapper>

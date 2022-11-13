@@ -30,4 +30,16 @@ public class StoreRegistDTO extends DTO {
     public StoreRegistDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
+
+    public void setStatus(Integer status) {
+        this.status = RegistStatus.of(status);
+    }
+
+    public Integer getStatus() {
+        return status.getCode();
+    }
+
+    public RegistStatus getStatusEnum() {
+        return status;
+    }
 }

@@ -8,69 +8,96 @@ import java.util.List;
 
 public abstract class DAO<T> {
     private final SqlSessionFactory sqlSessionFactory;
-    public DAO(SqlSessionFactory sqlSessionFactory) {
+    protected final String sqlMapperPath;
+
+    public DAO(SqlSessionFactory sqlSessionFactory, String sqlMapperPath) {
         this.sqlSessionFactory = sqlSessionFactory;
+        this.sqlMapperPath = sqlMapperPath;
     }
 
-    public List<T> selectList(Object... arg) {
+    protected abstract List<T> selectList(SqlSession session, Object[] arg) throws Exception;
+    protected abstract T selectOne(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int insert(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int update(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int delete(SqlSession session, Object[] arg) throws Exception;
+
+    protected List<T> selectList(Object... arg) {
         List<T> dtos = new ArrayList<>();
         SqlSession session = sqlSessionFactory.openSession();
         try {
             dtos = selectList(session, arg);
-        } finally {
+            session.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return dtos;
     }
 
-    public T selectOne(Object... arg) {
+    protected T selectOne(Object... arg) {
         T dto = null;
         SqlSession session = sqlSessionFactory.openSession();
         try {
             dto = selectOne(session, arg);
-        } finally {
+            session.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return dto;
     }
 
-    public int insert(Object... arg) {
+    protected int insert(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = insert(session, arg);
-        } finally {
+            session.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;
     }
 
-    public int update(Object... arg) {
+    protected int update(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = update(session, arg);
-        } finally {
+            session.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;
     }
 
-    public int delete(Object... arg) {
+    protected int delete(Object... arg) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
             sign = delete(session, arg);
-        } finally {
+            session.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;
     }
-
-
-    protected abstract List<T> selectList(SqlSession session, Object[] arg);
-    protected abstract T selectOne(SqlSession session, Object[] arg);
-    protected abstract int insert(SqlSession session, Object[] arg);
-    protected abstract int update(SqlSession session, Object[] arg);
-    protected abstract int delete(SqlSession session, Object[] arg);
 }

@@ -10,17 +10,28 @@
         <result property="regdate" column="regdate"/>
         <result property="star_rating" column="star_rating"/>
         <result property="user_pk" column="user_pk"/>
-        <result property="order_id" column="order_id"/>
+        <result property="orders_id" column="orders_id"/>
     </resultMap>
 
     <insert id="insertReview">
-        INSERT INTO review (id, regdate, contents, upper_review_id, user_id)
-        VALUES (#{id}, #{regdate}, #{contents}, #{upper_review_id}), #{user_id})
+        INSERT INTO review (contents, regdate, star_rating, user_pk, orders_id)
+        VALUES (#{contents}, #{regdate}, #{star_rating}, #{user_pk}, #{orders_id});
     </insert>
 
-    <select id="selectAllWithUser_pk">
+    <update id="updateForInsert">
+        UPDATE store
+        SET review_count = review_count + 1,
+            star_rating = star_rating + #{star_rating}
+        WHERE store.id = (
+            SELECT store_id
+            FROM orders
+            WHERE orders.id = #{orders_id}
+        );
+    </update>
+
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM review
-        WHERE user_id=#{user_id}
+        WHERE user_pk=#{user_pk}
     </select>
 </mapper>
