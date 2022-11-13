@@ -10,15 +10,13 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        UserDAO userDAO = UserDAO.getUserDAO();
+        /*
         StoreDAO storeDAO = StoreDAO.getStoreDAO();
         DetailsDAO detailsDAO = DetailsDAO.getDetailsDAO();
         MenuDAO menuDAO = MenuDAO.getMenuDAO();
         TotalOrdersDAO totalOrdersDAO = TotalOrdersDAO.getTotalOrdersDAO();
         OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
         ReviewDAO reviewDAO = ReviewDAO.getReviewDAO();
-        StoreRegistDAO storeRegistDAO = StoreRegistDAO.getStoreRegistDAO();
-/*
         userDAO.insertUser(Authority.ADMIN, "nm090909", "0014", "백대환", 23);
         storeDAO.insertStore("맘터", "밥줘", "123-4567-8901", "오름 27", null, null, 1l);
         detailsDAO.insertDetails("곱빼기", 1000, 1l);
@@ -32,11 +30,34 @@ public class Main {
         storeRegistDAO.updateStatus(1l, RegistStatus.ACCEPT);
         List<StoreRegistDTO> d = storeRegistDAO.selectAllWithStatus(RegistStatus.ACCEPT);
         List<TotalOrdersDTO> e = TotalOrdersDAO.getTotalOrdersDAO().selectAllWithUser_pk(1l);
-*/
+        */
+        storeRegistAndView();
+        //백대환 바보
     }
 
     public static void storeRegistAndView() {
+        UserDAO userDAO = UserDAO.getUserDAO();
+        StoreRegistDAO storeRegistDAO = StoreRegistDAO.getStoreRegistDAO();
 
+        UserDTO userDTO = null;
+
+        //userDAO.insertUser(Authority.OWNER, "honsot", "honsotKIT123", "김선명", 40); // phone : 010-1234-5678
+        //userDTO = userDAO.selectOneWithId("honsot");
+        //storeRegistDAO.insertRegistration("한솥도시락 금오공대점", "맛과 정성을 담았습니다", "054-472-0615","경북 구미시 대학로 39", userDTO.getPk());
+
+        var list = storeRegistDAO.selectAll();
+        list.stream().forEach( p -> {
+            var user = userDAO.selectOneWithPk(p.getUser_pk());
+            System.out.println(p.toString() + ", " + user.toString());
+        } );
+
+        storeRegistDAO.updateStatus(1L, RegistStatus.ACCEPT); // 관리자가 가게 등록 승인/거절 하는 함수
+
+        list = storeRegistDAO.selectAll();
+        list.stream().forEach( p -> {
+            var user = userDAO.selectOneWithPk(p.getUser_pk());
+            System.out.println(p.toString() + ", " + user.toString());
+        } );
     }
 
     public static void insertOptionAll() {
