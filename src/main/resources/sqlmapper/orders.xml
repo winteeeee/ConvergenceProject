@@ -27,10 +27,16 @@
         WHERE store_id=#{store_id}
     </select>
 
-    <select id="selectAllWithTotal_Orders_id" resultMap="result">
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM orders
-        WHERE total_orders_id=#{total_orders_id}
+        WHERE user_pk=#{user_pk}
+    </select>
+
+    <select id="selectOneWithId" resultMap="result">
+        SELECT *
+        FROM orders
+        WHERE id=#{id}
     </select>
 
     <update id="updateStatus">

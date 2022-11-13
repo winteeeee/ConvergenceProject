@@ -29,7 +29,9 @@ public class OrdersDAO extends DAO<OrdersDTO> {
         return session.selectList(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
-    protected OrdersDTO selectOne(SqlSession session, Object[] arg) { return null; }
+    protected OrdersDTO selectOne(SqlSession session, Object[] arg) {
+        return session.selectOne(sqlMapperPath + arg[0], arg[1]);
+    }
     @Override
     protected int insert(SqlSession session, Object[] arg) {
         return session.insert(sqlMapperPath + arg[0], arg[1]);
@@ -42,9 +44,9 @@ public class OrdersDAO extends DAO<OrdersDTO> {
     protected int delete(SqlSession session, Object[] arg) { return 0; }
 
 
-    public int insertOrders(LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long total_order_id, Long store_id) {
+    public int insertOrders(LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long user_pk, Long store_id) {
         String stmt = "insertOrders";
-        OrdersDTO ordersDTO = new OrdersDTO(null, OrdersStatus.HOLD.getCode(), regdate, details, price, comment, menu_id, total_order_id, store_id);
+        OrdersDTO ordersDTO = new OrdersDTO(null, OrdersStatus.HOLD.getCode(), regdate, details, price, comment, menu_id, user_pk, store_id);
 
         return insert(stmt, ordersDTO);
     }
@@ -57,12 +59,20 @@ public class OrdersDAO extends DAO<OrdersDTO> {
         return selectList(stmt, ordersDTO);
     }
 
-    public List<OrdersDTO> selectAllWithTotal_Orders_id (Long total_orders_id) {
+    public List<OrdersDTO> selectAllWithUser_pk (Long user_pk) {
         String stmt = "selectAllWithTotal_Orders_id";
         OrdersDTO ordersDTO = new OrdersDTO();
-        ordersDTO.setTotal_orders_id(total_orders_id);
+        ordersDTO.setUser_pk(user_pk);
 
         return selectList(stmt, ordersDTO);
+    }
+
+    public OrdersDTO selectOneWithId (Long id) {
+        String stmt = "selectOneWithId";
+        OrdersDTO ordersDTO = new OrdersDTO();
+        ordersDTO.setId(id);
+
+        return selectOne(stmt, ordersDTO);
     }
 
     public int updateStatus(OrdersStatus status, Long id) {

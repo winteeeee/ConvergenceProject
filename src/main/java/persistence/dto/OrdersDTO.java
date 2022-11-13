@@ -2,6 +2,7 @@ package persistence.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import persistence.enums.OrdersStatus;
 import persistence.enums.RegistStatus;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public class OrdersDTO extends DTO {
     private Long id;
     private OrdersStatus status;
@@ -18,12 +20,12 @@ public class OrdersDTO extends DTO {
     private Integer price;
     private String comment;
     private Long menu_id;           // FK
-    private Long total_orders_id;    // FK
+    private Long user_pk;           // FK
     private Long store_id;          // FK
 
     public OrdersDTO() {}
 
-    public OrdersDTO(Long id, Integer status, LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long total_orders_id, Long store_id) {
+    public OrdersDTO(Long id, Integer status, LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long user_pk, Long store_id) {
         this.id = id;
         this.status = OrdersStatus.of(status);
         this.regdate = regdate;
@@ -31,7 +33,7 @@ public class OrdersDTO extends DTO {
         this.price = price;
         this.comment = comment;
         this.menu_id = menu_id;
-        this.total_orders_id = total_orders_id;
+        this.user_pk = user_pk;
         this.store_id = store_id;
     }
 

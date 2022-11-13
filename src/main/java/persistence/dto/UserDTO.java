@@ -3,7 +3,6 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Authority;
-import persistence.enums.RegistStatus;
 
 @Getter
 @Setter
