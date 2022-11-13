@@ -17,7 +17,7 @@
         VALUES (#{regdate}, #{address}, #{total_price}, #{user_pk})
     </insert>
 
-    <select id="selectAllWithUser_pk">
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM total_orders
         WHERE user_pk=#{user_pk}

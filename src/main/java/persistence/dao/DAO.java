@@ -15,11 +15,11 @@ public abstract class DAO<T> {
         this.sqlMapperPath = sqlMapperPath;
     }
 
-    protected abstract List<T> selectList(SqlSession session, Object[] arg);
-    protected abstract T selectOne(SqlSession session, Object[] arg);
-    protected abstract int insert(SqlSession session, Object[] arg);
-    protected abstract int update(SqlSession session, Object[] arg);
-    protected abstract int delete(SqlSession session, Object[] arg);
+    protected abstract List<T> selectList(SqlSession session, Object[] arg) throws Exception;
+    protected abstract T selectOne(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int insert(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int update(SqlSession session, Object[] arg) throws Exception;
+    protected abstract int delete(SqlSession session, Object[] arg) throws Exception;
 
     protected List<T> selectList(Object... arg) {
         List<T> dtos = new ArrayList<>();
@@ -27,7 +27,11 @@ public abstract class DAO<T> {
         try {
             dtos = selectList(session, arg);
             session.commit();
-        } finally {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return dtos;
@@ -39,7 +43,11 @@ public abstract class DAO<T> {
         try {
             dto = selectOne(session, arg);
             session.commit();
-        } finally {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return dto;
@@ -51,7 +59,11 @@ public abstract class DAO<T> {
         try {
             sign = insert(session, arg);
             session.commit();
-        } finally {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;
@@ -63,7 +75,11 @@ public abstract class DAO<T> {
         try {
             sign = update(session, arg);
             session.commit();
-        } finally {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;
@@ -75,7 +91,11 @@ public abstract class DAO<T> {
         try {
             sign = delete(session, arg);
             session.commit();
-        } finally {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             session.close();
         }
         return sign;

@@ -13,17 +13,17 @@ public class ReviewDTO extends DTO {
     private LocalDateTime regdate;
     private Integer star_rating;
     private Long user_pk;           // FK
-    private Long order_id;          // FK
+    private Long orders_id;          // FK
 
     public ReviewDTO() {  }
 
-    public ReviewDTO(Long id, String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long order_id) {
+    public ReviewDTO(Long id, String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long orders_id) {
         this.id = id;
         this.contents = contents;
         this.regdate = regdate;
         this.star_rating = star_rating;
         this.user_pk = user_pk;
-        this.order_id = order_id;
+        this.orders_id = orders_id;
     }
 
     public ReviewDTO(byte[] arr) {

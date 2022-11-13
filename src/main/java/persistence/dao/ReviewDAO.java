@@ -29,17 +29,23 @@ public class ReviewDAO extends DAO<ReviewDTO> {
     @Override
     protected ReviewDTO selectOne(SqlSession session, Object[] arg) { return null; }
     @Override
-    protected int insert(SqlSession session, Object[] arg) {
-        return session.insert(sqlMapperPath + arg[0], arg[1]);
+    protected int insert(SqlSession session, Object[] arg) throws Exception {
+        int sign = 0;
+        sign += session.insert(sqlMapperPath + arg[0], arg[1]);
+        sign += session.update(sqlMapperPath + "updateForInsert", arg[1]);
+        if (sign < 2) {
+            throw new Exception("Error");
+        }
+        return sign;
     }
     @Override
     protected int update(SqlSession session, Object[] arg) { return 0; }
     @Override
     protected int delete(SqlSession session, Object[] arg) { return 0; }
 
-    public int insertReview(String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long order_id) {
+    public int insertReview(String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long orders_id) {
         String stmt = "insertReview";
-        ReviewDTO reviewDTO = new ReviewDTO(null, contents, regdate, star_rating, user_pk, order_id);
+        ReviewDTO reviewDTO = new ReviewDTO(null, contents, regdate, star_rating, user_pk, orders_id);
 
         return insert(stmt, reviewDTO);
     }
