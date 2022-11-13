@@ -22,12 +22,12 @@
         VALUES (#{name}, #{comment}, #{phone}, #{address}, #{review_count}, #{star_rating}, #{open_time}, #{close_time}, #{user_pk})
     </insert>
 
-    <select id="selectAll">
+    <select id="selectAll" resultMap="result">
         SELECT *
         FROM store
     </select>
 
-    <select id="selectAllWithUser_pk">
+    <select id="selectAllWithUser_pk" resultMap="result">
         SELECT *
         FROM store
         WHERE user_pk=#{user_pk}

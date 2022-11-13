@@ -50,9 +50,9 @@ public class StoreDAO extends DAO<StoreDTO>{
         return 0;
     }
 
-    public int insertStore(String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
+    public int insertStore(String name, String comment, String phone, String address, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
         String stmt = "insertStore";
-        StoreDTO storeDTO = new StoreDTO(null, name, comment, phone, address, review_count, star_rating, open_time, close_time, user_pk);
+        StoreDTO storeDTO = new StoreDTO(null, name, comment, phone, address, 0, 0, open_time, close_time, user_pk);
 
         return insert(stmt, storeDTO);
     }

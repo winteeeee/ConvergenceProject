@@ -73,7 +73,7 @@ public class StoreRegistDAO extends DAO<StoreRegistDTO>{
     }
 
     public int updateStatus(Long id, RegistStatus status) {
-        String stmt = "selectAllWithStatus";
+        String stmt = "updateStatus";
         StoreRegistDTO storeRegistDTO = new StoreRegistDTO();
         storeRegistDTO.setId(id);
         storeRegistDTO.setStatus(status.getCode());
