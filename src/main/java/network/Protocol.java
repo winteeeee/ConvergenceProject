@@ -78,10 +78,6 @@ public class Protocol {
                 return new StoreRegistDTO(arr);
             }
 
-            else if (code == ProtocolCode.TOTAL_ORDER) {
-                return new TotalOrdersDTO(arr);
-            }
-
             else if (code == ProtocolCode.USER) {
                 return new UserDTO(arr);
             }
