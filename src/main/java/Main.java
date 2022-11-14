@@ -1,8 +1,11 @@
+import persistence.MyBatisConnectionFactory;
 import persistence.dao.*;
 import persistence.dto.*;
-import persistence.enums.Authority;
 import persistence.enums.OrdersStatus;
-import persistence.enums.RegistStatus;
+import service.AdminService;
+import service.OwnerService;
+import service.UserService;
+import view.StoreView;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -10,49 +13,41 @@ import java.util.List;
 
 
 public class Main {
-    static StoreDAO storeDAO = StoreDAO.getStoreDAO();
-    static DetailsDAO detailsDAO = DetailsDAO.getDetailsDAO();
-    static MenuDAO menuDAO = MenuDAO.getMenuDAO();
-    static TotalOrdersDAO totalOrdersDAO = TotalOrdersDAO.getTotalOrdersDAO();
-    static OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
-    static ReviewDAO reviewDAO = ReviewDAO.getReviewDAO();
-    static UserDAO userDAO = UserDAO.getUserDAO();
-    static StoreRegistDAO storeRegistDAO = StoreRegistDAO.getStoreRegistDAO();
-    static ClassificationDAO classificationDAO = ClassificationDAO.getClassificationDAO();
+    static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static StoreRegistDAO storeRegistDAO = new StoreRegistDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+
+    static StoreView storeView = new StoreView();
+
+    static UserService userService = new UserService(userDAO);
+    static OwnerService ownerService = new OwnerService(userDAO, storeRegistDAO);
+    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO, storeView);
 
     public static void main(String[] args) {
-        test2_2();
+        test1();
     }
 
     public static void test1() {
         /* 사용자 추가 및 가게 등록 요청*/
-        userDAO.insertUser(Authority.OWNER, "honsot", "honsotKIT123", "김선명", "010-1234-5678", 40);
-        UserDTO userDTO = userDAO.selectOneWithId("honsot");
-        storeRegistDAO.insertRegistration("한솥도시락 금오공대점", "맛과 정성을 담았습니다", "054-472-0615","경북 구미시 대학로 39", userDTO.getPk());
+        Long ownerKey = ownerService.insertOwner("honsot", "honsotKIT123", "김선명", "010-1234-5678", 40);
+        ownerService.insertStoreRegist("한솥도시락 금오공대점", "맛과 정성을 담았습니다", "054-472-0615","경북 구미시 대학로 39", ownerKey);
 
-        /* 관리자 승인 */
-        var list = storeRegistDAO.selectAll();
-        StoreRegistDTO storeRegistDTO = list.get(0);
-        storeRegistDAO.updateStatus(storeRegistDTO.getId(), RegistStatus.ACCEPT);
-
-        /* 가게 추가 */
-        storeDAO.insertStore(
-                storeRegistDTO.getName(),
-                storeRegistDTO.getComment(),
-                storeRegistDTO.getPhone(),
-                storeRegistDTO.getAddress(),
-                null,
-                null,
-                storeRegistDTO.getUser_pk()
-        );
+        /* 관리자 승인 및 가게 추가 */
+        var list = adminService.getHoldList();
+        StoreRegistDTO storeRegist = list.get(0);
+        adminService.acceptStoreRegist(storeRegist.getId());
 
         /* 모든 가게 조회 */
-        var storeDTOList = storeDAO.selectAll();
-        storeDTOList.stream().forEach( p -> {
-            var user = userDAO.selectOneWithPk(p.getUser_pk());
-            System.out.println(p.toString() + ", " + user.toString());
-        } );
+        adminService.viewStoreList();
     }
+
+
 
     public static void test2_1() {
         /* 가게 들고 오기 */
@@ -89,13 +84,20 @@ public class Main {
         menuDAO.insertMenu(name, price, stock, group_id, Arrays.asList(options));
     }
 
+
+
     public static void test2_2() {
         /* 가게 들고 오기 */
         UserDTO user = userDAO.selectOneWithId("honsot");
         StoreDTO honsot = storeDAO.selectAllWithUser_pk(user.getPk()).get(0);
 
+        /* 출력 */
+        viewAllMenu(honsot.getId());
+    }
+
+    public static void viewAllMenu(Long store_id) {
         /* 그룹 들고 오기 */
-        List<ClassificationDTO> groups = classificationDAO.selectAllWithStore_id(honsot.getId());
+        List<ClassificationDTO> groups = classificationDAO.selectAllWithStore_id(store_id);
         List<MenuDTO> menus;
         List<DetailsDTO> detailsList;
 
@@ -123,19 +125,7 @@ public class Main {
 
 
 
-
-
-    public static void viewAllMenu(Long store_id) {
-        MenuDAO menuDAO = MenuDAO.getMenuDAO();
-        List<MenuDTO> list = menuDAO.selectAllWithClassification_id(store_id);
-        // 조건 추가 필요 -> 그룹별로 나눠서 출력
-        list.stream().forEach( p -> {
-            System.out.println(p.toString()); // 옵션 추가 필요
-        } );
-    }
-
     public static void changeMenuNameAndPrice(Long menu_id, String name, Integer price) {
-        MenuDAO menuDAO = MenuDAO.getMenuDAO();
         MenuDTO menuDTO = menuDAO.selectOneWithId(menu_id);
 
         System.out.println(menuDTO.getName() + "의 이름과 가격을 각각 " + name + "와" + " " + price + "원으로 수정");
@@ -148,7 +138,6 @@ public class Main {
     }
 
     public static void test3_1() {
-        MenuDAO menuDAO = MenuDAO.getMenuDAO();
         Long user_pk = 1l;
         Long store_id = 2l;
 
@@ -161,10 +150,6 @@ public class Main {
     }
 
     public static void createOrders(Long user_pk, Long store_id, MenuDTO menu, Integer... optionArr) {
-        DetailsDAO detailsDAO = DetailsDAO.getDetailsDAO();
-        OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
-
-
         List<DetailsDTO> options = detailsDAO.selectAllWithMenu_id(menu.getId());
 
         String details = "";
@@ -178,7 +163,6 @@ public class Main {
     }
 
     public static void viewOrders(Long store_id) {
-        OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
         List<OrdersDTO> list = ordersDAO.selectAllWithStore_id(store_id);
 
         for (OrdersDTO o : list) {
@@ -187,17 +171,14 @@ public class Main {
     }
 
     public static void acceptOrders(Long order_id) {
-        OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
         ordersDAO.updateStatus(OrdersStatus.IN_DELIVERY, order_id);
     }
 
     public static void cancelOrders(Long order_id) {
-        OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
         ordersDAO.updateStatus(OrdersStatus.CANCEL, order_id);
     }
 
     public static void deliveryFinish(Long order_id) {
-        OrdersDAO ordersDAO = OrdersDAO.getOrdersDAO();
         ordersDAO.updateStatus(OrdersStatus.COMPLETE, order_id);
     }
 

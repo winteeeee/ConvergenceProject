@@ -12,7 +12,7 @@
         <result property="classification_id" column="classification_id"/>
     </resultMap>
 
-    <insert id="insertMenu">
+    <insert id="insertMenu" useGeneratedKeys = "true" keyProperty="id" keyColumn="id">
         INSERT INTO menu (name, price, stock, classification_id)
         VALUES (#{name}, #{price}, #{stock}, #{classification_id})
     </insert>

@@ -10,15 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class TotalOrdersDAO extends DAO<TotalOrdersDTO>{
-    private static TotalOrdersDAO totalOrdersDAO;
-    static {
-        if (totalOrdersDAO == null) {
-            totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static TotalOrdersDAO getTotalOrdersDAO() { return totalOrdersDAO; }
-
-    private TotalOrdersDAO(SqlSessionFactory sqlSessionFactory) {
+    public TotalOrdersDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.TotalOrdersMapper.");
     }
 

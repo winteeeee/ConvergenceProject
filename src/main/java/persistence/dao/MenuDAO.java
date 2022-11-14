@@ -3,23 +3,13 @@ package persistence.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import persistence.MyBatisConnectionFactory;
 import persistence.dto.MenuDTO;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class MenuDAO extends DAO<MenuDTO>{
-    private static MenuDAO menuDAO;
-    static {
-        if (menuDAO == null) {
-            menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static MenuDAO getMenuDAO() { return menuDAO; }
-
-
-    private MenuDAO(SqlSessionFactory sqlSessionFactory) {
+    public MenuDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.MenuMapper.");
     }
 
@@ -33,23 +23,21 @@ public class MenuDAO extends DAO<MenuDTO>{
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) throws Exception {
-        session.insert(sqlMapperPath + arg[0], arg[1]);
-        session.commit();
+        int sign = 0;
 
-        MenuDTO menuDTO = (MenuDTO) arg[1];
-        for (MenuDTO temp : selectList("selectAllWithClassification_id", menuDTO)) {
-            if (menuDTO.getName().equals(temp.getName())) {
-                menuDTO = temp;
-                break;
-            }
-        }
+        sign += session.insert(sqlMapperPath + arg[0], arg[1]);
+        MenuDTO menu = (MenuDTO) arg[1];
         List<Long> details = (List) arg[2];
 
         for (int i = 0; i < details.size(); i++) {
             HashMap<String, Long> map = new HashMap<>();
-            map.put("menu_id", menuDTO.getId());
+            map.put("menu_id", menu.getId());
             map.put("details_id", details.get(i));
-            session.insert(sqlMapperPath + "insertMenuDetails", map);
+            sign += session.insert(sqlMapperPath + "insertMenuDetails", map);
+        }
+
+        if (sign < details.size()+1) {
+            throw new Exception("[Error] 메뉴 및 옵션 관계 추가 오류");
         }
 
         return 1;

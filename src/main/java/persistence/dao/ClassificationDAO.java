@@ -8,15 +8,7 @@ import persistence.dto.ClassificationDTO;
 import java.util.List;
 
 public class ClassificationDAO extends DAO<ClassificationDTO>{
-    private static ClassificationDAO classificationDAO;
-    static {
-        if (classificationDAO == null) {
-            classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static ClassificationDAO getClassificationDAO() { return classificationDAO; }
-
-    private ClassificationDAO(SqlSessionFactory sqlSessionFactory) {
+    public ClassificationDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.ClassificationMapper.");
     }
 

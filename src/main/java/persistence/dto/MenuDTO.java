@@ -10,7 +10,7 @@ public class MenuDTO extends DTO {
     private String name;
     private Integer price;
     private Integer stock;
-    private Long Classification_id;          // FK
+    private Long classification_id;          // FK
 
     public MenuDTO() {  }
 
@@ -19,7 +19,7 @@ public class MenuDTO extends DTO {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.Classification_id = Classification_id;
+        this.classification_id = Classification_id;
     }
 
     public MenuDTO(byte[] arr) {
