@@ -20,8 +20,8 @@ public class OrdersDTO extends DTO {
     private Integer price;
     private String comment;
     private Long menu_id;           // FK
-    private Long user_pk;           // FK
     private Long store_id;          // FK
+    private Long user_pk;           // FK
 
     public OrdersDTO() {}
 
@@ -33,8 +33,8 @@ public class OrdersDTO extends DTO {
         this.price = price;
         this.comment = comment;
         this.menu_id = menu_id;
-        this.user_pk = user_pk;
         this.store_id = store_id;
+        this.user_pk = user_pk;
     }
 
     public OrdersDTO(byte[] arr) {

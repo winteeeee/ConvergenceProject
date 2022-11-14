@@ -35,11 +35,12 @@ public class OrdersDAO extends DAO<OrdersDTO> {
     protected int delete(SqlSession session, Object[] arg) { return 0; }
 
 
-    public int insertOrders(LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long user_pk, Long store_id) {
+    public Long insertOrders(LocalDateTime regdate, String details, Integer price, String comment, Long menu_id, Long user_pk, Long store_id) {
         String stmt = "insertOrders";
         OrdersDTO ordersDTO = new OrdersDTO(null, OrdersStatus.HOLD.getCode(), regdate, details, price, comment, menu_id, user_pk, store_id);
+        insert(stmt, ordersDTO);
 
-        return insert(stmt, ordersDTO);
+        return ordersDTO.getId();
     }
 
     public List<OrdersDTO> selectAllWithStore_id (Long store_id) {
@@ -51,7 +52,15 @@ public class OrdersDAO extends DAO<OrdersDTO> {
     }
 
     public List<OrdersDTO> selectAllWithUser_pk (Long user_pk) {
-        String stmt = "selectAllWithTotal_Orders_id";
+        String stmt = "selectAllWithUser_pk";
+        OrdersDTO ordersDTO = new OrdersDTO();
+        ordersDTO.setUser_pk(user_pk);
+
+        return selectList(stmt, ordersDTO);
+    }
+
+    public List<OrdersDTO> selectAllEndedWithUser_pk (Long user_pk) {
+        String stmt = "selectAllEndedWithUser_pk";
         OrdersDTO ordersDTO = new OrdersDTO();
         ordersDTO.setUser_pk(user_pk);
 
@@ -71,6 +80,14 @@ public class OrdersDAO extends DAO<OrdersDTO> {
         OrdersDTO ordersDTO = new OrdersDTO();
         ordersDTO.setStatus(status.getCode());
         ordersDTO.setId(id);
+
+        return update(stmt, ordersDTO);
+    }
+
+    public int updateForInsert(Long menu_id) {
+        String stmt = "updateForInsert";
+        OrdersDTO ordersDTO = new OrdersDTO();
+        ordersDTO.setMenu_id(menu_id);
 
         return update(stmt, ordersDTO);
     }

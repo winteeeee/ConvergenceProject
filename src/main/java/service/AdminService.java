@@ -41,17 +41,6 @@ public class AdminService {
         );
     }
 
-    public void viewStoreList() {
-        List<StoreDTO> storeList = getStoreList();
-        List<UserDTO> ownerList = new ArrayList<>();
-
-        for (StoreDTO store : storeList) {
-            ownerList.add(userDAO.selectOneWithPk(store.getUser_pk()));
-        }
-
-        storeView.storeViewForAdmin(storeList, ownerList);
-    }
-
     public void rejectStoreRegist(Long id) {
         storeRegistDAO.updateStatus(id, RegistStatus.REJECT);
     }

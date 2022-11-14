@@ -20,4 +20,10 @@
         FROM classification
         WHERE store_id=#{store_id}
     </select>
+
+    <select id="selectOneWithId" resultMap="result">
+        SELECT *
+        FROM classification
+        WHERE id=#{id}
+    </select>
 </mapper>
