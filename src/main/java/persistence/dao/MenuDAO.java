@@ -23,24 +23,7 @@ public class MenuDAO extends DAO<MenuDTO>{
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) throws Exception {
-        int sign = 0;
-
-        sign += session.insert(sqlMapperPath + arg[0], arg[1]);
-        MenuDTO menu = (MenuDTO) arg[1];
-        List<Long> details = (List) arg[2];
-
-        for (int i = 0; i < details.size(); i++) {
-            HashMap<String, Long> map = new HashMap<>();
-            map.put("menu_id", menu.getId());
-            map.put("details_id", details.get(i));
-            sign += session.insert(sqlMapperPath + "insertMenuDetails", map);
-        }
-
-        if (sign < details.size()+1) {
-            throw new Exception("[Error] 메뉴 및 옵션 관계 추가 오류");
-        }
-
-        return 1;
+        return session.insert(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int update(SqlSession session, Object[] arg) {
@@ -50,10 +33,21 @@ public class MenuDAO extends DAO<MenuDTO>{
     protected int delete(SqlSession session, Object[] arg) { return 0; }
 
 
-    public int insertMenu(String name, Integer price, Integer stock, Long classification_id, List<Long> details) {
+    public Long insertMenu(String name, Integer price, Integer stock, Long classification_id) {
         String stmt = "insertMenu";
         MenuDTO menuDTO = new MenuDTO(null, name, price, stock, classification_id);
-        return insert(stmt, menuDTO, details);
+        insert(stmt, menuDTO);
+
+        return menuDTO.getId();
+    }
+
+    public int insertMenuDetails(Long menuId, Long details_id) {
+        String stmt = "insertMenuDetails";
+        HashMap<String, Long> map = new HashMap<>();
+        map.put("menu_id", menuId);
+        map.put("details_id", details_id);
+
+        return insert(stmt, map);
     }
 
     public List<MenuDTO> selectAllWithClassification_id(Long classification_id) {

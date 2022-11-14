@@ -5,11 +5,8 @@ import persistence.dao.StoreRegistDAO;
 import persistence.dao.UserDAO;
 import persistence.dto.StoreDTO;
 import persistence.dto.StoreRegistDTO;
-import persistence.dto.UserDTO;
 import persistence.enums.RegistStatus;
-import view.StoreView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdminService {
@@ -17,13 +14,10 @@ public class AdminService {
     private StoreDAO storeDAO;
     private UserDAO userDAO;
 
-    private StoreView storeView;
-
-    public AdminService(StoreRegistDAO storeRegistDAO, StoreDAO storeDAO, UserDAO userDAO, StoreView storeView) {
+    public AdminService(StoreRegistDAO storeRegistDAO, StoreDAO storeDAO, UserDAO userDAO) {
         this.storeRegistDAO = storeRegistDAO;
         this.storeDAO = storeDAO;
         this.userDAO = userDAO;
-        this.storeView = storeView;
     }
 
     public void acceptStoreRegist(Long id) {
@@ -39,17 +33,6 @@ public class AdminService {
                 null,
                 registDTO.getUser_pk()
         );
-    }
-
-    public void viewStoreList() {
-        List<StoreDTO> storeList = getStoreList();
-        List<UserDTO> ownerList = new ArrayList<>();
-
-        for (StoreDTO store : storeList) {
-            ownerList.add(userDAO.selectOneWithPk(store.getUser_pk()));
-        }
-
-        storeView.storeViewForAdmin(storeList, ownerList);
     }
 
     public void rejectStoreRegist(Long id) {

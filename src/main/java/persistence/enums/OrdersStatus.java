@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 @Getter
 public enum OrdersStatus implements Enum {
     HOLD(0, "접수대기"),
-    CANCEL(1, "취소"),
-    IN_DELIVERY(2, "배달중"),
+    IN_DELIVERY(1, "배달중"),
+    CANCEL(2, "취소"),
     COMPLETE(3, "배달완료");
 
     private static final Map<Integer, String> CODE_MAP = Collections.unmodifiableMap(
