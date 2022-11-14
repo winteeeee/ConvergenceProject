@@ -3,7 +3,6 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.enums.Authority;
-import persistence.enums.RegistStatus;
 
 @Getter
 @Setter
@@ -13,16 +12,18 @@ public class UserDTO extends DTO {
     private String id;
     private String pw;
     private String name;
+    private String phone;
     private Integer age;
 
     public UserDTO() {}
 
-    public UserDTO(Long pk, Integer authority, String id, String pw, String name, Integer age) {
+    public UserDTO(Long pk, Integer authority, String id, String pw, String name, String phone, Integer age) {
         this.pk = pk;
         this.authority = Authority.of(authority);
         this.id = id;
         this.pw = pw;
         this.name = name;
+        this.phone = phone;
         this.age = age;
     }
 
@@ -40,5 +41,10 @@ public class UserDTO extends DTO {
 
     public Authority getAuthorityEnum() {
         return authority;
+    }
+
+    @Override
+    public String toString() {
+        return name + ", " + phone + ", " + id + ", " + pw;
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.ClassificationMapper">
+    <resultMap id="result" type="ClassificationDTO">
+        <result property="id" column="id"/>     <!--PK, 자동 생성-->
+        <result property="name" column="name"/>
+        <result property="store_id" column="store_id"/>
+    </resultMap>
+
+    <insert id="insertClassification">
+        INSERT INTO classification (name, store_id)
+        VALUES (#{name}, #{store_id})
+    </insert>
+
+    <select id="selectAllWithStore_id" resultMap="result">
+        SELECT *
+        FROM classification
+        WHERE store_id=#{store_id}
+    </select>
+</mapper>

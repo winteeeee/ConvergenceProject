@@ -11,15 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoreRegistDAO extends DAO<StoreRegistDTO>{
-    private static StoreRegistDAO storeRegistDAO;
-    static {
-        if (storeRegistDAO == null) {
-            storeRegistDAO = new StoreRegistDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static StoreRegistDAO getStoreRegistDAO() { return storeRegistDAO; }
-
-    private StoreRegistDAO(SqlSessionFactory sqlSessionFactory) {
+    public StoreRegistDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.StoreRegistMapper.");
     }
 
@@ -36,7 +28,7 @@ public class StoreRegistDAO extends DAO<StoreRegistDTO>{
     }
     @Override
     protected StoreRegistDTO selectOne(SqlSession session, Object[] arg) {
-        return null;
+        return session.selectOne(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) {
@@ -79,5 +71,13 @@ public class StoreRegistDAO extends DAO<StoreRegistDTO>{
         storeRegistDTO.setStatus(status.getCode());
 
         return update(stmt, storeRegistDTO);
+    }
+
+    public StoreRegistDTO selectOneWithId(Long id) {
+        String stmt = "selectOneWithId";
+        StoreRegistDTO storeRegistDTO = new StoreRegistDTO();
+        storeRegistDTO.setId(id);
+
+        return selectOne(stmt, storeRegistDTO);
     }
 }

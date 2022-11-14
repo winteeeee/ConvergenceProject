@@ -12,6 +12,7 @@
         <typeAlias alias="StoreRegistDTO" type="persistence.dto.StoreRegistDTO"/>
         <typeAlias alias="TotalOrdersDTO" type="persistence.dto.TotalOrdersDTO"/>
         <typeAlias alias="UserDTO" type="persistence.dto.UserDTO"/>
+        <typeAlias alias="ClassificationDTO" type="persistence.dto.ClassificationDTO"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
@@ -34,5 +35,6 @@
         <mapper resource="sqlmapper/storeRegist.xml"/>
         <mapper resource="sqlmapper/totalOrders.xml"/>
         <mapper resource="sqlmapper/user.xml"/>
+        <mapper resource="sqlmapper/classification.xml"/>
     </mappers>
 </configuration>
