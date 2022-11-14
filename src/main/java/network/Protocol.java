@@ -2,7 +2,6 @@ package network;
 import lombok.Getter;
 import lombok.Setter;
 import persistence.dto.*;
-
 @Getter
 @Setter
 public class Protocol {
@@ -16,6 +15,10 @@ public class Protocol {
         code = c;
         dataLength = dL;
         data = d;
+    }
+
+    public Protocol(byte[] arr) {
+        byteArrayToProtocol(arr);
     }
 
     public byte[] getBytes() {
@@ -42,7 +45,7 @@ public class Protocol {
             }
 
             else if (code == ProtocolCode.ORDER) {
-                return new OrdersDTO(arr);
+                return new DetailsDTO(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
@@ -73,10 +76,6 @@ public class Protocol {
 
             else if (code == (ProtocolCode.STORE | ProtocolCode.REGIST)) {
                 return new StoreRegistDTO(arr);
-            }
-
-            else if (code == ProtocolCode.TOTAL_ORDER) {
-                return new TotalOrdersDTO(arr);
             }
 
             else if (code == ProtocolCode.USER) {
