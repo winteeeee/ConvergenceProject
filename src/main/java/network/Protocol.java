@@ -1,8 +1,7 @@
 package network;
 import lombok.Getter;
 import lombok.Setter;
-import persistence.dto.DTO;
-
+import persistence.dto.*;
 @Getter
 @Setter
 public class Protocol {
@@ -16,6 +15,10 @@ public class Protocol {
         code = c;
         dataLength = dL;
         data = d;
+    }
+
+    public Protocol(byte[] arr) {
+        byteArrayToProtocol(arr);
     }
 
     public byte[] getBytes() {
@@ -38,103 +41,63 @@ public class Protocol {
     private DTO byteArrayToData(byte type, byte code, byte[] arr) {
         if (type == ProtocolType.REGISTER) {
             if (code == ProtocolCode.STORE) {
-                return Deserializer.byteArrayToStoreDTO(arr);
-            }
-
-            else if (code == ProtocolCode.MENU) {
-                return Deserializer.byteArrayToMenuDTO(arr);
+                return new StoreRegistDTO(arr);
             }
 
             else if (code == ProtocolCode.ORDER) {
-                return Deserializer.byteArrayToOrderDTO(arr);
+                return new DetailsDTO(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
-                return Deserializer.byteArrayToReviewDTO(arr);
+                return new ReviewDTO(arr);
             }
         }
 
-        else if (type == ProtocolType.MODIFICATION) {
+        else if (type == ProtocolType.MODIFICATION || type == ProtocolType.SEARCH) {
             if (code == ProtocolCode.MENU) {
-                return Deserializer.byteArrayToMenuDTO(arr);
+                return new MenuDTO(arr);
             }
 
-            else if (code == ProtocolCode.STORE_APPROVAL) {
-                return Deserializer.byteArrayToStoreDTO(arr);
+            else if (code == ProtocolCode.OPTION) {
+                return new DetailsDTO(arr);
             }
 
-            else if (code == ProtocolCode.STORE_REFUSAL) {
-                return Deserializer.byteArrayToStoreDTO(arr);
+            else if (code == ProtocolCode.ORDER) {
+                return new OrdersDTO(arr);
+            }
+
+            else if (code == ProtocolCode.REVIEW) {
+                return new ReviewDTO(arr);
+            }
+
+            else if (code == ProtocolCode.STORE) {
+                return new StoreDTO(arr);
+            }
+
+            else if (code == (ProtocolCode.STORE | ProtocolCode.REGIST)) {
+                return new StoreRegistDTO(arr);
+            }
+
+            else if (code == ProtocolCode.TOTAL_ORDER) {
+                return new TotalOrdersDTO(arr);
+            }
+
+            else if (code == ProtocolCode.USER) {
+                return new UserDTO(arr);
             }
         }
 
         else if (type == ProtocolType.DELETE) {
-            if (code == ProtocolCode.ORDER) {
-                return Deserializer.byteArrayToOrderDTO(arr);
-            }
-
-            else if (code == ProtocolCode.STORE) {
-                return Deserializer.byteArrayToStoreDTO(arr);
-            }
-
-            else if (code == ProtocolCode.MENU) {
-                return Deserializer.byteArrayToMenuDTO(arr);
-            }
-
-            else if (code == ProtocolCode.REVIEW) {
-                return Deserializer.byteArrayToReviewDTO(arr);
-            }
+            //보류
         }
 
         else if (type == ProtocolType.RESPONSE) {
-            if (code == ProtocolCode.REGISTER_REFUSAL) {
-
+            if (code == ProtocolCode.ACCEPT) {
+                return null;
             }
 
-            else if (code == ProtocolCode.REGISTER_SUSPENSION) {
-
-            }
-
-            else if (code == ProtocolCode.REGISTER_REFUSAL) {
-
-            }
-
-            else if (code == ProtocolCode.ORDER_APPROVAL) {
-
-            }
-
-            else if (code == ProtocolCode.ORDER_REFUSAL) {
-
-            }
-        }
-
-        else if (type == ProtocolType.SEARCH) {
-            if (code == ProtocolCode.STORE_SEARCH_BY_MENU) {
-
-            }
-
-            else if (code == ProtocolCode.STORE_SEARCH_BY_NAME) {
-
-            }
-
-            else if (code == ProtocolCode.ORDER_HISTORY) {
-
-            }
-
-            else if (code == ProtocolCode.MENU) {
-
-            }
-
-            else if (code == ProtocolCode.REVIEW_USER) {
-
-            }
-
-            else if (code == ProtocolCode.REVIEW_STROE) {
-
-            }
-
-            else if (code == ProtocolCode.ALL_LIST) {
-
+            else if (code == ProtocolCode.REFUSAL) {
+                return null;
             }
         }
 

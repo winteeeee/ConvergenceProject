@@ -3,26 +3,38 @@ package persistence.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class StoreDTO extends DTO {
-    private long id;
+    private Long id;
     private String name;
-    private String tag;     // TODO 따로 테이블 구성할지 판단
-    private int carry_price;
+    private String comment;
     private String phone;
     private String address;
-    private String user_id;
-    private int carry_sale;
+    private Integer review_count;
+    private Integer star_rating;
+    private LocalDateTime open_time;
+    private LocalDateTime close_time;
+    private Long user_pk;         // FK
 
-    public StoreDTO(long id, String name, String tag, int carry_price, String phone, String address, String user_id, int carry_sale) {
+    public StoreDTO() {  }
+
+    public StoreDTO(Long id, String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
         this.id = id;
         this.name = name;
-        this.tag = tag;
-        this.carry_price = carry_price;
+        this.comment = comment;
         this.phone = phone;
         this.address = address;
-        this.user_id = user_id;
-        this.carry_sale = carry_sale;
+        this.review_count = review_count;
+        this.star_rating = star_rating;
+        this.open_time = open_time;
+        this.close_time = close_time;
+        this.user_pk = user_pk;
+    }
+
+    public StoreDTO(byte[] arr) {
+        setMembersByByteArray(arr);
     }
 }
