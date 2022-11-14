@@ -23,11 +23,10 @@ public class Main {
     static StoreRegistDAO storeRegistDAO = new StoreRegistDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
 
-    static StoreView storeView = new StoreView();
 
     static UserService userService = new UserService(userDAO, ordersDAO, menuDAO, reviewDAO);
     static OwnerService ownerService = new OwnerService(userDAO, menuDAO, storeRegistDAO, ordersDAO);
-    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO, storeView);
+    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO);
     static StoreService storeService = new StoreService(storeDAO, classificationDAO, menuDAO, detailsDAO);
 
     public static void main(String[] args) {
