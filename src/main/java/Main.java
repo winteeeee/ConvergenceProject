@@ -16,7 +16,6 @@ public class Main {
     static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    static TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
@@ -31,6 +30,7 @@ public class Main {
 
     public static void main(String[] args) {
         test1();
+        // 복구용
     }
 
     public static void test1() {
