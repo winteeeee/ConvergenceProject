@@ -10,14 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewDAO extends DAO<ReviewDTO> {
-    private static ReviewDAO reviewDAO;
-    static {
-        if (reviewDAO == null) {
-            reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static ReviewDAO getReviewDAO() { return reviewDAO; }
-
     public ReviewDAO(SqlSessionFactory sqlSessionFactory){
         super(sqlSessionFactory, "mapper.ReviewMapper.");
     }

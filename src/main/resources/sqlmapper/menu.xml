@@ -6,22 +6,26 @@
 <mapper namespace="mapper.MenuMapper">
     <resultMap id="result" type="MenuDTO">
         <result property="id" column="id"/>
-        <result property="group_name" column="group_name"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>
         <result property="stock" column="stock"/>
-        <result property="store_id" column="store_id"/>
+        <result property="classification_id" column="classification_id"/>
     </resultMap>
 
-    <insert id="insertMenu">
-        INSERT INTO menu (group_name, name, price, stock, store_id)
-        VALUES (#{group_name}, #{name}, #{price}, #{stock}, #{store_id})
+    <insert id="insertMenu" useGeneratedKeys = "true" keyProperty="id" keyColumn="id">
+        INSERT INTO menu (name, price, stock, classification_id)
+        VALUES (#{name}, #{price}, #{stock}, #{classification_id})
     </insert>
 
-    <select id="selectAllWithStore_id" resultMap="result">
+    <insert id="insertMenuDetails">
+        INSERT INTO menu_details_map (menu_id, details_id)
+        VALUES (#{menu_id}, #{details_id})
+    </insert>
+
+    <select id="selectAllWithClassification_id" resultMap="result">
         SELECT *
         FROM menu
-        WHERE store_id=#{store_id}
+        WHERE classification_id=#{classification_id}
     </select>
 
     <select id="selectOneWithId" resultMap="result">

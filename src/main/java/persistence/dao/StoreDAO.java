@@ -3,23 +3,13 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import persistence.MyBatisConnectionFactory;
 import persistence.dto.StoreDTO;
-import persistence.dto.StoreRegistDTO;
-import persistence.enums.Authority;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StoreDAO extends DAO<StoreDTO>{
-    private static StoreDAO storeDao;
-    static {
-        if (storeDao == null) {
-            storeDao = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static StoreDAO getStoreDAO() { return storeDao; }
-
-    private StoreDAO(SqlSessionFactory sqlSessionFactory) {
+    public StoreDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.StoreMapper.");
     }
 
