@@ -2,7 +2,9 @@ package network;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import persistence.dto.*;
 public class Client
@@ -99,7 +101,7 @@ public class Client
 
                     if (ans.equals("Y") || ans.equals("y")) {
                         System.out.println("승인되었습니다.\n");
-                        Protocol registAccept = new Protocol(ProtocolType.REGISTER, (byte) (ProtocolCode.STORE | ProtocolCode.REGIST), 0, DTOs.get(idx));
+                        Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하고 가게 테이블에 등록하시오.
                         dos.write(registAccept.getBytes());
                         DTOs.remove(idx);
@@ -108,8 +110,60 @@ public class Client
 
                     else if (ans.equals("N") || ans.equals("n")) {
                         System.out.println("거절되었습니다.\n");
-                        Protocol registRefuse = new Protocol(ProtocolType.DELETE, (byte) (ProtocolCode.STORE | ProtocolCode.REGIST), 0, DTOs.get(idx));
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하시오.
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else {
+                        System.out.println("[경고] 잘못된 입력");
+                    }
+                }
+            }
+
+            else {
+                break;
+            }
+        }
+    }
+
+    public static void orderDetermination(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput) throws IOException {
+        Protocol requestAllOrderDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.ORDER, 0, null);
+        dos.write(requestAllOrderDTOs.getBytes());
+
+        ArrayList<OrdersDTO> DTOs = new ArrayList<>();
+        int listLength = 0;
+        for(int i = 0; i < listLength; i++) {
+            DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        while(DTOs.size() > 0) {
+            for (int i = 0; i < DTOs.size(); i++) {
+                System.out.println("[" + i + "] " + DTOs.get(i).toString());
+            }
+
+            System.out.println("승인 / 거절할 요청 선택(범위 외 값 입력 시 종료) : ");
+            int idx = Integer.parseInt(keyInput.readLine());
+
+            if (0 <= idx && idx < DTOs.size()) {
+                while (true) {
+                    System.out.println("승인 : Y/y, 거절 : N/n");
+                    String ans = keyInput.readLine();
+
+                    if (ans.equals("Y") || ans.equals("y")) {
+                        System.out.println("승인되었습니다.\n");
+                        Protocol orderAccept = new Protocol(ProtocolType.RESPONSE, (byte)(ProtocolCode.ORDER | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
+                        //전달한 DTO의 Status를 변경
+                        dos.write(orderAccept.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else if (ans.equals("N") || ans.equals("n")) {
+                        System.out.println("거절되었습니다.\n");
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.ORDER | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
+                        //전달한 DTO의 Status를 변경
                         DTOs.remove(idx);
                         break;
                     }
@@ -167,6 +221,66 @@ public class Client
                 System.out.println(cur.toString());
         }
         System.out.println();
+    }
+
+    public static void setRunningTime(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+                /*
+        자신이 지닌 모든 가게 목록을 출력하고
+        그 중에서 운영시간 바꿀걸 설정하고
+         */
+
+        Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, userInfo);
+        dos.write(requestAllMyStoreDTOs.getBytes());
+        //userInfo에 해당하는 모든 Store 리스트를 가져옴
+
+        ArrayList<StoreDTO> DTOs = new ArrayList<>();
+        int listLength = 0;
+        for(int i = 0; i < listLength; i++) {
+            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        while(DTOs.size() > 0) {
+            for (int i = 0; i < DTOs.size(); i++) {
+                System.out.println("[" + i + "] " + DTOs.get(i).toString());
+            }
+
+            System.out.println("운영시간 변경 대상 선택(범위 외 값 입력 시 종료) : ");
+            int idx = Integer.parseInt(keyInput.readLine());
+
+            if (0 <= idx && idx < DTOs.size()) {
+                StringTokenizer st;
+
+                System.out.println("변경할 개점 시간 : ");
+                st = new StringTokenizer(keyInput.readLine());
+                int openHour = Integer.parseInt(st.nextToken());
+                int openMinute = Integer.parseInt(st.nextToken());
+
+                System.out.println("변경할 폐점 시간 : ");
+                st = new StringTokenizer(keyInput.readLine());
+                int closeHour = Integer.parseInt(st.nextToken());
+                int closeMinute = Integer.parseInt(st.nextToken());
+
+                LocalDateTime newOpenTime = LocalDateTime.of(1, 1, 1, openHour, openMinute);
+                LocalDateTime newCloseTime = LocalDateTime.of(1, 1, 1, closeHour, closeMinute);
+                DTOs.get(idx).setOpen_time(newOpenTime);
+                DTOs.get(idx).setClose_time(newCloseTime);
+                Protocol requestSetRunningTime = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.STORE, 0, DTOs.get(idx));
+                //보내진 DTO의 내용으로 스토어 수정
+                dos.write(requestSetRunningTime.getBytes());
+            }
+
+            else {
+                break;
+            }
+        }
+    }
+
+    public static void storeRegist(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+
+    }
+
+    public static void menuRegist(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+
     }
 
     public static void logout() {
@@ -241,35 +355,35 @@ public class Client
             }
 
             else if (option == 3) {
-
+                //구현 안된듯?
             }
 
             else if (option == 4) {
-
+                setRunningTime(dis, dos, keyInput, userInfo);
             }
 
             else if (option == 5) {
-
+                orderDetermination(dis, dos, keyInput);
             }
 
             else if (option == 6) {
-
+                //이야기 필요
             }
 
             else if (option == 7) {
-
+                //통계 정보 아직 구현안된걸로 보임
             }
 
             else if (option == 8) {
-
+                searchStore(dis, dos);
             }
 
             else if (option == 9) {
-
+                searchMenu(dis, dos);
             }
 
             else if (option == 10) {
-                System.out.println("로그아웃합니다.\n");
+                logout();
                 break;
             }
 
