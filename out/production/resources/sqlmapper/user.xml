@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.UserMapper">
+    <resultMap id="result" type="UserDTO">
+        <result property="pk" column="pk"/> <!--PK, 자동 생성-->
+
+        <result property="id" column="id"/>
+        <result property="pw" column="pw"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="age" column="age"/>
+
+        <result property="authority" column="authority"/>
+    </resultMap>
+
+    <insert id="insertUser">
+        INSERT INTO user (authority, id, pw, name, phone, age)
+        VALUES (#{authority}, #{id}, #{pw}, #{name}, #{phone}, #{age})
+    </insert>
+
+    <select id="selectOneWithUserPk" resultMap="result">
+        SELECT *
+        FROM user
+        WHERE pk=#{pk}
+    </select>
+
+    <select id="selectOneWithUserId" resultMap="result">
+        SELECT *
+        FROM user
+        WHERE id=#{id}
+    </select>
+</mapper>
