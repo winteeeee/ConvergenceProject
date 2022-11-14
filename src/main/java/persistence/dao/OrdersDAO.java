@@ -11,16 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrdersDAO extends DAO<OrdersDTO> {
-    private static OrdersDAO ordersDAO;
-    static {
-        if (ordersDAO == null) {
-            ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-        }
-    }
-    public static OrdersDAO getOrdersDAO() { return ordersDAO; }
-
-
-    private OrdersDAO(SqlSessionFactory sqlSessionFactory) {
+    public OrdersDAO(SqlSessionFactory sqlSessionFactory) {
         super(sqlSessionFactory, "mapper.OrdersMapper.");
     }
 
