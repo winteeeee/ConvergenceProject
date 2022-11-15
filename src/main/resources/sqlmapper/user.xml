@@ -32,4 +32,23 @@
         FROM user
         WHERE id=#{id}
     </select>
+
+    <update id="update">
+        UPDATE user
+        <set>
+            <if test="pw != null">
+                pw=#{pw},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="age != null">
+                age=#{age},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
 </mapper>

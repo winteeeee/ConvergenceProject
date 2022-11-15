@@ -27,8 +27,8 @@ public class OwnerService {
         return userDAO.insertUser(Authority.OWNER, id, pw, name, phone, age);
     }
 
-    public void insertStoreRegist(String name, String comment, String phone, String address, Long user_pk) {
-        storeRegistDAO.insertRegistration(name, comment, phone, address, user_pk);
+    public int insertStoreRegist(String name, String comment, String phone, String address, Long user_pk) {
+        return  storeRegistDAO.insertRegistration(name, comment, phone, address, user_pk);
     }
 
     public void insertMenu(String name, Integer price, Integer stock, Long classification_id, List<Long> detailsList) {

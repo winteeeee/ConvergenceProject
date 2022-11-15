@@ -29,7 +29,7 @@ public class UserDAO extends DAO<UserDTO>{
     }
     @Override
     protected int update(SqlSession session, Object[] arg) {
-        return 0;
+        return session.update(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int delete(SqlSession session, Object[] arg) {
@@ -58,5 +58,12 @@ public class UserDAO extends DAO<UserDTO>{
         userDTO.setId(id);
 
         return selectOne(stmt, userDTO);
+    }
+
+    public int update(String id, String pw, String name, String phone, Integer age) {
+        String stmt = "update";
+        UserDTO userDTO = new UserDTO(null, null, id, pw, name, phone, age);
+
+        return update(stmt, userDTO);
     }
 }

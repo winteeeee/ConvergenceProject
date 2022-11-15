@@ -63,4 +63,8 @@ public class UserService {
     public List<OrdersDTO> getEndedOrders(Long user_pk) {
         return ordersDAO.selectAllEndedWithUser_pk(user_pk);
     }
+
+    public int update(String id, String pw, String name, String phone, Integer age) {
+        return userDAO.update(id, pw, name, phone, age);
+    }
 }
