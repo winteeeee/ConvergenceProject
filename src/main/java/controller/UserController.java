@@ -25,8 +25,14 @@ public class UserController {
     StoreService storeService = new StoreService(storeDAO, classificationDAO, menuDAO, detailsDAO);
 
 
-    public boolean Login(UserDTO dto) {
-        return userService.getUserWithId(dto.getId()).getPw().equals(dto.getPw());
+    public UserDTO Login(UserDTO input) {
+        UserDTO user = userService.getUserWithId(input.getId());
+        if (input.getPw().equals(user.getPw())) {
+            return user;
+        }
+        else {
+            return null;
+        }
     }
 
     public boolean insert(UserDTO dto) {
