@@ -41,7 +41,7 @@ public class Client
             System.out.print("PW : ");
             String PW = keyInput.readLine();
 
-            UserDTO userInfo = login(dis, dos, keyInput, ID, PW);
+            UserDTO userInfo = login(dis, dos, ID, PW);
 
             if(userInfo != null) {
                 String userAuthority = userInfo.getAuthorityEnum().getName();
@@ -66,42 +66,30 @@ public class Client
 
     public static void adminRun(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         boolean login = true;
+        final int REGIST_STORE_DETERMINATION = 1;
+        final int VIEW_ALL_STORE = 2;
+        final int VIEW_OWNER_AND_USER = 3;
+        final int LOGOUT = 4;
 
         while(login) {
-            System.out.println();
-            System.out.println("관리자 " + userInfo.getName() + "님 환영합니다.");
-            System.out.println("무엇을 하시겠습니까?");
-            System.out.println("[1] 가게 등록 신청 승인 / 거절");
-            System.out.println("[2] 가게 정보 조회");
-            System.out.println("[3] 메뉴 정보 조회");
-            System.out.println("[4] 고객과 점주 정보 조회");
-            System.out.println("[5] 가게별 매출 조회");
-            System.out.println("[6] 로그아웃");
-            System.out.println("입력 : ");
+            Viewer.adminScreen(userInfo);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
-                case 1:
+                case REGIST_STORE_DETERMINATION:
                     registStoreDetermination(dis, dos, keyInput);
                     break;
 
-                case 2:
-                    searchStore(dis, dos);
+                case VIEW_ALL_STORE:
+                    viewAllStore(dis, dos);
                     break;
 
-                case 3:
-                    searchAllMenu(dis, dos);
+                case VIEW_OWNER_AND_USER:
+                    viewOwnerAndUser(dis, dos);
                     break;
 
-                case 4:
-                    searchOwnerAndUser(dis, dos);
-                    break;
-
-                case 5:
-                    break;
-
-                case 6:
-                    logout();
+                case LOGOUT:
+                    Viewer.logout();
                     login = false;
                     break;
 
@@ -114,60 +102,45 @@ public class Client
 
     public static void ownerRun(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         boolean login = true;
+        final int REQUEST_STORE_REGIST = 1;
+        final int REGIST_MENU = 2;
+        final int MODIFICATION_MANAGEMENT_TIME = 3;
+        final int DETERMINATION_ORDER = 4;
+        final int VIEW_STORE_INFO = 5;
+        final int VIEW_MENU_INFO = 6;
+        final int LOGOUT = 7;
 
         while(login) {
-            System.out.println();
-            System.out.println("점주 " + userInfo.getName() + "님 환영합니다.");
-            System.out.println("무엇을 하시겠습니까?");
-            System.out.println("[1] 가게 등록 신청");
-            System.out.println("[2] 메뉴 등록 신청");
-            System.out.println("[3] 할인 정책 설정");
-            System.out.println("[4] 운영 시간 설정");
-            System.out.println("[5] 주문 접수 / 거절");
-            System.out.println("[6] 리뷰 답글 작성");
-            System.out.println("[7] 통계 정보 열람");
-            System.out.println("[8] 가게 정보 조회");
-            System.out.println("[9] 메뉴 정보 조회");
-            System.out.println("[10] 로그아웃");
-            System.out.println("입력 : ");
-            System.out.println();
+            Viewer.ownerScreen(userInfo);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
-                case 1:
+                case REQUEST_STORE_REGIST:
                     registStore(dos, keyInput, userInfo);
                     break;
 
-                case 2:
-                    break; //옵션 관련 정보 업데이트 시 구현
+                case REGIST_MENU:
+                    registMenu(dis, dos, keyInput, userInfo);
+                    break;
 
-                case 3:
-                    break; //구현 안된듯
-
-                case 4:
+                case MODIFICATION_MANAGEMENT_TIME:
                     setRunningTime(dis, dos, keyInput, userInfo);
                     break;
 
-                case 5:
-                    orderDetermination(dis, dos, keyInput);
+                case DETERMINATION_ORDER:
+                    orderDetermination(dis, dos, keyInput, userInfo);
                     break;
 
-                case 6:
-                    break; //이야기 필요
-
-                case 7:
-                    break; //통계 정보 아직 구현안된걸로 보임
-
-                case 8:
-                    searchStore(dis, dos);
+                case VIEW_STORE_INFO:
+                    viewStoreWithUser(dis, dos, userInfo);
                     break;
 
-                case 9:
-                    searchMenu(dis, dos, keyInput, userInfo);
+                case VIEW_MENU_INFO:
+                    viewMenuWithUser(dis, dos, keyInput, userInfo);
                     break;
 
-                case 10:
-                    logout();
+                case LOGOUT:
+                    Viewer.logout();
                     login = false;
                     break;
 
@@ -180,55 +153,50 @@ public class Client
 
     public static void userRun(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         boolean login = true;
+        final int MODIFICATION_USER = 1;
+        final int VIEW_STORE = 2;
+        final int REGIST_ORDER = 3;
+        final int CANCEL_ORDER = 4;
+        final int VIEW_ORDER = 5;
+        final int REGIST_REVIEW = 6;
+        final int VIEW_ACCOUNT_INFO = 7;
+        final int LOGOUT = 8;
 
         while(login) {
-            System.out.println();
-            System.out.println("고객 " + userInfo.getName() + "님 환영합니다.");
-            System.out.println("무엇을 하시겠습니까?");
-            System.out.println("[1] 개인 정보 및 비밀번호 수정");
-            System.out.println("[2] 가게 조회");
-            System.out.println("[3] 음식 주문");
-            System.out.println("[4] 주문 취소");
-            System.out.println("[5] 주문 조회");
-            System.out.println("[6] 리뷰 등록");
-            System.out.println("[7] 계정 정보 조회");
-            System.out.println("[8] 로그아웃");
-            System.out.println("입력 : ");
-            System.out.println();
+            Viewer.userScreen(userInfo);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
-                case 1:
+                case MODIFICATION_USER:
                     modificationUser(dos, keyInput, userInfo);
                     break;
 
-                case 2:
-                    searchStoreInUserRun(dis, dos, keyInput);
+                case VIEW_STORE:
+                    viewStoreInUserRun(dis, dos, keyInput);
                     break;
 
-                case 3:
-                    //임시, 구현안됐음.
-                    registOrder(dis, dos, keyInput);
+                case REGIST_ORDER:
+                    registOrder(dis, dos, keyInput, userInfo);
                     break;
 
-                case 4:
+                case CANCEL_ORDER:
                     orderCancel(dis, dos, keyInput, userInfo);
                     break;
 
-                case 5:
-                    searchOrder(dis, dos, userInfo);
+                case VIEW_ORDER:
+                    viewOrderWithUser(dis, dos, userInfo);
                     break;
 
-                case 6:
+                case REGIST_REVIEW:
                     registReview(dis, dos, keyInput, userInfo);
                     break;
 
-                case 7:
-                    searchAccount(userInfo);
+                case VIEW_ACCOUNT_INFO:
+                    viewAccountInfo(userInfo);
                     break;
 
-                case 8:
-                    logout();
+                case LOGOUT:
+                    Viewer.logout();
                     login = false;
                     break;
 
@@ -239,7 +207,7 @@ public class Client
         }
     }
 
-    public static UserDTO login(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, String ID, String PW) throws IOException {
+    public static UserDTO login(DataInputStream dis, DataOutputStream dos, String ID, String PW) throws IOException {
         UserDTO user = new UserDTO();
         user.setId(ID);
         user.setPw(PW);
@@ -282,6 +250,20 @@ public class Client
         Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER | ProtocolCode.ALL), 0, userInfo);
         dos.write(requestAllMyOrderDTOs.getBytes());
         //userInfo에 해당하는 모든 Orders 리스트를 가져옴
+
+        ArrayList<OrdersDTO> DTOs = new ArrayList<>();
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        for(int i = 0; i < listLength; i++) {
+            DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        return DTOs;
+    }
+
+    public static ArrayList<OrdersDTO> getAllOrderDTOWithStore(DataInputStream dis, DataOutputStream dos, StoreDTO storeInfo) throws IOException {
+        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER | ProtocolCode.ALL), 0, storeInfo);
+        dos.write(requestAllMyOrderDTOs.getBytes());
+        //storeInfo에 해당하는 모든 Orders 리스트를 가져옴
 
         ArrayList<OrdersDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -340,6 +322,21 @@ public class Client
         return DTOs;
     }
 
+    public static ArrayList<StoreDTO> getAllStoreDTOWithClassification(DataInputStream dis, DataOutputStream dos, ClassificationDTO classificationInfo) throws IOException {
+        Protocol searchStoreInfo = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.ALL), 0, classificationInfo);
+        //데이터로 전달한 DTO의 외래키를 기반으로 검색
+        dos.write(searchStoreInfo.getBytes());
+
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        ArrayList<StoreDTO> DTOs = new ArrayList<>();
+
+        for (int i = 0; i < listLength; i++) {
+            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        return DTOs;
+    }
+
     public static ArrayList<StoreDTO> getAllStoreDTOWithUser(DataInputStream dis, DataOutputStream dos, UserDTO userInfo) throws IOException {
         Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.ALL), 0, userInfo);
         dos.write(requestAllMyStoreDTOs.getBytes());
@@ -394,6 +391,35 @@ public class Client
 
         return DTOs;
     }
+
+    public static ArrayList<ClassificationDTO> getAllClassificationDTO(DataInputStream dis, DataOutputStream dos) throws IOException {
+        Protocol requestAllMyClassificationDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.CLASSIFICATION | ProtocolCode.ALL), 0, null);
+        dos.write(requestAllMyClassificationDTOs.getBytes());
+        //모든 카테고리DTO 리스트를 가져옴
+
+        ArrayList<ClassificationDTO> DTOs = new ArrayList<>();
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        for(int i = 0; i < listLength; i++) {
+            DTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        return DTOs;
+    }
+
+    public static ArrayList<ClassificationDTO> getAllClassificationDTOWithStore(DataInputStream dis, DataOutputStream dos, StoreDTO storeInfo) throws IOException {
+        Protocol requestAllMyClassificationDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.CLASSIFICATION | ProtocolCode.ALL), 0, storeInfo);
+        dos.write(requestAllMyClassificationDTOs.getBytes());
+        //storeInfo가 지닌 모든 카테고리DTO 리스트를 가져옴
+
+        ArrayList<ClassificationDTO> DTOs = new ArrayList<>();
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        for(int i = 0; i < listLength; i++) {
+            DTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+        }
+
+        return DTOs;
+    }
+
 
     public static ArrayList<UserDTO> getAllOwnerAndUserDTO(DataInputStream dis, DataOutputStream dos) throws IOException {
         Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.USER | ProtocolCode.ALL), 0, null);
@@ -486,29 +512,131 @@ public class Client
         dos.write(requestStoreRegist.getBytes());
     }
 
-    public static void registMenu(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, StoreDTO storeInfo) throws IOException {
-        String name;
+    public static void registMenu(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(dis, dos, userInfo);
+        viewAllStore(storeDTOs);
+        StoreDTO storeInfo = null;
+        while(true) {
+            System.out.println("가게를 선택해주세요 : ");
+            int select = Integer.parseInt(keyInput.readLine());
 
-        ArrayList<DetailsDTO> Options = getAllOptionDTOWithStore(dis, dos, storeInfo);
+            if(0 <= select && select <  storeDTOs.size()) {
+                storeInfo = storeDTOs.get(select);
+                break;
+            }
+
+            else {
+                System.out.println(ErrorMessage.OUT_OF_BOUND);
+            }
+        }
+
+        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTOWithStore(dis, dos, storeInfo);
+        ArrayList<ClassificationDTO> classificationDTOs = getAllClassificationDTOWithStore(dis, dos, storeInfo);
         ArrayList<Integer> selectedOption = new ArrayList<>();
-        System.out.println("");
-        //옵션 관련 정보 업데이트 시 마저 구현
+
+        viewClassification(classificationDTOs);
+        ClassificationDTO selectedClass = null;
+        while(true) {
+            System.out.println("분류를 선택해주세요 : ");
+            int select = Integer.parseInt(keyInput.readLine());
+
+            if(0 <= select && select < classificationDTOs.size()) {
+                selectedClass = classificationDTOs.get(select);
+                break;
+            }
+
+            else {
+                System.out.println(ErrorMessage.OUT_OF_BOUND);
+            }
+        }
+
+        viewOption(optionDTOs);
+        System.out.println("등록할 옵션을 모두 선택하세요");
+        System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
+        while(selectedOption.size() < optionDTOs.size()) {
+            System.out.print("입력 : ");
+            selectedOption.add(Integer.parseInt(keyInput.readLine()));
+            System.out.println("등록되었습니다.");
+        }
+
+        System.out.println("메뉴 정보를 등록합니다.");
+        System.out.print("메뉴 이름 : ");
+        String name = keyInput.readLine();
+        System.out.print("가격 : ");
+        int price = Integer.parseInt(keyInput.readLine());
+        System.out.print("수량 : ");
+        int stock = Integer.parseInt(keyInput.readLine());
+
+        MenuDTO newMenu = new MenuDTO();
+        newMenu.setClassification_id(selectedClass.getId());
+        newMenu.setName(name);
+        newMenu.setPrice(price);
+        newMenu.setStock(stock);
+
+        Protocol registMenu = new Protocol(ProtocolType.REGISTER, ProtocolCode.MENU, 0, newMenu);
+        dos.write(registMenu.getBytes());
+        //옵션을 제외한 정보들을 먼저 보내고
+
+        dos.write(Serializer.intToByteArray(selectedOption.size()));
+        //보낼 옵션 리스트의 크기
+        for(int i = 0; i < selectedOption.size(); i++) {
+            dos.write(optionDTOs.get(selectedOption.get(i)).getBytes());
+            //옵션들의 정보들을 쭉 보낸다.
+        }
+
+        System.out.println();
     }
 
-    public static void registOrder(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput) throws IOException {
-        //토탈 오더로 넣어야하는지?? 그냥 오더로 넣어야하는지??
-        //정확한 매커니즘을 알아야할듯함
+    public static void registOrder(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(dis, dos);
+        viewAllStore(storeDTOs);
+        System.out.print("주문할 가게를 선택하세요 : ");
+        int storeIdx = Integer.parseInt(keyInput.readLine());
+
+        ArrayList<MenuDTO> menuDTOs = getAllMenuDTOWithStore(dis, dos, storeDTOs.get(storeIdx));
+        viewAllMenu(menuDTOs);
+        System.out.print("메뉴를 선택하세요 : ");
+        int menuIdx = Integer.parseInt(keyInput.readLine());
+
+        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTOWithStore(dis, dos, storeDTOs.get(storeIdx));
+        viewOption(optionDTOs);
+        ArrayList<Integer> optionIdxes = new ArrayList<>();
+        System.out.println("옵션을 선택하세요");
+        System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
+        while(optionIdxes.size() < optionDTOs.size()) {
+            System.out.print("입력 : ");
+            optionIdxes.add(Integer.parseInt(keyInput.readLine()));
+            System.out.println("등록되었습니다.");
+        }
+
+        OrdersDTO newOrder = new OrdersDTO();
+        newOrder.setStatus(OrdersStatus.HOLD.getCode());
+        newOrder.setRegdate(LocalDateTime.now());
+        newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
+        newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
+        newOrder.setUser_pk(userInfo.getPk());
+
+        Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
+        dos.write(registOrder.getBytes());
+        //등록할 주문 정보를 보내고
+
+        dos.write(Serializer.intToByteArray(optionIdxes.size()));
+        //옵션의 크기를 보냄
+        for(int i = 0; i < optionIdxes.size(); i++) {
+            dos.write(optionDTOs.get(optionIdxes.get(i)).getBytes());
+            //옵션 정보들을 하나씩 보낸다.
+        }
+
+
+        System.out.println("주문이 정상적으로 등록되었습니다.");
     }
 
     public static void registReview(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(dis, dos, userInfo);
 
         while(true) {
-            System.out.println("[리뷰 등록]");
-            for (int i = 0; i < DTOs.size(); i++) {
-                System.out.println("[" + i + "] " + DTOs.get(i).toString());
-            }
-            System.out.println("리뷰를 등록할 주문을 선택하세요(범위 외 입력 시 종료) : ");
+            viewOrder(DTOs);
+            System.out.print("리뷰를 등록할 주문을 선택하세요(범위 외 입력 시 종료) : ");
             int select = Integer.parseInt(keyInput.readLine());
 
             if (0 <= select && select < DTOs.size()) {
@@ -537,69 +665,74 @@ public class Client
         }
     }
 
-    public static void orderDetermination(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(dis, dos);
+    public static void orderDetermination(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(dis, dos, userInfo);
+        viewAllStore(storeDTOs);
+        System.out.print("주문 승인 / 거절할 가게를 선택하세요(범위 외 값 입력 시 종료) : ");
+        int storeIdx = Integer.parseInt(keyInput.readLine());
 
-        while(DTOs.size() > 0) {
-            for (int i = 0; i < DTOs.size(); i++) {
-                System.out.println("[" + i + "] " + DTOs.get(i).toString());
-            }
+        if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
+            ArrayList<OrdersDTO> OrderDTOs = getAllOrderDTOWithStore(dis, dos, storeDTOs.get(storeIdx));
+            while (OrderDTOs.size() > 0) {
+                viewOrder(OrderDTOs);
 
-            System.out.println("승인 / 거절할 요청 선택(범위 외 값 입력 시 종료) : ");
-            int idx = Integer.parseInt(keyInput.readLine());
+                System.out.print("승인 / 거절할 요청 선택(범위 외 값 입력 시 종료) : ");
+                int idx = Integer.parseInt(keyInput.readLine());
 
-            if (0 <= idx && idx < DTOs.size()) {
-                while (true) {
-                    System.out.println("승인 : Y/y, 거절 : N/n");
-                    String ans = keyInput.readLine();
+                if (0 <= idx && idx < OrderDTOs.size()) {
+                    while (true) {
+                        System.out.println("승인 : Y/y, 거절 : N/n");
+                        String ans = keyInput.readLine();
 
-                    if (ans.equals("Y") || ans.equals("y")) {
-                        System.out.println("승인되었습니다.\n");
-                        Protocol orderAccept = new Protocol(ProtocolType.RESPONSE, (byte)(ProtocolCode.ORDER | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
-                        //전달한 DTO의 Status를 변경
-                        dos.write(orderAccept.getBytes());
-                        DTOs.remove(idx);
-                        break;
-                    }
+                        if (ans.equals("Y") || ans.equals("y")) {
+                            System.out.println("승인되었습니다.\n");
+                            Protocol orderAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.ORDER | ProtocolCode.ACCEPT), 0, OrderDTOs.get(idx));
+                            //전달한 DTO의 Status를 변경
+                            dos.write(orderAccept.getBytes());
+                            OrderDTOs.remove(idx);
+                            break;
+                        }
 
-                    else if (ans.equals("N") || ans.equals("n")) {
-                        System.out.println("거절되었습니다.\n");
-                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.ORDER | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
-                        //전달한 DTO의 Status를 변경
-                        DTOs.remove(idx);
-                        break;
-                    }
+                        else if (ans.equals("N") || ans.equals("n")) {
+                            System.out.println("거절되었습니다.\n");
+                            Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.ORDER | ProtocolCode.REFUSAL), 0, OrderDTOs.get(idx));
+                            //전달한 DTO의 Status를 변경
+                            OrderDTOs.remove(idx);
+                            break;
+                        }
 
-                    else {
-                        System.out.println(ErrorMessage.OUT_OF_BOUND);
+                        else {
+                            System.out.println(ErrorMessage.OUT_OF_BOUND);
+                        }
                     }
                 }
-            }
 
-            else {
-                break;
+                else {
+                    break;
+                }
             }
         }
     }
 
-    public static void searchStoreInUserRun(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput) throws IOException {
+    public static void viewStoreInUserRun(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput) throws IOException {
         boolean iteration = true;
         while (iteration) {
-            System.out.println("[가게 조회]");
-            System.out.println("[1] 카테고리로 검색");
-            System.out.println("[2] 가게명으로 검색");
-            System.out.println("[3] 종료");
-            System.out.println("입력 : ");
+            Viewer.searchStoreScreen();
 
             int searchStoreOption = Integer.parseInt(keyInput.readLine());
             switch (searchStoreOption) {
                 case 1:
-                    break; //카테고리로 검색은 추후 구현(현재는 테이블의 원소에 없음)
+                    viewAllClassification(dis, dos);
+                    System.out.println("카테고리명 입력 : ");
+                    String classificationName = keyInput.readLine();
+                    viewStoreWithClassification(dis, dos, classificationName);
+                    break;
 
                 case 2:
+                    viewAllStore(dis, dos);
                     System.out.println("가게명 입력 : ");
                     String storeName = keyInput.readLine();
-                    searchStoreWithName(dis, dos, storeName);
+                    viewStoreWithName(dis, dos, storeName);
                     break;
 
                 case 3:
@@ -612,7 +745,17 @@ public class Client
         }
     }
 
-    public static void searchStore(DataInputStream dis, DataOutputStream dos) throws IOException {
+    public static void viewAllClassification(DataInputStream dis, DataOutputStream dos) throws IOException {
+        System.out.println("[전체 카테고리 조회]");
+        ArrayList<ClassificationDTO> DTOs = getAllClassificationDTO(dis, dos);
+
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+        System.out.println();
+    }
+
+    public static void viewAllStore(DataInputStream dis, DataOutputStream dos) throws IOException {
         System.out.println("[전체 가게 조회]");
         ArrayList<StoreDTO> DTOs = getAllStoreDTO(dis, dos);
 
@@ -621,8 +764,17 @@ public class Client
         }
         System.out.println();
     }
+
+    public static void viewAllStore(ArrayList<StoreDTO> DTOs) {
+        System.out.println("[전체 가게 조회]");
+
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+        System.out.println();
+    }
     
-    public static void searchStoreWithName(DataInputStream dis, DataOutputStream dos, String storeName) throws IOException {
+    public static void viewStoreWithName(DataInputStream dis, DataOutputStream dos, String storeName) throws IOException {
         System.out.println("[이름으로 가게 조회]");
         ArrayList<StoreDTO> DTOs = getAllStoreDTOWithName(dis, dos, storeName);
 
@@ -632,7 +784,33 @@ public class Client
         System.out.println();
     }
 
-    public static void searchAllMenu(DataInputStream dis, DataOutputStream dos) throws IOException {
+    public static void viewStoreWithClassification(DataInputStream dis, DataOutputStream dos, String classificationName) throws IOException {
+        System.out.println("[카테고리로 가게 조회]");
+        ClassificationDTO target = new ClassificationDTO();
+        target.setName(classificationName);
+        Protocol requestClassification = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, target);
+        dos.write(requestClassification.getBytes());
+        target = (ClassificationDTO) new Protocol(dis.readAllBytes()).getData();
+
+        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithClassification(dis, dos, target);
+
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+        System.out.println();
+    }
+
+    public static void viewStoreWithUser(DataInputStream dis, DataOutputStream dos, UserDTO userInfo) throws IOException {
+        System.out.println("[가게 조회]");
+        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithUser(dis, dos, userInfo);
+
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+        System.out.println();
+    }
+
+    public static void viewAllMenu(DataInputStream dis, DataOutputStream dos) throws IOException {
         System.out.println("[전체 메뉴 조회]");
         ArrayList<MenuDTO> DTOs = getAllMenuDTO(dis, dos);
 
@@ -642,7 +820,16 @@ public class Client
         System.out.println();
     }
 
-    public static void searchMenu(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
+    public static void viewAllMenu(ArrayList<MenuDTO> DTOs) throws IOException {
+        System.out.println("[전체 메뉴 조회]");
+
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+        System.out.println();
+    }
+
+    public static void viewMenuWithUser(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(dis, dos, userInfo);
 
         for (int i = 0; i < storeDTOs.size(); i++) {
@@ -658,9 +845,8 @@ public class Client
         System.out.println();
     }
 
-    public static void searchOption(DataInputStream dis, DataOutputStream dos, StoreDTO storeInfo) throws IOException {
+    public static void viewOption(ArrayList<DetailsDTO> DTOs) {
         System.out.println("[전체 옵션 조회]");
-        ArrayList<DetailsDTO> DTOs = getAllOptionDTOWithStore(dis, dos, storeInfo);
         for (int i = 0; i < DTOs.size(); i++) {
             System.out.println("[" + i + "] " + DTOs.get(i).toString());
         }
@@ -668,7 +854,16 @@ public class Client
         System.out.println();
     }
 
-    public static void searchOwnerAndUser(DataInputStream dis, DataOutputStream dos) throws IOException {
+    public static void viewClassification(ArrayList<ClassificationDTO> DTOs) {
+        System.out.println("[전체 분류 조회]");
+        for (int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+
+        System.out.println();
+    }
+
+    public static void viewOwnerAndUser(DataInputStream dis, DataOutputStream dos) throws IOException {
         System.out.println("[전체 점주 / 고객 조회]");
         ArrayList<UserDTO> DTOs = getAllOwnerAndUserDTO(dis, dos);
         for (int i = 0; i < DTOs.size(); i++) {
@@ -678,8 +873,8 @@ public class Client
         System.out.println();
     }
 
-    public static void searchOrder(DataInputStream dis, DataOutputStream dos, UserDTO userInfo) throws IOException {
-        System.out.println("[전체 점주 / 고객 조회]");
+    public static void viewOrderWithUser(DataInputStream dis, DataOutputStream dos, UserDTO userInfo) throws IOException {
+        System.out.println("[주문 조회]");
         ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(dis, dos, userInfo);
         for (int i = 0; i < DTOs.size(); i++) {
             System.out.println("[" + i + "] " + DTOs.get(i).toString());
@@ -688,11 +883,17 @@ public class Client
         System.out.println();
     }
 
-    public static void searchAccount(UserDTO userInfo) {
-        System.out.println("[계정 정보 조회]");
-        System.out.println("ID : " + userInfo.getId());
-        System.out.println("이름 : " + userInfo.getName());
-        System.out.println("나이 : " + userInfo.getAge());
+    public static void viewOrder(ArrayList<OrdersDTO> DTOs) {
+        System.out.println("[주문 조회]");
+        for (int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+        }
+
+        System.out.println();
+    }
+
+    public static void viewAccountInfo(UserDTO userInfo) {
+        Viewer.searchAccountScreen(userInfo);
     }
 
     public static void setRunningTime(DataInputStream dis, DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
@@ -737,12 +938,7 @@ public class Client
     public static void modificationUser(DataOutputStream dos, BufferedReader keyInput, UserDTO userInfo) throws IOException {
         //개인정보 및 비밀번호 수정
         while(true) {
-            System.out.println("변경할 정보를 선택해주세요.");
-            System.out.println("[1] 비밀번호");
-            System.out.println("[2] 이름");
-            System.out.println("[3] 나이");
-            System.out.println("[4] 종료");
-            System.out.println("입력 : ");
+            Viewer.modificationUserScreen();
 
             int option = Integer.parseInt(keyInput.readLine());
 
@@ -806,9 +1002,5 @@ public class Client
             }
         }
 
-    }
-
-    public static void logout() {
-        System.out.println("로그아웃합니다.\n");
     }
 }
