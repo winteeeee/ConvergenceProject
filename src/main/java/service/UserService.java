@@ -68,6 +68,10 @@ public class UserService {
         }
     }
 
+    public List<OrdersDTO> getOrders(Long user_pk) {
+        return ordersDAO.selectAllWithUser_pk(user_pk);
+    }
+
     public List<OrdersDTO> getEndedOrders(Long user_pk) {
         return ordersDAO.selectAllEndedWithUser_pk(user_pk);
     }
