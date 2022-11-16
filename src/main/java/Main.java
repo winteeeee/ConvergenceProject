@@ -1,15 +1,17 @@
 import persistence.MyBatisConnectionFactory;
 import persistence.dao.*;
 import persistence.dto.*;
-import persistence.enums.OrdersStatus;
+
+import persistence.enums.Authority;
 import service.AdminService;
 import service.OwnerService;
+import service.StoreService;
 import service.UserService;
-import view.StoreView;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Main {
@@ -22,37 +24,121 @@ public class Main {
     static StoreRegistDAO storeRegistDAO = new StoreRegistDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
 
-    static StoreView storeView = new StoreView();
 
-    static UserService userService = new UserService(userDAO);
-    static OwnerService ownerService = new OwnerService(userDAO, storeRegistDAO);
-    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO, storeView);
+    static UserService userService = new UserService(userDAO, ordersDAO, menuDAO, reviewDAO);
+    static OwnerService ownerService = new OwnerService(userDAO, menuDAO, storeRegistDAO, ordersDAO);
+    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO);
+    static StoreService storeService = new StoreService(storeDAO, classificationDAO, menuDAO, detailsDAO);
 
     public static void main(String[] args) {
+        init();
+
+        System.out.println("test1");
         test1();
-        // 복구용
+
+        System.out.println("\ntest2_1");
+        test2_1();
+
+        System.out.println("\ntest2_2");
+        test2_2();
+
+        System.out.println("\ntest2_3");
+        test2_3();
+
+        System.out.println("\ntest3_1");
+        test3_1();
+
+        System.out.println("\ntest3_2");
+        test3_2();
+
+        System.out.println("\ntest3_3");
+        test3_3();
+
+        System.out.println("\ntest3_4");
+        test3_4();
+
+        System.out.println("\ntest3_5");
+        test3_5();
+
+        System.out.println("\ntest3_6");
+        test3_6();
+
+        System.out.println("\ntest4_1");
+        test4_1();
+
+        System.out.println("\ntest4_2");
+        test4_2();
     }
 
+    public static Long adminPk;
+    public static Long user1pk;
+    public static Long user2pk;
+
+    public static void init() {
+        adminPk = userDAO.insertUser(Authority.ADMIN, "admin", "admin", "admin", "uniqe", 23);
+        user1pk = userService.insertUser("hello", "world", "테크모", "010-4265-6669", 23);
+        user2pk = userService.insertUser("bye", "kit", "삼족오", "010-4444-4444", 27);
+    }
+
+
+
     public static void test1() {
-        /* 사용자 추가 및 가게 등록 요청*/
+        /* 점주 추가 및 가게 등록 요청*/
         Long ownerKey = ownerService.insertOwner("honsot", "honsotKIT123", "김선명", "010-1234-5678", 40);
         ownerService.insertStoreRegist("한솥도시락 금오공대점", "맛과 정성을 담았습니다", "054-472-0615","경북 구미시 대학로 39", ownerKey);
 
+        Long ownerKey2 = ownerService.insertOwner("moms", "momsKIT123", "김성렬", "010-1234-5678", 30);
+        ownerService.insertStoreRegist("맘스터치 금오공대점", "엄마의 마음으로 만듭니다", "054-476-9958","경북 구미시 대학로 52", ownerKey2);
+
         /* 관리자 승인 및 가게 추가 */
         var list = adminService.getHoldList();
-        StoreRegistDTO storeRegist = list.get(0);
-        adminService.acceptStoreRegist(storeRegist.getId());
+        for (StoreRegistDTO storeRegist : list) {
+            adminService.acceptStoreRegist(storeRegist.getId());
+        }
 
         /* 모든 가게 조회 */
-        adminService.viewStoreList();
+        viewStoreList();
     }
+
+    public static void viewStoreList() {
+        List<StoreDTO> storeList = adminService.getStoreList();
+        List<UserDTO> ownerList = new ArrayList<>();
+
+        for (StoreDTO store : storeList) {
+            ownerList.add(userDAO.selectOneWithPk(store.getUser_pk()));
+        }
+
+        storeViewForAdmin(storeList, ownerList);
+    }
+
+    public static void storeViewForAdmin(List<StoreDTO> storeList, List<UserDTO> ownerList) {
+        for (int idx = 0; idx < storeList.size(); idx++) {
+            StoreDTO store = storeList.get(idx);
+            UserDTO owner = ownerList.get(idx);
+            System.out.println( (idx + 1) + ". " +
+                    store.getName() + ", " +
+                    store.getComment() + ", " +
+                    store.getAddress() + ", " +
+                    store.getPhone() + ", " +
+                    owner.getName() + ", " +
+                    owner.getPhone() + ", " +
+                    owner.getId() + ", " +
+                    owner.getPw()
+            );
+        }
+    }
+
+
+
+
+
 
 
 
     public static void test2_1() {
         /* 가게 들고 오기 */
-        UserDTO user = userDAO.selectOneWithId("honsot");
-        StoreDTO honsot = storeDAO.selectAllWithUser_pk(user.getPk()).get(0);
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
 
         /* 옵션 등록 */
         insertOptionAll(honsot.getId());
@@ -81,15 +167,21 @@ public class Main {
     }
 
     public static void insertMenu(Long group_id, String name, Integer price, Integer stock, Long... options) {
-        menuDAO.insertMenu(name, price, stock, group_id, Arrays.asList(options));
+        ownerService.insertMenu(name, price, stock, group_id, Arrays.asList(options));
     }
+
+
+
+
+
+
 
 
 
     public static void test2_2() {
         /* 가게 들고 오기 */
-        UserDTO user = userDAO.selectOneWithId("honsot");
-        StoreDTO honsot = storeDAO.selectAllWithUser_pk(user.getPk()).get(0);
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
 
         /* 출력 */
         viewAllMenu(honsot.getId());
@@ -97,17 +189,17 @@ public class Main {
 
     public static void viewAllMenu(Long store_id) {
         /* 그룹 들고 오기 */
-        List<ClassificationDTO> groups = classificationDAO.selectAllWithStore_id(store_id);
+        List<ClassificationDTO> groups = storeService.getMenuGroups(store_id);
         List<MenuDTO> menus;
         List<DetailsDTO> detailsList;
 
         /* 출력 */
         int menuIdx = 1;
         for (ClassificationDTO group : groups) {
-            menus = menuDAO.selectAllWithClassification_id(group.getId());
+            menus = storeService.getMenusWithGroup_id(group.getId());
             System.out.println("[" + group.getName() + "]");
             for (MenuDTO menu : menus) {
-                detailsList = detailsDAO.selectAllWithMenu_id(menu.getId());
+                detailsList = storeService.getDetailsWithMenuId(menu.getId());
 
                 System.out.print(menuIdx + ". " + menu.getName() + ", " + menu.getPrice() + "원");
                 for (DetailsDTO details : detailsList) {
@@ -124,69 +216,221 @@ public class Main {
 
 
 
+    public static void test2_3() {
+        /* 가게 들고 오기*/
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
 
-    public static void changeMenuNameAndPrice(Long menu_id, String name, Integer price) {
-        MenuDTO menuDTO = menuDAO.selectOneWithId(menu_id);
+        /* 매뉴 그룹 들고 오기 */
+        ClassificationDTO classification = storeService.getMenuGroups(honsot.getId()).get(0);
 
-        System.out.println(menuDTO.getName() + "의 이름과 가격을 각각 " + name + "와" + " " + price + "원으로 수정");
-        menuDAO.updateNameAndPrice(menu_id, name, price);
+        /* 수정할 메뉴 들고 오기 */
+        MenuDTO menu = storeService.getMenusWithGroup_id(classification.getId()).get(0);
 
-        System.out.println("(수정 후 조회)");
-
-        menuDTO = menuDAO.selectOneWithId(menu_id);
-        System.out.println(menuDTO.toString());
+        /* 메뉴 수정 */
+        changeMenuNameAndPrice(menu.getId(), "돈까스고기고기", 6500);
     }
 
+    public static void changeMenuNameAndPrice(Long menu_id, String name, Integer price) {
+        MenuDTO menu = storeService.getMenu(menu_id);
+
+        ownerService.updateMenu(menu_id, name, price);
+
+        System.out.println(menu.getName() + "의 이름과 가격을 각각 " + name + "와" + " " + price + "원으로 수정");
+        System.out.println("(수정 후 조회)");
+
+        ClassificationDTO classification = storeService.getGroupWithId(menu.getClassification_id());
+        menu = storeService.getMenu(menu_id);
+        System.out.println("[" + classification.getName() + "]");
+        List<DetailsDTO> detailsList = storeService.getDetailsWithMenuId(menu.getId());
+
+        System.out.print(menu.getName() + " | " + menu.getPrice());
+        for (DetailsDTO details : detailsList) {
+            System.out.print(", " + details.getName());
+        }
+        System.out.println();
+    }
+
+
+
+
+
     public static void test3_1() {
-        Long user_pk = 1l;
-        Long store_id = 2l;
+        UserDTO honsotOwner = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(honsotOwner.getPk()).get(0);
 
-        List<MenuDTO> menuList = menuDAO.selectAllWithClassification_id(0l); //TODO
+        List<MenuDTO> menuList = storeService.getAllMenus(honsot.getId());
 
-        createOrders(user_pk, store_id, menuList.get(0), 0, 2);
-        createOrders(user_pk, store_id, menuList.get(2), 0);
-        createOrders(user_pk, store_id, menuList.get(2), 0);
-        createOrders(user_pk, store_id, menuList.get(3), 3);
+        createOrders(user1pk, honsot.getId(), menuList.get(0), 0, 2);
+        createOrders(user1pk, honsot.getId(), menuList.get(2), 0);
+        createOrders(user1pk, honsot.getId(), menuList.get(2), 0);
+        createOrders(user2pk, honsot.getId(), menuList.get(3), 3);
     }
 
     public static void createOrders(Long user_pk, Long store_id, MenuDTO menu, Integer... optionArr) {
-        List<DetailsDTO> options = detailsDAO.selectAllWithMenu_id(menu.getId());
+        List<DetailsDTO> options = storeService.getDetailsWithMenuId(menu.getId());
 
         String details = "";
         Integer price = menu.getPrice();
-        for (int idx : optionArr) {
-            details += ", " + options.get(idx).getName() + "(+" + options.get(idx).getPrice() + ")";
+
+        if (0 < optionArr.length) {
+            details += options.get(0).getName();
+        }
+        for (int idx = 1; idx < optionArr.length; idx++) {
+            details += ", " + options.get(idx).getName();
             price += options.get(idx).getPrice();
         }
 
-        ordersDAO.insertOrders(LocalDateTime.now(), details, price, "무 많이요", menu.getId(), user_pk, store_id);
+        userService.order(details, price, "temp comment", menu.getId(), user_pk, store_id);
     }
 
-    public static void viewOrders(Long store_id) {
-        List<OrdersDTO> list = ordersDAO.selectAllWithStore_id(store_id);
 
-        for (OrdersDTO o : list) {
-            System.out.println(o.toString());
+
+
+
+
+
+    public static void test3_2() {
+        UserDTO honsotOwner = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(honsotOwner.getPk()).get(0);
+
+        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
+    }
+
+    public static void viewOrders(List<OrdersDTO> list) {
+        System.out.println("[주문내역]");
+        String menu_name;
+
+        for (OrdersDTO order : list) {
+            menu_name = storeService.getMenu(order.getMenu_id()).getName();
+            System.out.println("회원" + order.getUser_pk() + ", " + menu_name + ", " + order.getDetails() + ", " + order.getPrice() + ", " + order.getStatusEnum().getTitle());
         }
     }
 
-    public static void acceptOrders(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.IN_DELIVERY, order_id);
+
+
+
+    public static void test3_3() {
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
+
+        List<OrdersDTO> list = ownerService.getOrdersWithStore_id(honsot.getId());
+
+        ownerService.acceptOrders(list.get(0).getId());
+        ownerService.acceptOrders(list.get(1).getId());
+        ownerService.acceptOrders(list.get(2).getId());
     }
 
-    public static void cancelOrders(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.CANCEL, order_id);
+
+
+
+    public static void test3_4() {
+        /* 두 회원 주문 취소 */
+        List<OrdersDTO> list = userService.getOrders(user1pk);
+        userService.cancelOrder(list.get(0).getId());
+
+        List<OrdersDTO> list2 = userService.getOrders(user2pk);
+        userService.cancelOrder(list2.get(0).getId());
+
+        /* 한솥 주문 리스트 조회 */
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
+        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
     }
 
-    public static void deliveryFinish(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.COMPLETE, order_id);
+
+
+
+    public static void test3_5() {
+        /* 한솥 메뉴 가져오기 */
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
+        List<MenuDTO> menuList = storeService.getAllMenus(honsot.getId());
+
+        /* 사용자 주문 */
+        createOrders(user1pk, honsot.getId(), menuList.get(6)); // 6번 인덱스가 돈치 스팸
+        createOrders(user2pk, honsot.getId(), menuList.get(6));
+
+        /* 주문 확인 */
+        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
     }
 
-    public static void writeReview() {
 
+
+
+    public static void test3_6() {
+        /* 한솥 가게 가져오기 */
+        UserDTO user = userService.getUserWithId("honsot");
+        StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
+
+        /* 주문 완료 */
+        List<OrdersDTO> list = ownerService.getOrdersWithStore_id(honsot.getId());
+        ownerService.deliveryFinish(list.get(0).getId());
+        ownerService.deliveryFinish(list.get(1).getId());
+        ownerService.deliveryFinish(list.get(2).getId());
+
+        /* 주문이 종료된 리스트 조회 */
+        viewOrders(userService.getEndedOrders(user1pk));
+        viewOrders(userService.getEndedOrders(user2pk));
     }
 
-    public static void viewReview() {
-        // 페이징 처리
+
+
+
+    public static void test4_1() {
+        /* 유저1 리뷰 등록*/
+        List<OrdersDTO> list = userService.getEndedOrders(user1pk);
+        writeReview("test1", 1, user1pk, list.get(0).getId());
+        writeReview("test2", 1, user1pk, list.get(1).getId());
+        writeReview("test3", 1, user1pk, list.get(2).getId());
+
+        /* 취소된 주문에는 리뷰 작성X 예시 */
+        List<OrdersDTO> list2 = userService.getEndedOrders(user2pk);
+        writeReview("test4", 1, user2pk, list2.get(0).getId()); // user2의 첫 주문은 취소되었음
+    }
+
+    public static void writeReview(String contents, Integer star_rating, Long user_pk, Long orders_id) {
+        userService.writeReview(contents, star_rating, user_pk, orders_id);
+    }
+
+
+
+
+    public static void test4_2() {
+        char input = '1';
+        int page;
+
+        while(input != 'Q' && input != 'q') {
+            page = input - '0';
+            List<ReviewDTO> list = userService.getReviewList(user1pk, page);
+            input = viewReview(list, input - '0', 2);
+        }
+    }
+
+    public static char viewReview(List<ReviewDTO> list, int page, int maxPage) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println();
+        if(1 <= page && page <= maxPage) {
+            System.out.println("현재 " + page + " page 입니다.");
+
+            for(ReviewDTO review : list) {
+                System.out.println(review.getOrders_id() + ", " + review.getContents() + ", " + review.getRegdate());
+            }
+
+            System.out.print("Page ");
+            for(int i = 1; i <= maxPage; i++) {
+                System.out.print(i + " ");
+            }
+            System.out.print('\t' + "종료: q or Q" + '\n');
+            System.out.print("입력 : ");
+
+        }
+        else {
+            System.out.println("없는 page 입니다. 다시 입력하세요.");
+            System.out.print("입력 : ");
+        }
+
+        return sc.next().charAt(0);
     }
 }

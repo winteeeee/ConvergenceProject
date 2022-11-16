@@ -12,14 +12,20 @@
         <result property="comment" column="comment"/>
         <result property="status" column="status"/>
         <result property="menu_id" column="menu_id"/>
-        <result property="total_orders_id" column="total_orders_id"/>
         <result property="store_id" column="store_id"/>
+        <result property="user_pk" column="user_pk"/>
     </resultMap>
 
-    <insert id="insertOrders">
-        INSERT INTO orders (status, regdate, details, price, comment, menu_id, total_orders_id, store_id)
-        VALUES (#{status}, #{regdate}, #{details}, #{price}, #{comment}, #{menu_id}, #{total_orders_id}, #{store_id})
+    <insert id="insertOrders" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO orders (status, regdate, details, price, comment, menu_id, store_id, user_pk)
+        VALUES (#{status}, #{regdate}, #{details}, #{price}, #{comment}, #{menu_id}, #{store_id}, #{user_pk})
     </insert>
+
+    <update id="updateForInsert">
+        UPDATE menu
+        SET stock = stock - 1
+        WHERE id=#{menu_id}
+    </update>
 
     <select id="selectAllWithStore_id" resultMap="result">
         SELECT *
@@ -31,6 +37,13 @@
         SELECT *
         FROM orders
         WHERE user_pk=#{user_pk}
+    </select>
+
+    <select id="selectAllEndedWithUser_pk" resultMap="result">
+        SELECT *
+        FROM orders
+        WHERE user_pk=#{user_pk}
+          AND status > '1'
     </select>
 
     <select id="selectOneWithId" resultMap="result">

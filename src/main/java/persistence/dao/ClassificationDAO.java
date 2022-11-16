@@ -19,7 +19,7 @@ public class ClassificationDAO extends DAO<ClassificationDTO>{
     }
     @Override
     protected ClassificationDTO selectOne(SqlSession session, Object[] arg) throws Exception {
-        return null;
+        return session.selectOne(sqlMapperPath + arg[0], arg[1]);
     }
     @Override
     protected int insert(SqlSession session, Object[] arg) throws Exception {
@@ -46,5 +46,13 @@ public class ClassificationDAO extends DAO<ClassificationDTO>{
         ClassificationDTO classificationDTO = new ClassificationDTO(null, name, store_id);
 
         return insert(stmt, classificationDTO);
+    }
+
+    public ClassificationDTO selectOneWithId(Long id) {
+        String stmt = "selectOneWithId";
+        ClassificationDTO classificationDTO = new ClassificationDTO();
+        classificationDTO.setId(id);
+
+        return selectOne(stmt, classificationDTO);
     }
 }
