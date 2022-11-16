@@ -43,7 +43,7 @@ public class MenuDAO extends DAO<MenuDTO>{
 
     public int insertMenuDetails(Long menuId, Long details_id) {
         String stmt = "insertMenuDetails";
-        HashMap<String, Long> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("menu_id", menuId);
         map.put("details_id", details_id);
 

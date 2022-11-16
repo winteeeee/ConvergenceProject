@@ -42,9 +42,4 @@ public class StoreRegistDTO extends DTO {
     public RegistStatus getStatusEnum() {
         return status;
     }
-
-    @Override
-    public String toString() {
-        return name + ", " + comment + ", " + address + ", " + phone;
-    }
 }

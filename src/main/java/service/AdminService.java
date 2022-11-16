@@ -20,11 +20,11 @@ public class AdminService {
         this.userDAO = userDAO;
     }
 
-    public void acceptStoreRegist(Long id) {
+    public int acceptStoreRegist(Long id) {
         storeRegistDAO.updateStatus(id, RegistStatus.ACCEPT);
         StoreRegistDTO registDTO = storeRegistDAO.selectOneWithId(id);
 
-        storeDAO.insertStore(
+        return storeDAO.insertStore(
                 registDTO.getName(),
                 registDTO.getComment(),
                 registDTO.getPhone(),
@@ -35,8 +35,8 @@ public class AdminService {
         );
     }
 
-    public void rejectStoreRegist(Long id) {
-        storeRegistDAO.updateStatus(id, RegistStatus.REJECT);
+    public int rejectStoreRegist(Long id) {
+        return storeRegistDAO.updateStatus(id, RegistStatus.REJECT);
     }
 
     public List<StoreRegistDTO> getHoldList() {

@@ -31,16 +31,4 @@
             WHERE menu_id=#{menu_id}
             )
     </select>
-
-<!--
-    <resultMap id="result" type="Map">
-        <result property="menu_id" column="menu_id"/>
-        <result property="option_id" column="option_id"/>
-    </resultMap>
-
-    <insert id="insertMenuOption">
-        INSERT INTO menu_option_map (menu_id, option_id)
-        VALUES (#{menu_id}, #{option_id})
-    </insert>
--->
 </mapper>
