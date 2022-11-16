@@ -5,6 +5,7 @@ import persistence.dao.OrdersDAO;
 import persistence.dao.ReviewDAO;
 import persistence.dao.UserDAO;
 import persistence.dto.OrdersDTO;
+import persistence.dto.ReviewDTO;
 import persistence.dto.UserDTO;
 import persistence.enums.Authority;
 import persistence.enums.OrdersStatus;
@@ -43,9 +44,16 @@ public class UserService {
         }
     }
 
-    public void writeReview(String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long orders_id) {
-        reviewDAO.insertReview(contents, regdate, star_rating, user_pk, orders_id);
-        reviewDAO.updateForInsert(star_rating, orders_id);
+    public void writeReview(String contents, Integer star_rating, Long user_pk, Long orders_id) {
+        OrdersDTO ordersDTO = ordersDAO.selectOneWithId(orders_id);
+
+        if(ordersDTO.getStatusEnum() == OrdersStatus.COMPLETE && (1 <= star_rating && star_rating <= 5)) {
+            reviewDAO.insertReview(contents, LocalDateTime.now(), star_rating, user_pk, orders_id);
+        }
+    }
+
+    public List<ReviewDTO> getReviewList(Long user_pk, int page) {
+        return reviewDAO.getReviewList(user_pk, page);
     }
 
     public void cancelOrder(Long orders_id) {

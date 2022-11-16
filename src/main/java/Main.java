@@ -1,16 +1,16 @@
 import persistence.MyBatisConnectionFactory;
 import persistence.dao.*;
 import persistence.dto.*;
-import persistence.enums.OrdersStatus;
+
 import service.AdminService;
 import service.OwnerService;
 import service.StoreService;
 import service.UserService;
-import view.StoreView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Main {
@@ -59,6 +59,12 @@ public class Main {
 
         System.out.println("\ntest3_6");
         test3_6();
+
+        System.out.println("\ntest4_1");
+        test4_1();
+
+        System.out.println("\ntest4_2");
+        test4_2();
     }
 
     public static void test1() {
@@ -348,12 +354,62 @@ public class Main {
 
 
 
-    public static void writeReview() {
 
+    public static void test4_1() {
+        UserDTO user = userService.getUserWithId("honsot");
+        List<OrdersDTO> list = userService.getEndedOrders(user.getPk());
+
+        writeReview("test1", 1, user.getPk(), list.get(0).getId());
+        writeReview("test2", 1, user.getPk(), list.get(1).getId());
+        writeReview("test3", 1, user.getPk(), list.get(2).getId());
+
+        /* 취소된 주문에는 리뷰 작성X 예시 */
+        UserDTO user2 = userService.getUserWithId("hello");
+        List<OrdersDTO> list2 = userService.getEndedOrders(user2.getPk());
+
+        writeReview("test4 comment1", 1, user2.getPk(), list2.get(0).getId());
     }
 
-    public static void viewReview() {
-        // 페이징 처리
+    public static void writeReview(String contents, Integer star_rating, Long user_pk, Long orders_id) {
+        userService.writeReview(contents, star_rating, user_pk, orders_id);
     }
 
+
+
+
+    public static void test4_2() {
+        UserDTO user = userService.getUserWithId("honsot");
+        char input = '1';
+        int page;
+
+        while(input != 'Q' && input != 'q') {
+            page = input - '0';
+            List<ReviewDTO> list = userService.getReviewList(user.getPk(), page);
+            input = viewReview(list, page, 2);
+        }
+    }
+
+    public static char viewReview(List<ReviewDTO> list, int page, int maxPage) {
+        Scanner sc = new Scanner(System.in);
+        if(1 <= page && page <= maxPage) {
+            System.out.println("현재 " + page + " page 입니다.");
+
+            for(ReviewDTO review : list) {
+                System.out.println(review.getOrders_id() + ", " + review.getContents() + ", " + review.getRegdate());
+            }
+
+            System.out.print("Page ");
+            for(int i = 1; i <= maxPage; i++) {
+                System.out.print(i + " ");
+            }
+            System.out.print('\t' + "종료: q or Q" + '\n');
+            System.out.print("입력 : ");
+
+        }
+        else {
+            System.out.println("없는 page 입니다. 다시 입력하세요.");
+            System.out.print("입력 : ");
+        }
+        return sc.next().charAt(0);
+    }
 }

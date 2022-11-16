@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class OrdersDTO extends DTO {
     private Long id;
     private OrdersStatus status;
