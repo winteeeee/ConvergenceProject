@@ -11,6 +11,7 @@ import persistence.enums.RegistStatus;
 import sharing.Serializable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -37,15 +38,35 @@ public abstract class DTO implements Serializable {
                     arr = Serializer.longToByteArray((long)memberVal);
                 }
                 else if (type.contains("String")) {
-                    arr = ((String)memberVal).getBytes();
+                    if((String)memberVal != null) {
+                        arr = ((String) memberVal).getBytes();
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
+
                     isDynamic = true;
                 }
                 else if (type.contains("LocalDateTime")) {
-                    arr = Serializer.dateToByteArray((LocalDateTime)memberVal);
+                    if((LocalDateTime)memberVal != null) {
+                        arr = Serializer.dateToByteArray((LocalDateTime) memberVal);
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
+
                     isDynamic = true;
                 }
                 else if (type.contains("enums")) {
-                    arr = Serializer.enumToByteArray((Enum)memberVal);
+                    if((Enum)memberVal != null) {
+                        arr = Serializer.enumToByteArray((Enum) memberVal);
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -141,6 +162,8 @@ public abstract class DTO implements Serializable {
                     System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
                     memberVal = RegistStatus.of(Deserializer.byteArrayToInt(codeByteArray));
                 }
+
+                classMembers[i].set(this, memberVal);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
