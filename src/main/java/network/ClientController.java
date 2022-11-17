@@ -543,4 +543,36 @@ public class ClientController {
         }
 
     }
+
+    public void viewAllStore() throws IOException {
+        ArrayList<StoreDTO> DTOs = getAllStoreDTO();
+        viewer.viewDTOs(DTOs);
+    }
+
+    public void viewOwnerAndUser() throws IOException {
+        ArrayList<UserDTO> DTOs = getAllOwnerAndUserDTO();
+        viewer.viewDTOs(DTOs);
+    }
+
+    public void viewStoreWithUser(UserDTO userInfo) throws IOException {
+        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithUser(userInfo);
+        viewer.viewDTOs(DTOs);
+    }
+
+    public void viewMenuWithUser(UserDTO userInfo) throws IOException {
+        viewer.viewMenuWithUser(userInfo);
+    }
+
+    public void viewStoreInUserRun() throws IOException {
+        viewer.viewStoreInUserRun();
+    }
+
+    public void viewOrderWithUser(UserDTO userInfo) throws IOException {
+        ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(userInfo);
+        viewer.viewDTOs(DTOs);
+    }
+
+    public void viewAccountInfo(UserDTO userInfo) {
+        viewer.searchAccountScreen(userInfo);
+    }
 }
