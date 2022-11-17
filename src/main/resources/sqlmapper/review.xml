@@ -34,4 +34,12 @@
         FROM review
         WHERE user_pk=#{user_pk}
     </select>
+
+    <select id="getReviewList" resultMap="result">
+        SELECT *
+        FROM review
+        WHERE user_pk=#{user_pk}
+        ORDER BY regdate DESC
+            LIMIT #{page}, 2
+    </select>
 </mapper>

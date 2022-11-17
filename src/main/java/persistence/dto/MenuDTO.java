@@ -25,9 +25,4 @@ public class MenuDTO extends DTO {
     public MenuDTO(byte[] arr) {
         setMembersByByteArray(arr);
     }
-
-    @Override
-    public String toString() {
-        return name + "," + price + "원,";
-    }
 }
