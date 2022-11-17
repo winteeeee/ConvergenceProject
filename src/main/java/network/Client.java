@@ -2,7 +2,6 @@ package network;
 
 import java.io.*;
 import java.net.*;
-
 import persistence.dto.*;
 
 public class Client
@@ -59,7 +58,7 @@ public class Client
         }
     }
 
-    public void adminRun() throws IOException {
+    private void adminRun() throws IOException {
         boolean login = true;
         final int REGIST_STORE_DETERMINATION = 1;
         final int VIEW_ALL_STORE = 2;
@@ -95,7 +94,7 @@ public class Client
         }
     }
 
-    public void ownerRun() throws IOException {
+    private void ownerRun() throws IOException {
         boolean login = true;
         final int REQUEST_STORE_REGIST = 1;
         final int REGIST_MENU = 2;
@@ -146,7 +145,7 @@ public class Client
         }
     }
 
-    public void userRun() throws IOException {
+    private void userRun() throws IOException {
         boolean login = true;
         final int MODIFICATION_USER = 1;
         final int VIEW_STORE = 2;

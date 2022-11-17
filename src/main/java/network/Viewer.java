@@ -2,11 +2,8 @@ package network;
 
 import org.testng.internal.collections.Pair;
 import persistence.dto.*;
-import persistence.enums.OrdersStatus;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -68,12 +65,14 @@ public class Viewer {
         return userInfo;
     }
 
-    public void searchStoreScreen() {
+    public int searchStoreScreenAndGetOption() throws IOException {
         System.out.println("[가게 조회]");
         System.out.println("[1] 카테고리로 검색");
         System.out.println("[2] 가게명으로 검색");
         System.out.println("[3] 종료");
         System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
     }
 
     public void searchAccountScreen(UserDTO userInfo) {
@@ -140,7 +139,7 @@ public class Viewer {
     }
 
     public ClassificationDTO selectClassification(ArrayList<ClassificationDTO> classificationDTOs) throws IOException {
-        viewClassification(classificationDTOs);
+        viewDTOs(classificationDTOs);
         ClassificationDTO selectedClass = null;
 
         while(true) {
@@ -163,7 +162,7 @@ public class Viewer {
     public ArrayList<Integer> selectOption(ArrayList<DetailsDTO> optionDTOs) throws IOException {
         ArrayList<Integer> selectedOption = new ArrayList<>();
 
-        viewOption(optionDTOs);
+        viewDTOs(optionDTOs);
         System.out.println("등록할 옵션을 모두 선택하세요");
         System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
         while(selectedOption.size() < optionDTOs.size()) {
@@ -200,7 +199,7 @@ public class Viewer {
     }
 
     public ArrayList<Integer> getOptionIdxes(ArrayList<DetailsDTO> optionDTOs) throws IOException {
-        viewOption(optionDTOs);
+        viewDTOs(optionDTOs);
         ArrayList<Integer> optionIdxes = new ArrayList<>();
 
         System.out.println("옵션을 선택하세요");
@@ -244,6 +243,34 @@ public class Viewer {
         return changeTimeInfo;
     }
 
+    public String[] getStoreInfo() throws IOException {
+        String[] result = new String[4];
+
+        System.out.println("[가게 등록]");
+        System.out.println("상호명 : ");
+        result[0] = keyInput.readLine();
+        System.out.println("간단한 가게 소개 : ");
+        result[1] = keyInput.readLine();
+        System.out.println("주소 : ");
+        result[2] = keyInput.readLine();
+        System.out.println("가게 전화번호 : ");
+        result[3] = keyInput.readLine();
+
+        return result;
+    }
+
+    public String getClassificationName(ArrayList<ClassificationDTO> DTOs) throws IOException {
+        viewDTOs(DTOs);
+        System.out.println("카테고리명 입력 : ");
+        return keyInput.readLine();
+    }
+
+    public String getStoreName(ArrayList<StoreDTO> DTOs) throws IOException {
+        viewDTOs(DTOs);
+        System.out.println("가게명 입력 : ");
+        return keyInput.readLine();
+    }
+
     public void showOrderCompleteMessage() {
         System.out.println("주문이 정상적으로 등록되었습니다.");
         System.out.println();
@@ -266,154 +293,10 @@ public class Viewer {
         System.out.println("변경사항이 저장되었습니다.");
     }
 
-
-    public void viewStoreInUserRun() throws IOException {
-        boolean iteration = true;
-        while (iteration) {
-            searchStoreScreen();
-
-            int searchStoreOption = Integer.parseInt(keyInput.readLine());
-            switch (searchStoreOption) {
-                case 1:
-                    viewAllClassification();
-                    System.out.println("카테고리명 입력 : ");
-                    String classificationName = keyInput.readLine();
-                    viewStoreWithClassification(classificationName);
-                    break;
-
-                case 2:
-                    viewAllStore();
-                    System.out.println("가게명 입력 : ");
-                    String storeName = keyInput.readLine();
-                    viewStoreWithName(storeName);
-                    break;
-
-                case 3:
-                    iteration = false;
-                    break;
-
-                default:
-                    System.out.println(ErrorMessage.OUT_OF_BOUND);
-            }
-        }
-    }
-
     public <T> void viewDTOs(ArrayList<T> DTOs) throws IOException {
         for(int i = 0; i < DTOs.size(); i++) {
             System.out.println("[" + i + "] " + DTOs.get(i).toString());
         }
         System.out.println();
-    }
-
-    public void viewStoreWithClassification() throws IOException {
-        System.out.println("[카테고리로 가게 조회]");
-        ClassificationDTO target = new ClassificationDTO();
-        target.setName(classificationName);
-        Protocol requestClassification = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, target);
-        dos.write(requestClassification.getBytes());
-        target = (ClassificationDTO) new Protocol(dis.readAllBytes()).getData();
-
-        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithClassification(target);
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-        System.out.println();
-    }
-
-    public void viewStoreWithUser(UserDTO userInfo) throws IOException {
-        System.out.println("[가게 조회]");
-        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithUser(userInfo);
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-        System.out.println();
-    }
-
-    public void viewAllMenu() throws IOException {
-        System.out.println("[전체 메뉴 조회]");
-        ArrayList<MenuDTO> DTOs = getAllMenuDTO();
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-        System.out.println();
-    }
-
-    public void viewAllMenu(ArrayList<MenuDTO> DTOs) throws IOException {
-        System.out.println("[전체 메뉴 조회]");
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-        System.out.println();
-    }
-
-    public void viewMenuWithUser(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
-
-        for (int i = 0; i < storeDTOs.size(); i++) {
-            System.out.println("[" + i + "] " + storeDTOs.get(i).toString());
-        }
-        System.out.println("메뉴를 조회할 가게 선택 : ");
-        int idx = Integer.parseInt(keyInput.readLine());
-
-        ArrayList<MenuDTO> MenuDTOs = getAllMenuDTOWithStore(storeDTOs.get(idx));
-        for (int i = 0; i < MenuDTOs.size(); i++) {
-            System.out.println(MenuDTOs.get(i).toString());
-        }
-        System.out.println();
-    }
-
-    public void viewOption(ArrayList<DetailsDTO> DTOs) {
-        System.out.println("[전체 옵션 조회]");
-        for (int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-
-        System.out.println();
-    }
-
-    public void viewClassification(ArrayList<ClassificationDTO> DTOs) {
-        System.out.println("[전체 분류 조회]");
-        for (int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-
-        System.out.println();
-    }
-
-    public void viewOwnerAndUser() throws IOException {
-        System.out.println("[전체 점주 / 고객 조회]");
-        ArrayList<UserDTO> DTOs = getAllOwnerAndUserDTO();
-        for (int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-
-        System.out.println();
-    }
-
-    public void viewOrderWithUser(UserDTO userInfo) throws IOException {
-        System.out.println("[주문 조회]");
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(userInfo);
-        for (int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-
-        System.out.println();
-    }
-
-    public void viewOrder(ArrayList<OrdersDTO> DTOs) {
-        System.out.println("[주문 조회]");
-        for (int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
-        }
-
-        System.out.println();
-    }
-
-    public void viewAccountInfo(UserDTO me) {
-        searchAccountScreen(me);
     }
 }

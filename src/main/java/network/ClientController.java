@@ -3,7 +3,6 @@ package network;
 import org.testng.internal.collections.Pair;
 import persistence.dto.*;
 import persistence.enums.OrdersStatus;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -272,20 +271,14 @@ public class ClientController {
         ArrayList<StoreRegistDTO> DTOs = getAllStoreRegistDTO();
 
         while(DTOs.size() > 0) {
-            for (int i = 0; i < DTOs.size(); i++) {
-                System.out.println("[" + i + "] " + DTOs.get(i).toString());
-            }
-
-            System.out.println("승인 / 거절할 요청 선택(범위 외 값 입력 시 종료) : ");
-            int idx = Integer.parseInt(keyInput.readLine());
+            int idx = viewer.getIdx(DTOs);
 
             if (0 <= idx && idx < DTOs.size()) {
                 while (true) {
-                    System.out.println("승인 : Y/y, 거절 : N/n");
-                    String ans = keyInput.readLine();
+                    String ans = viewer.getDetermination();
 
                     if (ans.equals("Y") || ans.equals("y")) {
-                        System.out.println("승인되었습니다.\n");
+                        viewer.showAcceptMessage();
                         Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하고 가게 테이블에 등록하시오.
                         dos.write(registAccept.getBytes());
@@ -294,7 +287,7 @@ public class ClientController {
                     }
 
                     else if (ans.equals("N") || ans.equals("n")) {
-                        System.out.println("거절되었습니다.\n");
+                        viewer.showRefusalMessage();
                         Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하시오.
                         DTOs.remove(idx);
@@ -314,23 +307,13 @@ public class ClientController {
     }
 
     public void registStore(UserDTO userInfo) throws IOException {
-        String name, comment, address, phone;
-
-        System.out.println("[가게 등록]");
-        System.out.println("상호명 : ");
-        name = keyInput.readLine();
-        System.out.println("간단한 가게 소개 : ");
-        comment = keyInput.readLine();
-        System.out.println("주소 : ");
-        address = keyInput.readLine();
-        System.out.println("가게 전화번호 : ");
-        phone = keyInput.readLine();
+        String[] storeInfo = viewer.getStoreInfo();
 
         StoreDTO newStore = new StoreDTO();
-        newStore.setName(name);
-        newStore.setComment(comment);
-        newStore.setAddress(address);
-        newStore.setPhone(phone);
+        newStore.setName(storeInfo[0]);
+        newStore.setComment(storeInfo[1]);
+        newStore.setAddress(storeInfo[2]);
+        newStore.setPhone(storeInfo[3]);
         newStore.setUser_pk(userInfo.getPk());
 
         Protocol requestStoreRegist = new Protocol(ProtocolType.REGISTER, ProtocolCode.STORE, 0, newStore);
@@ -545,34 +528,62 @@ public class ClientController {
     }
 
     public void viewAllStore() throws IOException {
-        ArrayList<StoreDTO> DTOs = getAllStoreDTO();
-        viewer.viewDTOs(DTOs);
+        viewer.viewDTOs(getAllStoreDTO());
     }
 
     public void viewOwnerAndUser() throws IOException {
-        ArrayList<UserDTO> DTOs = getAllOwnerAndUserDTO();
-        viewer.viewDTOs(DTOs);
+        viewer.viewDTOs(getAllOwnerAndUserDTO());
     }
 
     public void viewStoreWithUser(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithUser(userInfo);
-        viewer.viewDTOs(DTOs);
+        viewer.viewDTOs(getAllStoreDTOWithUser(userInfo));
     }
 
     public void viewMenuWithUser(UserDTO userInfo) throws IOException {
-        viewer.viewMenuWithUser(userInfo);
-    }
-
-    public void viewStoreInUserRun() throws IOException {
-        viewer.viewStoreInUserRun();
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
+        int idx = viewer.getIdx(storeDTOs);
+        viewer.viewDTOs(getAllMenuDTOWithStore(storeDTOs.get(idx)));
     }
 
     public void viewOrderWithUser(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(userInfo);
-        viewer.viewDTOs(DTOs);
+        viewer.viewDTOs(getAllOrderDTOWithUser(userInfo));
     }
 
     public void viewAccountInfo(UserDTO userInfo) {
         viewer.searchAccountScreen(userInfo);
+    }
+
+    public void viewStoreInUserRun() throws IOException {
+        boolean iteration = true;
+        while (iteration) {
+            int searchStoreOption = viewer.searchStoreScreenAndGetOption();
+
+            switch (searchStoreOption) {
+                case 1:
+                    String classificationName = viewer.getClassificationName(getAllClassificationDTO());
+
+                    ClassificationDTO target = new ClassificationDTO();
+                    target.setName(classificationName);
+                    Protocol requestClassification = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, target);
+                    dos.write(requestClassification.getBytes());
+                    target = (ClassificationDTO) new Protocol(dis.readAllBytes()).getData();
+                    ArrayList<StoreDTO> DTOs = getAllStoreDTOWithClassification(target);
+
+                    viewer.viewDTOs(DTOs);
+                    break;
+
+                case 2:
+                    String storeName = viewer.getStoreName(getAllStoreDTO());
+                    viewer.viewDTOs(getAllStoreDTOWithName(storeName));
+                    break;
+
+                case 3:
+                    iteration = false;
+                    break;
+
+                default:
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+            }
+        }
     }
 }
