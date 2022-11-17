@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class Viewer {
-    private ClientContoroller con;
-
     public void adminScreen(UserDTO userInfo) {
         System.out.println();
         System.out.println("관리자 " + userInfo.getName() + "님 환영합니다.");
@@ -48,15 +46,16 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public String[] loginScreen(BufferedReader keyInput) throws IOException {
-        String[] IDAndPW = new String[2];
+    public UserDTO loginScreen(BufferedReader keyInput) throws IOException {
+        UserDTO userInfo = new UserDTO();
+
         System.out.println("********** 음식 주문 시스템 **********");
         System.out.print("ID : ");
-        IDAndPW[0] = keyInput.readLine();
+        userInfo.setId(keyInput.readLine());
         System.out.print("PW : ");
-        IDAndPW[1] = keyInput.readLine();
+        userInfo.setPw(keyInput.readLine());
 
-        return IDAndPW;
+        return userInfo;
     }
 
     public void searchStoreScreen() {
