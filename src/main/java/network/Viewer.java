@@ -2,8 +2,13 @@ package network;
 
 import persistence.dto.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 public class Viewer {
-    public static void adminScreen(UserDTO userInfo) {
+    private ClientContoroller con;
+
+    public void adminScreen(UserDTO userInfo) {
         System.out.println();
         System.out.println("관리자 " + userInfo.getName() + "님 환영합니다.");
         System.out.println("무엇을 하시겠습니까?");
@@ -14,7 +19,7 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public static void ownerScreen(UserDTO userInfo) {
+    public void ownerScreen(UserDTO userInfo) {
         System.out.println();
         System.out.println("점주 " + userInfo.getName() + "님 환영합니다.");
         System.out.println("무엇을 하시겠습니까?");
@@ -28,7 +33,7 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public static void userScreen(UserDTO userInfo) {
+    public void userScreen(UserDTO userInfo) {
         System.out.println();
         System.out.println("고객 " + userInfo.getName() + "님 환영합니다.");
         System.out.println("무엇을 하시겠습니까?");
@@ -43,7 +48,18 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public static void searchStoreScreen() {
+    public String[] loginScreen(BufferedReader keyInput) throws IOException {
+        String[] IDAndPW = new String[2];
+        System.out.println("********** 음식 주문 시스템 **********");
+        System.out.print("ID : ");
+        IDAndPW[0] = keyInput.readLine();
+        System.out.print("PW : ");
+        IDAndPW[1] = keyInput.readLine();
+
+        return IDAndPW;
+    }
+
+    public void searchStoreScreen() {
         System.out.println("[가게 조회]");
         System.out.println("[1] 카테고리로 검색");
         System.out.println("[2] 가게명으로 검색");
@@ -51,14 +67,14 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public static void searchAccountScreen(UserDTO userInfo) {
+    public void searchAccountScreen(UserDTO userInfo) {
         System.out.println("[계정 정보 조회]");
         System.out.println("ID : " + userInfo.getId());
         System.out.println("이름 : " + userInfo.getName());
         System.out.println("나이 : " + userInfo.getAge());
     }
 
-    public static void modificationUserScreen() {
+    public void modificationUserScreen() {
         System.out.println("변경할 정보를 선택해주세요.");
         System.out.println("[1] 비밀번호");
         System.out.println("[2] 이름");
@@ -67,7 +83,7 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
-    public static void logout() {
+    public void logout() {
         System.out.println("로그아웃합니다.\n");
     }
 }
