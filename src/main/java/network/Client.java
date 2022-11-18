@@ -153,8 +153,9 @@ public class Client
         final int CANCEL_ORDER = 4;
         final int VIEW_ORDER = 5;
         final int REGIST_REVIEW = 6;
-        final int VIEW_ACCOUNT_INFO = 7;
-        final int LOGOUT = 8;
+        final int VIEW_REVIEW = 7;
+        final int VIEW_ACCOUNT_INFO = 8;
+        final int LOGOUT = 9;
 
         while(login) {
             con.showUserScreen(me);
@@ -183,6 +184,10 @@ public class Client
 
                 case REGIST_REVIEW:
                     con.registReview(me);
+                    break;
+
+                case VIEW_REVIEW:
+                    con.viewReview(me);
                     break;
 
                 case VIEW_ACCOUNT_INFO:

@@ -48,8 +48,9 @@ public class Viewer {
         System.out.println("[4] 주문 취소");
         System.out.println("[5] 주문 조회");
         System.out.println("[6] 리뷰 등록");
-        System.out.println("[7] 계정 정보 조회");
-        System.out.println("[8] 로그아웃");
+        System.out.println("[7] 리뷰 조회");
+        System.out.println("[8] 계정 정보 조회");
+        System.out.println("[9] 로그아웃");
         System.out.print("입력 : ");
     }
 
@@ -293,10 +294,55 @@ public class Viewer {
         System.out.println("변경사항이 저장되었습니다.");
     }
 
-    public <T> void viewDTOs(ArrayList<T> DTOs) throws IOException {
+    public <T> void viewDTOs(ArrayList<T> DTOs) {
         for(int i = 0; i < DTOs.size(); i++) {
             System.out.println("[" + i + "] " + DTOs.get(i).toString());
         }
         System.out.println();
+    }
+
+    public <T> void viewDTO(T DTO) {
+        System.out.println("[" + DTO.toString() + "]");
+    }
+
+    public void viewPage(int curPage, int maxPage, int pageWidth) {
+        int gap = pageWidth / 2;
+        int startPage;
+
+        if(curPage <= gap) {
+            startPage = 1;
+        } else if(maxPage - curPage < gap) {
+            startPage = maxPage - pageWidth + 1;
+        } else {
+            startPage = curPage - gap;
+        }
+
+        if(startPage != 1) {
+            System.out.print(1 + " ... ");
+        }
+
+        for(int i = startPage; i < startPage + pageWidth; i++) {
+            if(i == curPage) {
+                System.out.print("[" + i + "] ");
+            } else {
+                System.out.print(i + " ");
+            }
+        }
+
+        if(pageWidth % 2 == 0) {
+            if(maxPage - curPage >= gap) {
+                System.out.print("... " + maxPage);
+            }
+        } else {
+            if(maxPage - curPage > gap) {
+                System.out.print("... " + maxPage);
+            }
+        }
+        System.out.println();
+    }
+
+    public int getNextPage() throws IOException {
+        System.out.print("페이지 입력(범위 외 입력 시 종료) : ");
+        return Integer.parseInt(keyInput.readLine());
     }
 }

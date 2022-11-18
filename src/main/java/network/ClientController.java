@@ -403,6 +403,38 @@ public class ClientController {
         }
     }
 
+    public void viewReview(UserDTO userInfo) throws IOException {
+        int curPage = 1;
+
+        while(true) {
+            Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, userInfo);
+            dos.write(requestReview.getBytes());
+            dos.write(Serializer.intToByteArray(curPage));
+
+            final int MAX_PAGE = Deserializer.byteArrayToInt(dis.readAllBytes());
+            int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
+            for (int i = 0; i < classificationListLength; i++) {
+                classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+
+                int reviewListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+                ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
+                for (int j = 0; j < reviewListLength; j++) {
+                    reviewDTOs.add((ReviewDTO) new Protocol(dis.readAllBytes()).getData());
+                }
+
+                viewer.viewDTO(classificationDTOs.get(i));
+                viewer.viewDTOs(reviewDTOs);
+            }
+            viewer.viewPage(curPage, MAX_PAGE, 5);
+            curPage = viewer.getNextPage();
+
+            if (!(1 <= curPage && curPage <= MAX_PAGE)) {
+                break;
+            }
+        }
+    }
+
     public void orderDetermination(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
         int storeIdx = viewer.getIdx(storeDTOs);
