@@ -456,7 +456,7 @@ public class ClientController {
 
     public void modificationUser(UserDTO userInfo) throws IOException {
         //개인정보 및 비밀번호 수정
-        boolean escapeFlag = true;
+        boolean escapeFlag = false;
         while(!escapeFlag) {
             int option = viewer.modifiUserScreenAndGetOption();
 
@@ -474,7 +474,7 @@ public class ClientController {
                     break;
 
                 case 4:
-                    escapeFlag = false;
+                    escapeFlag = true;
                     break;
 
                 default:
