@@ -126,11 +126,11 @@ public class Client
                     break;
 
                 case VIEW_STORE_INFO:
-                    con.viewStoreWithUser(me);
+                    con.viewStore(me);
                     break;
 
                 case VIEW_MENU_INFO:
-                    con.viewMenuWithUser(me);
+                    con.viewMenu(me);
                     break;
 
                 case LOGOUT:
@@ -179,7 +179,7 @@ public class Client
                     break;
 
                 case VIEW_ORDER:
-                    con.viewOrderWithUser(me);
+                    con.viewOrder(me);
                     break;
 
                 case REGIST_REVIEW:
