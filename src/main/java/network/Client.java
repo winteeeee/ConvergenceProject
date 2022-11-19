@@ -167,7 +167,7 @@ public class Client
                     break;
 
                 case VIEW_STORE:
-                    con.viewStoreInUserRun();
+                    con.viewStore();
                     break;
 
                 case REGIST_ORDER:

@@ -517,6 +517,10 @@ public class ClientController {
         viewer.viewDTOs(getAllOwnerAndUserDTO());
     }
 
+    public void viewStore() throws IOException {
+        viewer.viewDTOs(getAllStoreDTO());
+    }
+
     public <T> void viewStore(T info) throws IOException {
         viewer.viewDTOs(getAllStoreDTO(info));
     }
@@ -533,41 +537,5 @@ public class ClientController {
 
     public void viewAccountInfo(UserDTO userInfo) {
         viewer.searchAccountScreen(userInfo);
-    }
-
-    public void viewStoreInUserRun() throws IOException {
-        boolean iteration = true;
-        while (iteration) {
-            int searchStoreOption = viewer.searchStoreScreenAndGetOption();
-
-            switch (searchStoreOption) {
-                case 1:
-                    String classificationName = viewer.getClassificationName(getAllClassificationDTO());
-
-                    ClassificationDTO target = new ClassificationDTO();
-                    target.setName(classificationName);
-                    Protocol requestClassification = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, target);
-                    dos.write(requestClassification.getBytes());
-                    target = (ClassificationDTO) new Protocol(dis.readAllBytes()).getData();
-                    ArrayList<StoreDTO> DTOs = getAllStoreDTO(target);
-
-                    viewer.viewDTOs(DTOs);
-                    break;
-
-                case 2:
-                    String storeName = viewer.getStoreName(getAllStoreDTO());
-                    StoreDTO target2 = new StoreDTO();
-                    target2.setName(storeName);
-                    viewer.viewDTOs(getAllStoreDTO(target2));
-                    break;
-
-                case 3:
-                    iteration = false;
-                    break;
-
-                default:
-                    System.out.println(ErrorMessage.OUT_OF_BOUND);
-            }
-        }
     }
 }

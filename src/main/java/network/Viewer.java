@@ -66,16 +66,6 @@ public class Viewer {
         return userInfo;
     }
 
-    public int searchStoreScreenAndGetOption() throws IOException {
-        System.out.println("[가게 조회]");
-        System.out.println("[1] 카테고리로 검색");
-        System.out.println("[2] 가게명으로 검색");
-        System.out.println("[3] 종료");
-        System.out.print("입력 : ");
-
-        return Integer.parseInt(keyInput.readLine());
-    }
-
     public void searchAccountScreen(UserDTO userInfo) {
         System.out.println("[계정 정보 조회]");
         System.out.println("ID : " + userInfo.getId());
@@ -259,18 +249,6 @@ public class Viewer {
         result[3] = keyInput.readLine();
 
         return result;
-    }
-
-    public String getClassificationName(ArrayList<ClassificationDTO> DTOs) throws IOException {
-        viewDTOs(DTOs);
-        System.out.print("카테고리명 입력 : ");
-        return keyInput.readLine();
-    }
-
-    public String getStoreName(ArrayList<StoreDTO> DTOs) throws IOException {
-        viewDTOs(DTOs);
-        System.out.print("가게명 입력 : ");
-        return keyInput.readLine();
     }
 
     public void showOrderCompleteMessage() {
