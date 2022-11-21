@@ -66,16 +66,6 @@ public class Viewer {
         return userInfo;
     }
 
-    public int searchStoreScreenAndGetOption() throws IOException {
-        System.out.println("[가게 조회]");
-        System.out.println("[1] 카테고리로 검색");
-        System.out.println("[2] 가게명으로 검색");
-        System.out.println("[3] 종료");
-        System.out.print("입력 : ");
-
-        return Integer.parseInt(keyInput.readLine());
-    }
-
     public void searchAccountScreen(UserDTO userInfo) {
         System.out.println("[계정 정보 조회]");
         System.out.println("ID : " + userInfo.getId());
@@ -96,21 +86,21 @@ public class Viewer {
 
     public void changeUserPW(UserDTO userInfo) throws IOException {
         System.out.println("새로운 비밀번호를 입력하세요.");
-        System.out.println("입력 : ");
+        System.out.print("입력 : ");
         userInfo.setPw(keyInput.readLine());
         System.out.println();
     }
 
     public void changeUserName(UserDTO userInfo) throws IOException {
         System.out.println("새로운 이름을 입력하세요.");
-        System.out.println("입력 : ");
+        System.out.print("입력 : ");
         userInfo.setName(keyInput.readLine());
         System.out.println();
     }
 
     public void changeUserAge(UserDTO userInfo) throws IOException {
         System.out.println("새로운 나이를 입력하세요.");
-        System.out.println("입력 : ");
+        System.out.print("입력 : ");
         userInfo.setAge(Integer.parseInt(keyInput.readLine()));
         System.out.println();
     }
@@ -123,7 +113,7 @@ public class Viewer {
         viewDTOs(storeDTOs);
         StoreDTO storeInfo = null;
         while(true) {
-            System.out.println("가게를 선택해주세요 : ");
+            System.out.print("가게를 선택해주세요 : ");
             int select = Integer.parseInt(keyInput.readLine());
 
             if(0 <= select && select <  storeDTOs.size()) {
@@ -144,7 +134,7 @@ public class Viewer {
         ClassificationDTO selectedClass = null;
 
         while(true) {
-            System.out.println("분류를 선택해주세요 : ");
+            System.out.print("분류를 선택해주세요 : ");
             int select = Integer.parseInt(keyInput.readLine());
 
             if(0 <= select && select < classificationDTOs.size()) {
@@ -214,9 +204,9 @@ public class Viewer {
     }
 
     public Pair<String, Integer> getReviewInfo() throws IOException {
-        System.out.println("리뷰 내용 입력 : ");
+        System.out.print("리뷰 내용 입력 : ");
         String contents = keyInput.readLine();
-        System.out.println("별점 입력(1 ~ 5) : ");
+        System.out.print("별점 입력(1 ~ 5) : ");
         int starRank = Integer.parseInt(keyInput.readLine());
 
         return new Pair<>(contents, starRank);
@@ -224,6 +214,7 @@ public class Viewer {
 
     public String getDetermination() throws IOException {
         System.out.println("승인 : Y/y, 거절 : N/n");
+        System.out.print("입력 : ");
         return keyInput.readLine();
     }
 
@@ -231,12 +222,12 @@ public class Viewer {
         int[] changeTimeInfo = new int[4];
         StringTokenizer st;
 
-        System.out.println("변경할 개점 시간 : ");
+        System.out.print("변경할 개점 시간 : ");
         st = new StringTokenizer(keyInput.readLine());
         changeTimeInfo[0] = Integer.parseInt(st.nextToken());
         changeTimeInfo[1] = Integer.parseInt(st.nextToken());
 
-        System.out.println("변경할 폐점 시간 : ");
+        System.out.print("변경할 폐점 시간 : ");
         st = new StringTokenizer(keyInput.readLine());
         changeTimeInfo[2] = Integer.parseInt(st.nextToken());
         changeTimeInfo[3] = Integer.parseInt(st.nextToken());
@@ -248,28 +239,16 @@ public class Viewer {
         String[] result = new String[4];
 
         System.out.println("[가게 등록]");
-        System.out.println("상호명 : ");
+        System.out.print("상호명 : ");
         result[0] = keyInput.readLine();
         System.out.println("간단한 가게 소개 : ");
         result[1] = keyInput.readLine();
-        System.out.println("주소 : ");
+        System.out.print("주소 : ");
         result[2] = keyInput.readLine();
-        System.out.println("가게 전화번호 : ");
+        System.out.print("가게 전화번호 : ");
         result[3] = keyInput.readLine();
 
         return result;
-    }
-
-    public String getClassificationName(ArrayList<ClassificationDTO> DTOs) throws IOException {
-        viewDTOs(DTOs);
-        System.out.println("카테고리명 입력 : ");
-        return keyInput.readLine();
-    }
-
-    public String getStoreName(ArrayList<StoreDTO> DTOs) throws IOException {
-        viewDTOs(DTOs);
-        System.out.println("가게명 입력 : ");
-        return keyInput.readLine();
     }
 
     public void showOrderCompleteMessage() {
