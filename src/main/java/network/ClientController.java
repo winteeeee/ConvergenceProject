@@ -145,7 +145,7 @@ public class ClientController {
     }
 
     public <T> ArrayList<MenuDTO> getAllMenuDTO(T info) throws IOException {
-        Protocol requestAllMyMenuDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, (DTO) info);
+        Protocol requestAllMyMenuDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, (DTO) info);
         dos.write(requestAllMyMenuDTOs.getBytes());
         //info가 지닌 모든 menu 리스트를 가져옴
 
