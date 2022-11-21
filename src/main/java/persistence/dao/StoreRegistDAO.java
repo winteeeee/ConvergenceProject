@@ -2,7 +2,6 @@ package persistence.dao;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import persistence.MyBatisConnectionFactory;
 
 import persistence.dto.StoreRegistDTO;
 import persistence.enums.RegistStatus;

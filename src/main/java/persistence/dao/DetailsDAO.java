@@ -53,7 +53,7 @@ public class DetailsDAO extends DAO<DetailsDTO>{
 
     public List<DetailsDTO> selectAllWithMenu_id(Long menu_id) {
         String stmt = "selectAllWithMenu_id";
-        Map<String, Long> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("menu_id", menu_id);
 
         return selectList(stmt, map);
