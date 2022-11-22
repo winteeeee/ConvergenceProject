@@ -491,7 +491,24 @@ public class ClientController {
     public <T> void viewMenu(T info) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(info);
         int idx = viewer.getIdx(storeDTOs);
-        viewer.viewDTOs(getAllMenuDTO(storeDTOs.get(idx)));
+
+        Protocol requestMenu = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, storeDTOs.get(idx));
+        dos.write(requestMenu.getBytes());
+
+        int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
+        for(int i = 0; i < classificationListLength; i++) {
+            classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+
+            int menuListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            ArrayList<MenuDTO> menuDTOs = new ArrayList<>();
+            for (int j = 0; j < menuListLength; j++) {
+                menuDTOs.add((MenuDTO) new Protocol(dis.readAllBytes()).getData());
+            }
+
+            viewer.viewDTO(classificationDTOs.get(i));
+            viewer.viewDTOs(menuDTOs);
+        }
     }
 
     public <T> void viewOrder(T info) throws IOException {
