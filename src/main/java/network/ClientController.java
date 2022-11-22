@@ -303,6 +303,11 @@ public class ClientController {
 
         ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
         ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
+        String details = null;
+        for(int i = 0; i < optionIdxes.size() - 1; i++) {
+            details += (optionIdxes.get(i) + ", ");
+        }
+        details += optionIdxes.get(optionIdxes.size() - 1);
 
         OrdersDTO newOrder = new OrdersDTO();
         newOrder.setStatus(OrdersStatus.HOLD.getCode());
@@ -310,18 +315,11 @@ public class ClientController {
         newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
         newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
         newOrder.setUser_pk(userInfo.getPk());
+        newOrder.setDetails(details);
 
         Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
         dos.write(registOrder.getBytes());
-        //등록할 주문 정보를 보내고
-
-        dos.write(Serializer.intToByteArray(optionIdxes.size()));
-        //옵션의 크기를 보냄
-        for(int i = 0; i < optionIdxes.size(); i++) {
-            dos.write(optionDTOs.get(optionIdxes.get(i)).getBytes());
-            //옵션 정보들을 하나씩 보낸다.
-        }
-
+        //등록할 주문 정보를 보냄
         viewer.showOrderCompleteMessage();
     }
 
