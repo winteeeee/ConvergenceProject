@@ -427,6 +427,19 @@ public class ClientController {
         }
     }
 
+    public <T> void modificationMenu(T info) throws IOException {
+        ArrayList<MenuDTO> menuDTOs = viewMenu(info);
+        int idx = viewer.getIdx();
+        MenuDTO selected = menuDTOs.get(idx);
+        Pair<String, Integer> modificationInfo = viewer.modificationMenuScreen(selected);
+        selected.setName(modificationInfo.first());
+        selected.setPrice(modificationInfo.second());
+
+        Protocol requestModification = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.MENU, 0, selected);
+        //전달한 메뉴 DTO를 update
+        dos.write(requestModification.getBytes());
+    }
+
     public void setRunningTime(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> DTOs = getAllStoreDTO(userInfo);
 
@@ -488,7 +501,7 @@ public class ClientController {
         viewer.viewDTOs(getAllStoreDTO(info));
     }
 
-    public <T> void viewMenu(T info) throws IOException {
+    public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(info);
         int idx = viewer.getIdx(storeDTOs);
 
@@ -497,18 +510,23 @@ public class ClientController {
 
         int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
         ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
+        ArrayList<MenuDTO> result = new ArrayList<>();
         for(int i = 0; i < classificationListLength; i++) {
             classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
 
             int menuListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
             ArrayList<MenuDTO> menuDTOs = new ArrayList<>();
             for (int j = 0; j < menuListLength; j++) {
-                menuDTOs.add((MenuDTO) new Protocol(dis.readAllBytes()).getData());
+                MenuDTO cur = (MenuDTO) new Protocol(dis.readAllBytes()).getData();
+                menuDTOs.add(cur);
+                result.add(cur);
             }
 
             viewer.viewDTO(classificationDTOs.get(i));
-            viewer.viewDTOs(menuDTOs);
+            viewer.viewDTOs(menuDTOs, result.size());
         }
+
+        return result;
     }
 
     public <T> void viewOrder(T info) throws IOException {

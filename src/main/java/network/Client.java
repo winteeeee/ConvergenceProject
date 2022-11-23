@@ -98,11 +98,12 @@ public class Client
         boolean login = true;
         final int REQUEST_STORE_REGIST = 1;
         final int REGIST_MENU = 2;
-        final int MODIFICATION_MANAGEMENT_TIME = 3;
-        final int DETERMINATION_ORDER = 4;
-        final int VIEW_STORE_INFO = 5;
-        final int VIEW_MENU_INFO = 6;
-        final int LOGOUT = 7;
+        final int MODIFICATION_MENU = 3;
+        final int MODIFICATION_MANAGEMENT_TIME = 4;
+        final int DETERMINATION_ORDER = 5;
+        final int VIEW_STORE_INFO = 6;
+        final int VIEW_MENU_INFO = 7;
+        final int LOGOUT = 8;
 
         while(login) {
             con.showOwnerScreen(me);
@@ -115,6 +116,10 @@ public class Client
 
                 case REGIST_MENU:
                     con.registMenu(me);
+                    break;
+
+                case MODIFICATION_MENU:
+                    con.modificationMenu(me);
                     break;
 
                 case MODIFICATION_MANAGEMENT_TIME:
