@@ -30,6 +30,7 @@ public class Viewer {
         System.out.println("무엇을 하시겠습니까?");
         System.out.println("[1] 가게 등록 신청");
         System.out.println("[2] 메뉴 등록");
+        System.out.println("[3] 메뉴 수정");
         System.out.println("[3] 운영 시간 설정");
         System.out.println("[4] 주문 접수 / 거절");
         System.out.println("[5] 가게 정보 조회");
@@ -151,6 +152,11 @@ public class Viewer {
         return newMenu;
     }
 
+    public int getIdx() throws IOException {
+        System.out.print("대상을 선택하세요 : ");
+        return Integer.parseInt(keyInput.readLine());
+    }
+
     public <T> int getIdx(ArrayList<T> DTOs) throws IOException {
         viewDTOs(DTOs);
         System.out.print("대상을 선택하세요 : ");
@@ -242,8 +248,12 @@ public class Viewer {
     }
 
     public <T> void viewDTOs(ArrayList<T> DTOs) {
+        viewDTOs(DTOs, 0);
+    }
+
+    public <T> void viewDTOs(ArrayList<T> DTOs, int startIdx) {
         for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOs.get(i).toString());
+            System.out.println("[" + (i + startIdx) + "] " + DTOs.get(i).toString());
         }
         System.out.println();
     }
@@ -291,5 +301,42 @@ public class Viewer {
     public int getNextPage() throws IOException {
         System.out.print("페이지 입력(범위 외 입력 시 종료) : ");
         return Integer.parseInt(keyInput.readLine());
+    }
+
+    public Pair<String, Integer> modificationMenuScreen(MenuDTO info) throws IOException {
+        final int NAME = 1;
+        final int PRICE = 2;
+        final int QUIT = 3;
+
+        System.out.println();
+        int option;
+        String name = info.getName();
+        int price = info.getPrice();
+        do {
+            System.out.println("[수정할 정보 입력]");
+            System.out.println("[1] 메뉴명 수정");
+            System.out.println("[2] 가격 수정");
+            System.out.println("[3] 종료");
+            option = Integer.parseInt(keyInput.readLine());
+
+            switch (option) {
+                case NAME:
+                    name = keyInput.readLine();
+                    break;
+
+                case PRICE:
+                    price = Integer.parseInt(keyInput.readLine());
+                    break;
+
+                case QUIT:
+                    break;
+
+                default:
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    break;
+            }
+        } while(option != 3);
+
+        return new Pair<>(name, price);
     }
 }
