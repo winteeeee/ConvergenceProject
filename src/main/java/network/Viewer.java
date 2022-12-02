@@ -125,7 +125,8 @@ public class Viewer {
         System.out.println("[1] 비밀번호");
         System.out.println("[2] 이름");
         System.out.println("[3] 나이");
-        System.out.println("[4] 종료");
+        System.out.println("[4] 전화번호");
+        System.out.println("[5] 종료");
         System.out.print("입력 : ");
 
         return Integer.parseInt(keyInput.readLine());
@@ -149,6 +150,13 @@ public class Viewer {
         System.out.println("새로운 나이를 입력하세요.");
         System.out.print("입력 : ");
         userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        System.out.println();
+    }
+
+    public void changeUserPhoneNumber(UserDTO userInfo) throws IOException {
+        System.out.println("새로운 전화번호를 입력하세요.");
+        System.out.print("입력 : ");
+        userInfo.setPw(keyInput.readLine());
         System.out.println();
     }
 
