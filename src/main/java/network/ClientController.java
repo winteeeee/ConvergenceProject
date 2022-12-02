@@ -334,30 +334,36 @@ public class ClientController {
     public void registOrder(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
         int storeIdx = viewer.getIdx(storeDTOs);
+        LocalDateTime now = LocalDateTime.of(1, 1, 1, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
+        if(storeDTOs.get(storeIdx).getOpen_time().isAfter(now) && storeDTOs.get(storeIdx).getClose_time().isBefore(now)) {
+            ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
+            int menuIdx = viewer.getIdx(menuDTOs);
 
-        ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
-        int menuIdx = viewer.getIdx(menuDTOs);
+            ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
+            ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
+            String details = null;
+            for (int i = 0; i < optionIdxes.size() - 1; i++) {
+                details += (optionIdxes.get(i) + ", ");
+            }
+            details += optionIdxes.get(optionIdxes.size() - 1);
 
-        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
-        ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
-        String details = null;
-        for(int i = 0; i < optionIdxes.size() - 1; i++) {
-            details += (optionIdxes.get(i) + ", ");
+            OrdersDTO newOrder = new OrdersDTO();
+            newOrder.setStatus(OrdersStatus.HOLD.getCode());
+            newOrder.setRegdate(LocalDateTime.now());
+            newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
+            newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
+            newOrder.setUser_pk(userInfo.getPk());
+            newOrder.setDetails(details);
+
+            Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
+            dos.write(registOrder.getBytes());
+            //등록할 주문 정보를 보냄
+            viewer.showOrderCompleteMessage();
         }
-        details += optionIdxes.get(optionIdxes.size() - 1);
 
-        OrdersDTO newOrder = new OrdersDTO();
-        newOrder.setStatus(OrdersStatus.HOLD.getCode());
-        newOrder.setRegdate(LocalDateTime.now());
-        newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
-        newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
-        newOrder.setUser_pk(userInfo.getPk());
-        newOrder.setDetails(details);
-
-        Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
-        dos.write(registOrder.getBytes());
-        //등록할 주문 정보를 보냄
-        viewer.showOrderCompleteMessage();
+        else {
+            System.out.println(ErrorMessage.OUT_OF_TIME);
+        }
     }
 
     public void registReview(UserDTO userInfo) throws IOException {
