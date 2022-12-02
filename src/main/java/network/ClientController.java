@@ -562,7 +562,22 @@ public class ClientController {
     }
 
     public void viewStore() throws IOException {
-        viewer.viewDTOs(getAllStoreDTO());
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
+
+        int idx = viewer.getIdx(storeDTOs);
+        while(0 <= idx && idx < storeDTOs.size()) {
+            idx = viewer.getIdx();
+            Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
+            dos.write(requestReview.getBytes());
+
+            int reviewListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (int i = 0; i < reviewListLength; i++) {
+                reviewDTOs.add((ReviewDTO) new Protocol(dis.readAllBytes()).getData());
+            }
+
+            viewer.viewDTOs(reviewDTOs);
+        }
     }
 
     public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
