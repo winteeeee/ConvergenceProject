@@ -464,6 +464,41 @@ public class ClientController {
         }
     }
 
+    public void modificationUser(UserDTO userInfo) throws IOException {
+        //개인정보 및 비밀번호 수정
+        boolean escapeFlag = false;
+        while(!escapeFlag) {
+            int option = viewer.modifiUserScreenAndGetOption();
+
+            switch (option) {
+                case 1:
+                    viewer.changeUserPW(userInfo);
+                    break;
+
+                case 2:
+                    viewer.changeUserName(userInfo);
+                    break;
+
+                case 3:
+                    viewer.changeUserAge(userInfo);
+                    break;
+
+                case 4:
+                    escapeFlag = true;
+                    break;
+
+                default:
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    break;
+            }
+        }
+
+        Protocol userModification = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.USER, 0, userInfo);
+        //데이터로 전달한 DTO로 변경, pk로 찾아오면 될것임.
+        dos.write(userModification.getBytes());
+        viewer.showSaveMessage();
+    }
+
     public <T> void modificationMenu(T info) throws IOException {
         ArrayList<MenuDTO> menuDTOs = viewMenu(info);
         int idx = viewer.getIdx();

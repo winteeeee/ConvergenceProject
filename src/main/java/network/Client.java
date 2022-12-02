@@ -161,6 +161,7 @@ public class Client
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
                 case USER_MODIFICATION:
+                    con.modificationUser(me);
                     break;
 
                 case VIEW_STORE:
