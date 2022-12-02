@@ -522,20 +522,8 @@ public class ClientController {
 
     }
 
-    public void viewAllStore() throws IOException {
-        viewer.viewDTOs(getAllStoreDTO());
-    }
-
-    public void viewOwnerAndUser() throws IOException {
-        viewer.viewDTOs(getAllOwnerAndUserDTO());
-    }
-
     public void viewStore() throws IOException {
         viewer.viewDTOs(getAllStoreDTO());
-    }
-
-    public <T> void viewStore(T info) throws IOException {
-        viewer.viewDTOs(getAllStoreDTO(info));
     }
 
     public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
@@ -568,9 +556,5 @@ public class ClientController {
 
     public <T> void viewOrder(T info) throws IOException {
         viewer.viewDTOs(getAllOrderDTO(info));
-    }
-
-    public void viewAccountInfo(UserDTO userInfo) {
-        viewer.searchAccountScreen(userInfo);
     }
 }
