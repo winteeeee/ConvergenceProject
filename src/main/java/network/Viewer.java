@@ -2,6 +2,8 @@ package network;
 
 import org.testng.internal.collections.Pair;
 import persistence.dto.*;
+import persistence.enums.Authority;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,10 +57,63 @@ public class Viewer {
         System.out.print("입력 : ");
     }
 
+    public int initScreen(BufferedReader keyInput) throws IOException {
+        System.out.println("********** 음식 주문 시스템 **********");
+        System.out.println("[환영합니다]");
+        System.out.println("[1] 로그인");
+        System.out.println("[2] 회원가입");
+        System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public int registScreen(BufferedReader keyInput) throws IOException {
+        System.out.println("[1] 점주 회원가입");
+        System.out.println("[2] 고객 회원가입");
+        System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public UserDTO ownerRegistScreen(BufferedReader keyInput) throws IOException {
+        UserDTO userInfo = new UserDTO();
+
+        System.out.print("ID : ");
+        userInfo.setId(keyInput.readLine());
+        System.out.print("PW : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.print("이름 : ");
+        userInfo.setName(keyInput.readLine());
+        System.out.print("전화번호 : ");
+        userInfo.setPhone(keyInput.readLine());
+        System.out.print("나이 : ");
+        userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        userInfo.setAuthority(Authority.OWNER.getCode());
+
+        return userInfo;
+    }
+
+    public UserDTO userRegistScreen(BufferedReader keyInput) throws IOException {
+        UserDTO userInfo = new UserDTO();
+
+        System.out.print("ID : ");
+        userInfo.setId(keyInput.readLine());
+        System.out.print("PW : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.print("이름 : ");
+        userInfo.setName(keyInput.readLine());
+        System.out.print("전화번호 : ");
+        userInfo.setPhone(keyInput.readLine());
+        System.out.print("나이 : ");
+        userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        userInfo.setAuthority(Authority.USER.getCode());
+
+        return userInfo;
+    }
+
     public UserDTO loginScreen(BufferedReader keyInput) throws IOException {
         UserDTO userInfo = new UserDTO();
 
-        System.out.println("********** 음식 주문 시스템 **********");
         System.out.print("ID : ");
         userInfo.setId(keyInput.readLine());
         System.out.print("PW : ");
@@ -232,6 +287,11 @@ public class Viewer {
 
     public void showReviewCompleteMessage() {
         System.out.println("리뷰가 등록되었습니다.");
+        System.out.println();
+    }
+
+    public void showRegistUserCompleteMessage() {
+        System.out.println("회원가입이 완료되었습니다.");
         System.out.println();
     }
 

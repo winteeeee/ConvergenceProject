@@ -24,13 +24,50 @@ public class ClientController {
     }
 
     public UserDTO login() throws IOException {
-        UserDTO user = viewer.loginScreen(keyInput);
+        final int LOGIN = 1;
+        final int OWNER_REGIST = 1;
+        final int REGIST = 2;
+        final int USER_REGIST = 2;
 
-        Protocol findUser = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, user);
-        dos.write(findUser.getBytes());
-        UserDTO me = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+        while (true) {
+            int option = viewer.initScreen(keyInput);
 
-        return me;
+            if(option == LOGIN) {
+                UserDTO user = viewer.loginScreen(keyInput);
+                Protocol findUser = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, user);
+                dos.write(findUser.getBytes());
+                UserDTO me = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+
+                return me;
+            }
+
+            else if(option == REGIST) {
+                int registOption = viewer.registScreen(keyInput);
+                UserDTO userInfo = new UserDTO();
+
+                if(registOption == OWNER_REGIST) {
+                    userInfo = viewer.ownerRegistScreen(keyInput);
+                }
+
+                else if(registOption == USER_REGIST) {
+                    userInfo = viewer.userRegistScreen(keyInput);
+                }
+
+                else {
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+                }
+
+                if(registOption == OWNER_REGIST || registOption == USER_REGIST) {
+                    Protocol registUser = new Protocol(ProtocolType.REGISTER, (byte)(ProtocolCode.USER | ProtocolCode.REGIST), 0, userInfo);
+                    dos.write(registUser.getBytes());
+                    viewer.showRegistUserCompleteMessage();
+                }
+            }
+
+            else {
+                System.out.println(ErrorMessage.OUT_OF_BOUND);
+            }
+        }
     }
 
     public void showAdminScreen(UserDTO userInfo) {
