@@ -1,49 +1,60 @@
 package service;
 
+import persistence.dao.MenuDAO;
 import persistence.dao.StoreDAO;
-import persistence.dao.StoreRegistDAO;
 import persistence.dao.UserDAO;
+import persistence.dto.MenuDTO;
 import persistence.dto.StoreDTO;
-import persistence.dto.StoreRegistDTO;
+import persistence.dto.UserDTO;
 import persistence.enums.RegistStatus;
 
 import java.util.List;
 
 public class AdminService {
-    private StoreRegistDAO storeRegistDAO;
     private StoreDAO storeDAO;
     private UserDAO userDAO;
+    private MenuDAO menuDAO;
 
-    public AdminService(StoreRegistDAO storeRegistDAO, StoreDAO storeDAO, UserDAO userDAO) {
-        this.storeRegistDAO = storeRegistDAO;
+    public AdminService(StoreDAO storeDAO, UserDAO userDAO, MenuDAO menuDAO) {
         this.storeDAO = storeDAO;
         this.userDAO = userDAO;
+        this.menuDAO = menuDAO;
     }
 
-    public int acceptStoreRegist(Long id) {
-        storeRegistDAO.updateStatus(id, RegistStatus.ACCEPT);
-        StoreRegistDTO registDTO = storeRegistDAO.selectOneWithId(id);
-
-        return storeDAO.insertStore(
-                registDTO.getName(),
-                registDTO.getComment(),
-                registDTO.getPhone(),
-                registDTO.getAddress(),
-                null,
-                null,
-                registDTO.getUser_pk()
-        );
+    public int acceptStore(Long id) {
+        return storeDAO.updateStatus(id, RegistStatus.ACCEPT);
+    }
+    public int rejectStore(Long id) {
+        return storeDAO.updateStatus(id, RegistStatus.REJECT);
     }
 
-    public int rejectStoreRegist(Long id) {
-        return storeRegistDAO.updateStatus(id, RegistStatus.REJECT);
+    public int acceptUser(Long pk) {
+        return userDAO.updateStatus(pk, RegistStatus.ACCEPT);
+    }
+    public int rejectUser(Long pk) {
+        return userDAO.updateStatus(pk, RegistStatus.REJECT);
     }
 
-    public List<StoreRegistDTO> getHoldList() {
-        return storeRegistDAO.selectAllWithStatus(RegistStatus.HOLD);
+    public int acceptMenu(Long id) {
+        return menuDAO.updateStatus(id, RegistStatus.ACCEPT);
+    }
+    public int rejectMenu(Long id) {
+        return menuDAO.updateStatus(id, RegistStatus.REJECT);
+    }
+
+    public List<StoreDTO> getHoldStoreList() {
+        return storeDAO.selectAllWithStatus(RegistStatus.HOLD);
     }
 
     public List<StoreDTO> getStoreList() {
         return storeDAO.selectAll();
+    }
+
+    public List<UserDTO> getHoldUserList() {
+        return userDAO.selectAllWithStatus(RegistStatus.HOLD);
+    }
+
+    public List<MenuDTO> getHoldMenuList() {
+        return menuDAO.selectAllWithStatus(RegistStatus.HOLD);
     }
 }

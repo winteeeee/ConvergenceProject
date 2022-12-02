@@ -1,10 +1,12 @@
 package persistence.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class DetailsDTO extends DTO {
     private Long id;
     private String name;
