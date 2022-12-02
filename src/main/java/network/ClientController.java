@@ -484,6 +484,10 @@ public class ClientController {
                     break;
 
                 case 4:
+                    viewer.changeUserPhoneNumber(userInfo);
+                    break;
+
+                case 5:
                     escapeFlag = true;
                     break;
 
