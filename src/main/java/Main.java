@@ -5,7 +5,6 @@ import persistence.dto.*;
 import persistence.enums.Authority;
 import service.AdminService;
 import service.OwnerService;
-import service.StoreService;
 import service.UserService;
 
 import java.util.ArrayList;
@@ -21,53 +20,39 @@ public class Main {
     static OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    static StoreRegistDAO storeRegistDAO = new StoreRegistDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    static TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
 
-
-    static UserService userService = new UserService(userDAO, ordersDAO, menuDAO, reviewDAO);
-    static OwnerService ownerService = new OwnerService(userDAO, menuDAO, storeRegistDAO, ordersDAO);
-    static AdminService adminService = new AdminService(storeRegistDAO, storeDAO, userDAO);
-    static StoreService storeService = new StoreService(storeDAO, classificationDAO, menuDAO, detailsDAO);
+    static UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
+    static OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, ordersDAO);
+    static AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO);
 
     public static void main(String[] args) {
-        init();
+        init();     // 관리자 계정 생성, 유저 2명 생성
 
-        System.out.println("test1");
-        test1();
+        test1();    // 매장 등록 및 조회
 
-        System.out.println("\ntest2_1");
-        test2_1();
+        test2_1();  // 메뉴 옵션 등록 및 매뉴 등록
 
-        System.out.println("\ntest2_2");
-        test2_2();
+        test2_2();  // 메뉴 조회
 
-        System.out.println("\ntest2_3");
-        test2_3();
+        test2_3();  // 메뉴 수정
 
-        System.out.println("\ntest3_1");
-        test3_1();
+        test3_1();  // 주문 생성
 
-        System.out.println("\ntest3_2");
-        test3_2();
+        test3_2();  // 주문 조회
 
-        System.out.println("\ntest3_3");
-        test3_3();
+        test3_3();  // 주문 접수
 
-        System.out.println("\ntest3_4");
-        test3_4();
+        test3_4();  // 주문 취소
 
-        System.out.println("\ntest3_5");
-        test3_5();
+        test3_5();  // 재료 소진
 
-        System.out.println("\ntest3_6");
-        test3_6();
+        test3_6();  // 주문 이력 조회(사용자)
 
-        System.out.println("\ntest4_1");
-        test4_1();
+        test4_1();  // 리뷰 작성
 
-        System.out.println("\ntest4_2");
-        test4_2();
+        test4_2();  // 리뷰 조회
     }
 
     public static Long adminPk;
@@ -91,7 +76,7 @@ public class Main {
         ownerService.insertStoreRegist("맘스터치 금오공대점", "엄마의 마음으로 만듭니다", "054-476-9958","경북 구미시 대학로 52", ownerKey2);
 
         /* 관리자 승인 및 가게 추가 */
-        var list = adminService.getHoldList();
+        var list = adminService.getHoldStoreList();
         for (StoreRegistDTO storeRegist : list) {
             adminService.acceptStoreRegist(storeRegist.getId());
         }
@@ -294,7 +279,7 @@ public class Main {
         UserDTO honsotOwner = userService.getUserWithId("honsot");
         StoreDTO honsot = storeService.getStoreWithUser_pk(honsotOwner.getPk()).get(0);
 
-        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
+        viewOrders(ownerService.getTotalOrder(honsot.getId()));
     }
 
     public static void viewOrders(List<OrdersDTO> list) {
@@ -314,7 +299,7 @@ public class Main {
         UserDTO user = userService.getUserWithId("honsot");
         StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
 
-        List<OrdersDTO> list = ownerService.getOrdersWithStore_id(honsot.getId());
+        List<OrdersDTO> list = ownerService.getTotalOrder(honsot.getId());
 
         ownerService.acceptOrders(list.get(0).getId());
         ownerService.acceptOrders(list.get(1).getId());
@@ -335,7 +320,7 @@ public class Main {
         /* 한솥 주문 리스트 조회 */
         UserDTO user = userService.getUserWithId("honsot");
         StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
-        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
+        viewOrders(ownerService.getTotalOrder(honsot.getId()));
     }
 
 
@@ -352,7 +337,7 @@ public class Main {
         createOrders(user2pk, honsot.getId(), menuList.get(6));
 
         /* 주문 확인 */
-        viewOrders(ownerService.getOrdersWithStore_id(honsot.getId()));
+        viewOrders(ownerService.getTotalOrder(honsot.getId()));
     }
 
 
@@ -364,7 +349,7 @@ public class Main {
         StoreDTO honsot = storeService.getStoreWithUser_pk(user.getPk()).get(0);
 
         /* 주문 완료 */
-        List<OrdersDTO> list = ownerService.getOrdersWithStore_id(honsot.getId());
+        List<OrdersDTO> list = ownerService.getTotalOrder(honsot.getId());
         ownerService.deliveryFinish(list.get(0).getId());
         ownerService.deliveryFinish(list.get(1).getId());
         ownerService.deliveryFinish(list.get(2).getId());
@@ -415,7 +400,7 @@ public class Main {
             System.out.println("현재 " + page + " page 입니다.");
 
             for(ReviewDTO review : list) {
-                System.out.println(review.getOrders_id() + ", " + review.getContents() + ", " + review.getRegdate());
+                System.out.println(review.getTotal_orders_id() + ", " + review.getComment() + ", " + review.getRegdate());
             }
 
             System.out.print("Page ");

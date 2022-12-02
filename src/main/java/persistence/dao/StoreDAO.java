@@ -1,11 +1,10 @@
 package persistence.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import persistence.MyBatisConnectionFactory;
 import persistence.dto.StoreDTO;
+import persistence.enums.RegistStatus;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class StoreDAO extends DAO<StoreDTO>{
@@ -13,50 +12,70 @@ public class StoreDAO extends DAO<StoreDTO>{
         super(sqlSessionFactory, "mapper.StoreMapper.");
     }
 
-    @Override
-    protected List<StoreDTO> selectList(SqlSession session, Object[] arg) {
-        switch ((String) arg[0]) {
-            case "selectAll":
-                return session.selectList(sqlMapperPath + arg[0]);
-            case "selectAllWithUser_pk":
-                return session.selectList(sqlMapperPath + arg[0], arg[1]);
-        }
-        return new ArrayList<StoreDTO>();
-    }
-    @Override
-    protected StoreDTO selectOne(SqlSession session, Object[] arg) {
-        return null;
-    }
-    @Override
-    protected int insert(SqlSession session, Object[] arg) {
-        return session.insert(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int update(SqlSession session, Object[] arg) {
-        return 0;
-    }
-    @Override
-    protected int delete(SqlSession session, Object[] arg) {
-        return 0;
+    public int insertStore(StoreDTO store) {
+        String stmt = sqlMapperPath + "insertStore";
+        StoreDTO dto = StoreDTO.builder()
+                .status(RegistStatus.HOLD)
+                .name(store.getName())
+                .comment(store.getComment())
+                .phone(store.getPhone())
+                .address(store.getAddress())
+                .open_time(store.getOpen_time())
+                .close_time(store.getClose_time())
+                .user_pk(store.getUser_pk()).build();
+
+        return insert((SqlSession session) -> {
+            return session.insert(stmt, dto);
+        });
     }
 
-    public int insertStore(String name, String comment, String phone, String address, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
-        String stmt = "insertStore";
-        StoreDTO storeDTO = new StoreDTO(null, name, comment, phone, address, 0, 0, open_time, close_time, user_pk);
+    public int updateStatus(Long id, RegistStatus status) {
+        String stmt = sqlMapperPath + "updateStatus";
+        StoreDTO dto = StoreDTO.builder()
+                .id(id)
+                .status(status).build();
 
-        return insert(stmt, storeDTO);
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
     }
 
     public List<StoreDTO> selectAll() {
-        String stmt = "selectAll";
-        return selectList(stmt);
+        String stmt = sqlMapperPath + "selectAll";
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt);
+        });
     }
 
-    public List<StoreDTO> selectAllWithUser_pk(Long user_pk) {
-        String stmt = "selectAllWithUser_pk";
-        StoreDTO storeDTO = new StoreDTO();
-        storeDTO.setUser_pk(user_pk);
+    public List<StoreDTO> selectAllWithStatus(RegistStatus status) {
+        String stmt = sqlMapperPath + "selectAllWithStatus";
+        StoreDTO dto = StoreDTO.builder()
+                .status(status).build();
 
-        return selectList(stmt, storeDTO);
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, dto);
+        });
+    }
+
+    public List<StoreDTO> selectAllWithUserPk(Long user_pk) {
+        String stmt = sqlMapperPath + "selectAllWithUserPk";
+        StoreDTO dto = StoreDTO.builder()
+                .user_pk(user_pk).build();
+
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, dto);
+        });
+    }
+
+    public int updateTime(Long id, LocalDateTime open_time, LocalDateTime close_time) {
+        String stmt = sqlMapperPath + "updateTime";
+        StoreDTO dto = StoreDTO.builder()
+                .id(id)
+                .open_time(open_time)
+                .close_time(close_time).build();
+
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
     }
 }

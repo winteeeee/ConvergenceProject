@@ -1,60 +1,78 @@
 package service;
 
-import persistence.dao.MenuDAO;
-import persistence.dao.OrdersDAO;
-import persistence.dao.StoreRegistDAO;
-import persistence.dao.UserDAO;
-import persistence.dto.OrdersDTO;
-import persistence.enums.Authority;
+import persistence.dao.*;
+import persistence.dto.*;
 import persistence.enums.OrdersStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OwnerService {
     private UserDAO userDAO;
+    private StoreDAO storeDAO;
     private MenuDAO menuDAO;
-    private StoreRegistDAO storeRegistDAO;
+    private TotalOrdersDAO totalOrdersDAO;
     private OrdersDAO ordersDAO;
+    private ReviewDAO reviewDAO;
 
-    public OwnerService(UserDAO userDAO, MenuDAO menuDAO, StoreRegistDAO storeRegistDAO, OrdersDAO ordersDAO) {
+    public OwnerService(UserDAO userDAO, StoreDAO storeDAO, MenuDAO menuDAO, OrdersDAO ordersDAO) {
         this.userDAO = userDAO;
+        this.storeDAO = storeDAO;
         this.menuDAO = menuDAO;
-        this.storeRegistDAO = storeRegistDAO;
         this.ordersDAO = ordersDAO;
     }
 
-    public Long insertOwner(String id, String pw, String name, String phone, Integer age) {
-        return userDAO.insertUser(Authority.OWNER, id, pw, name, phone, age);
+    public Long insertOwner(UserDTO user) {
+        return userDAO.insertOwner(user);
     }
 
-    public int insertStoreRegist(String name, String comment, String phone, String address, Long user_pk) {
-        return  storeRegistDAO.insertRegistration(name, comment, phone, address, user_pk);
+    public int insertStore(StoreDTO store) {
+        return storeDAO.insertStore(store);
     }
 
-    public void insertMenu(String name, Integer price, Integer stock, Long classification_id, List<Long> detailsList) {
-        Long menu_id = menuDAO.insertMenu(name, price, stock, classification_id);
+
+    public void insertMenu(MenuDTO menu, List<Long> detailsList) {
+        Long menu_id = menuDAO.insertMenu(menu);
         for (Long details_id : detailsList) {
             menuDAO.insertMenuDetails(menu_id, details_id);
         }
     }
 
-    public void updateMenu(Long menu_id, String name, Integer price) {
-        menuDAO.updateNameAndPrice(menu_id, name, price);
+    public int updateTime(Long store_id, LocalDateTime open_time, LocalDateTime close_time) {
+        return storeDAO.updateTime(store_id, open_time, close_time);
     }
 
-    public List<OrdersDTO> getOrdersWithStore_id(Long store_id) {
-        return ordersDAO.selectAllWithStore_id(store_id);
+    public int updateMenu(Long menu_id, String name, Integer price) {
+        return menuDAO.updateNameAndPrice(menu_id, name, price);
     }
 
-    public void acceptOrders(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.IN_DELIVERY, order_id);
+    public List<TotalOrdersDTO> getTotalOrders(Long store_id) {
+        return totalOrdersDAO.selectAllWithStoreId(store_id);
+    }
+    
+    public List<OrdersDTO> getOrders(Long total_order_id) {
+        return ordersDAO.selectAllWithTotal_orders_id(total_order_id);
     }
 
-    public void cancelOrders(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.CANCEL, order_id);
+    public int acceptOrders(Long id) {
+        return totalOrdersDAO.updateStatus(id, OrdersStatus.IN_DELIVERY);
     }
 
-    public void deliveryFinish(Long order_id) {
-        ordersDAO.updateStatus(OrdersStatus.COMPLETE, order_id);
+    public int cancelOrders(Long id) {
+        return totalOrdersDAO.updateStatus(id, OrdersStatus.CANCEL);
     }
+
+    public int deliveryFinish(Long id) {
+        return totalOrdersDAO.updateStatus(id, OrdersStatus.COMPLETE);
+    }
+
+    public List<ReviewDTO> getReviewList(Long store_id, Integer page) {
+        return reviewDAO.selectAllWithStoreId(store_id, page);
+    }
+
+    public int updateOwnerComment(Long review_id, String comment) {
+        return reviewDAO.updateOwnerComment(review_id, comment);
+    }
+
+    // TODO 1.7 통계정보
 }
