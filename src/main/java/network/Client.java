@@ -116,7 +116,7 @@ public class Client
                     break;
 
                 case MENU_REGIST_REQUEST:
-                    con.registMenu(me);
+                    con.registMenuAndOption(me);
                     break;
 
                 case MANAGEMENT_TIME_MODIFICATION:

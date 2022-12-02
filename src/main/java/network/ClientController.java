@@ -307,10 +307,25 @@ public class ClientController {
         dos.write(requestStoreRegist.getBytes());
     }
 
-    public void registMenu(UserDTO userInfo) throws IOException {
+    public void registMenuAndOption(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
         StoreDTO storeInfo = viewer.selectStore(storeDTOs);
 
+        int option;
+        do {
+            option = viewer.registMenuAndOptionScreen();
+
+            if(option == 1) {
+                registMenu(storeInfo);
+            }
+
+            else if(option == 2) {
+                registOption(storeInfo);
+            }
+        } while(option == 1 || option == 2);
+    }
+
+    public void registMenu(StoreDTO storeInfo) throws IOException {
         ArrayList<ClassificationDTO> classificationDTOs = getAllClassificationDTO(storeInfo);
         ClassificationDTO selectedClass = viewer.selectClassification(classificationDTOs);
 
@@ -329,6 +344,13 @@ public class ClientController {
             dos.write(optionDTOs.get(selectedOption.get(i)).getBytes());
             //옵션들의 정보들을 쭉 보낸다.
         }
+    }
+
+    public void registOption(StoreDTO storeInfo) throws IOException {
+        DetailsDTO newOption = viewer.setNewOption(storeInfo);
+
+        Protocol registOption = new Protocol(ProtocolType.REGISTER, ProtocolCode.OPTION, 0, newOption);
+        dos.write(registOption.getBytes());
     }
 
     public void registOrder(UserDTO userInfo) throws IOException {

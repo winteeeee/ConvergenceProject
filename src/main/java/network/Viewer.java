@@ -164,6 +164,14 @@ public class Viewer {
         System.out.println("로그아웃합니다.\n");
     }
 
+    public int registMenuAndOptionScreen() throws IOException {
+        System.out.println("[1] 메뉴 등록");
+        System.out.println("[2] 옵션 등록");
+        System.out.print("입력(범위 외 입력 시 종료) : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
     public StoreDTO selectStore(ArrayList<StoreDTO> storeDTOs) throws IOException {
         viewDTOs(storeDTOs);
         StoreDTO storeInfo = null;
@@ -221,7 +229,7 @@ public class Viewer {
     }
 
     public MenuDTO setNewMenu(ClassificationDTO selectedClass) throws IOException {
-        System.out.println("메뉴 정보를 등록합니다.");
+        System.out.println("메뉴를 등록합니다.");
         System.out.print("메뉴 이름 : ");
         String name = keyInput.readLine();
         System.out.print("가격 : ");
@@ -236,6 +244,21 @@ public class Viewer {
         newMenu.setStock(stock);
 
         return newMenu;
+    }
+
+    public DetailsDTO setNewOption(StoreDTO storeInfo) throws IOException {
+        System.out.println("옵션을 등록합니다.");
+        System.out.print("메뉴명 : ");
+        String name = keyInput.readLine();
+        System.out.print("추가 금액 : ");
+        int price = Integer.parseInt(keyInput.readLine());
+
+        DetailsDTO newOption = new DetailsDTO();
+        newOption.setName(name);
+        newOption.setPrice(price);
+        newOption.setStore_id(storeInfo.getId());
+
+        return newOption;
     }
 
     public int getIdx() throws IOException {
