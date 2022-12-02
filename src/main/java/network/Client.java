@@ -98,11 +98,12 @@ public class Client
         boolean login = true;
         final int REQUEST_STORE_REGIST = 1;
         final int REGIST_MENU = 2;
-        final int MODIFICATION_MANAGEMENT_TIME = 3;
-        final int DETERMINATION_ORDER = 4;
-        final int VIEW_STORE_INFO = 5;
-        final int VIEW_MENU_INFO = 6;
-        final int LOGOUT = 7;
+        final int MODIFICATION_MENU = 3;
+        final int MODIFICATION_MANAGEMENT_TIME = 4;
+        final int DETERMINATION_ORDER = 5;
+        final int VIEW_STORE_INFO = 6;
+        final int VIEW_MENU_INFO = 7;
+        final int LOGOUT = 8;
 
         while(login) {
             con.showOwnerScreen(me);
@@ -117,6 +118,10 @@ public class Client
                     con.registMenu(me);
                     break;
 
+                case MODIFICATION_MENU:
+                    con.modificationMenu(me);
+                    break;
+
                 case MODIFICATION_MANAGEMENT_TIME:
                     con.setRunningTime(me);
                     break;
@@ -126,11 +131,11 @@ public class Client
                     break;
 
                 case VIEW_STORE_INFO:
-                    con.viewStoreWithUser(me);
+                    con.viewStore(me);
                     break;
 
                 case VIEW_MENU_INFO:
-                    con.viewMenuWithUser(me);
+                    con.viewMenu(me);
                     break;
 
                 case LOGOUT:
@@ -147,27 +152,22 @@ public class Client
 
     private void userRun() throws IOException {
         boolean login = true;
-        final int MODIFICATION_USER = 1;
-        final int VIEW_STORE = 2;
-        final int REGIST_ORDER = 3;
-        final int CANCEL_ORDER = 4;
-        final int VIEW_ORDER = 5;
-        final int REGIST_REVIEW = 6;
-        final int VIEW_REVIEW = 7;
-        final int VIEW_ACCOUNT_INFO = 8;
-        final int LOGOUT = 9;
+        final int VIEW_STORE = 1;
+        final int REGIST_ORDER = 2;
+        final int CANCEL_ORDER = 3;
+        final int VIEW_ORDER = 4;
+        final int REGIST_REVIEW = 5;
+        final int VIEW_REVIEW = 6;
+        final int VIEW_ACCOUNT_INFO = 7;
+        final int LOGOUT = 8;
 
         while(login) {
             con.showUserScreen(me);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
-                case MODIFICATION_USER:
-                    con.modificationUser(me);
-                    break;
-
                 case VIEW_STORE:
-                    con.viewStoreInUserRun();
+                    con.viewStore();
                     break;
 
                 case REGIST_ORDER:
@@ -179,7 +179,7 @@ public class Client
                     break;
 
                 case VIEW_ORDER:
-                    con.viewOrderWithUser(me);
+                    con.viewOrder(me);
                     break;
 
                 case REGIST_REVIEW:

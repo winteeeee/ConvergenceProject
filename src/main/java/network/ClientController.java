@@ -75,10 +75,10 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<OrdersDTO> getAllOrderDTOWithUser(UserDTO userInfo) throws IOException {
-        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, userInfo);
+    public <T> ArrayList<OrdersDTO> getAllOrderDTO(T info) throws IOException {
+        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, (DTO) info);
         dos.write(requestAllMyOrderDTOs.getBytes());
-        //userInfo에 해당하는 모든 Orders 리스트를 가져옴
+        //info에 해당하는 모든 Orders 리스트를 가져옴
 
         ArrayList<OrdersDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -89,32 +89,15 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<OrdersDTO> getAllOrderDTOWithStore(StoreDTO storeInfo) throws IOException {
-        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, storeInfo);
-        dos.write(requestAllMyOrderDTOs.getBytes());
-        //storeInfo에 해당하는 모든 Orders 리스트를 가져옴
+    public <T> ArrayList<OrdersDTO> getAllHoldOrderDTO(T info) throws IOException {
+        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(info);
+        ArrayList<OrdersDTO> result = new ArrayList<>();
 
-        ArrayList<OrdersDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        for(int i = 0; i < listLength; i++) {
-            DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
-    public ArrayList<OrdersDTO> getAllHoldOrderDTOWithUser(UserDTO userInfo) throws IOException {
-        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.ORDER, 0, userInfo);
-        dos.write(requestAllMyOrderDTOs.getBytes());
-        //userInfo에 해당하는 모든 Orders 리스트를 가져옴
-
-        ArrayList<OrdersDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        for(int i = 0; i < listLength; i++) {
-            OrdersDTO cur = (OrdersDTO) new Protocol(dis.readAllBytes()).getData();
+        for(int i = 0; i < DTOs.size(); i++) {
+            OrdersDTO cur = DTOs.get(i);
 
             if(cur.getStatusEnum().getName().equals("HOLD")) {
-                DTOs.add(cur);
+                result.add(cur);
             }
         }
 
@@ -134,42 +117,10 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<StoreDTO> getAllStoreDTOWithName(String storeName) throws IOException {
-        StoreDTO targetStore = new StoreDTO();
-        targetStore.setName(storeName);
-        Protocol searchStoreInfo = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, targetStore);
-        //데이터로 전달한 DTO의 이름으로 검색
-        dos.write(searchStoreInfo.getBytes());
-
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        ArrayList<StoreDTO> DTOs = new ArrayList<>();
-
-        for (int i = 0; i < listLength; i++) {
-            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
-    public ArrayList<StoreDTO> getAllStoreDTOWithClassification(ClassificationDTO classificationInfo) throws IOException {
-        Protocol searchStoreInfo = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, classificationInfo);
-        //데이터로 전달한 DTO의 외래키를 기반으로 검색
-        dos.write(searchStoreInfo.getBytes());
-
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        ArrayList<StoreDTO> DTOs = new ArrayList<>();
-
-        for (int i = 0; i < listLength; i++) {
-            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
-    public ArrayList<StoreDTO> getAllStoreDTOWithUser(UserDTO userInfo) throws IOException {
-        Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, userInfo);
+    public <T> ArrayList<StoreDTO> getAllStoreDTO(T info) throws IOException {
+        Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, (DTO) info);
         dos.write(requestAllMyStoreDTOs.getBytes());
-        //userInfo에 해당하는 모든 Store 리스트를 가져옴
+        //info에 해당하는 모든 Store 리스트를 가져옴
 
         ArrayList<StoreDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -193,10 +144,10 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<MenuDTO> getAllMenuDTOWithStore(StoreDTO storeInfo) throws IOException {
-        Protocol requestAllMyMenuDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, storeInfo);
+    public <T> ArrayList<MenuDTO> getAllMenuDTO(T info) throws IOException {
+        Protocol requestAllMyMenuDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, (DTO) info);
         dos.write(requestAllMyMenuDTOs.getBytes());
-        //storeInfo가 지닌 모든 menu 리스트를 가져옴
+        //info가 지닌 모든 menu 리스트를 가져옴
 
         ArrayList<MenuDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -207,10 +158,10 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<DetailsDTO> getAllOptionDTOWithStore(StoreDTO storeInfo) throws IOException {
-        Protocol requestAllMyOptionDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.OPTION, 0, storeInfo);
+    public <T> ArrayList<DetailsDTO> getAllOptionDTO(T info) throws IOException {
+        Protocol requestAllMyOptionDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.OPTION, 0, (DTO) info);
         dos.write(requestAllMyOptionDTOs.getBytes());
-        //storeInfo가 지닌 모든 DetailsDTO 리스트를 가져옴
+        //info가 지닌 모든 DetailsDTO 리스트를 가져옴
 
         ArrayList<DetailsDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -235,10 +186,10 @@ public class ClientController {
         return DTOs;
     }
 
-    public ArrayList<ClassificationDTO> getAllClassificationDTOWithStore(StoreDTO storeInfo) throws IOException {
-        Protocol requestAllMyClassificationDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, storeInfo);
+    public <T> ArrayList<ClassificationDTO> getAllClassificationDTO(T info) throws IOException {
+        Protocol requestAllMyClassificationDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, (DTO) info);
         dos.write(requestAllMyClassificationDTOs.getBytes());
-        //storeInfo가 지닌 모든 카테고리DTO 리스트를 가져옴
+        //info가 지닌 모든 카테고리DTO 리스트를 가져옴
 
         ArrayList<ClassificationDTO> DTOs = new ArrayList<>();
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
@@ -248,7 +199,6 @@ public class ClientController {
 
         return DTOs;
     }
-
 
     public ArrayList<UserDTO> getAllOwnerAndUserDTO() throws IOException {
         Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, null);
@@ -321,13 +271,13 @@ public class ClientController {
     }
 
     public void registMenu(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
         StoreDTO storeInfo = viewer.selectStore(storeDTOs);
 
-        ArrayList<ClassificationDTO> classificationDTOs = getAllClassificationDTOWithStore(storeInfo);
+        ArrayList<ClassificationDTO> classificationDTOs = getAllClassificationDTO(storeInfo);
         ClassificationDTO selectedClass = viewer.selectClassification(classificationDTOs);
 
-        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTOWithStore(storeInfo);
+        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeInfo);
         ArrayList<Integer> selectedOption = viewer.selectOption(optionDTOs);
 
         MenuDTO newMenu = viewer.setNewMenu(selectedClass);
@@ -348,11 +298,16 @@ public class ClientController {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
         int storeIdx = viewer.getIdx(storeDTOs);
 
-        ArrayList<MenuDTO> menuDTOs = getAllMenuDTOWithStore(storeDTOs.get(storeIdx));
+        ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
         int menuIdx = viewer.getIdx(menuDTOs);
 
-        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTOWithStore(storeDTOs.get(storeIdx));
+        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
         ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
+        String details = null;
+        for(int i = 0; i < optionIdxes.size() - 1; i++) {
+            details += (optionIdxes.get(i) + ", ");
+        }
+        details += optionIdxes.get(optionIdxes.size() - 1);
 
         OrdersDTO newOrder = new OrdersDTO();
         newOrder.setStatus(OrdersStatus.HOLD.getCode());
@@ -360,23 +315,16 @@ public class ClientController {
         newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
         newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
         newOrder.setUser_pk(userInfo.getPk());
+        newOrder.setDetails(details);
 
         Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
         dos.write(registOrder.getBytes());
-        //등록할 주문 정보를 보내고
-
-        dos.write(Serializer.intToByteArray(optionIdxes.size()));
-        //옵션의 크기를 보냄
-        for(int i = 0; i < optionIdxes.size(); i++) {
-            dos.write(optionDTOs.get(optionIdxes.get(i)).getBytes());
-            //옵션 정보들을 하나씩 보낸다.
-        }
-
+        //등록할 주문 정보를 보냄
         viewer.showOrderCompleteMessage();
     }
 
     public void registReview(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTOWithUser(userInfo);
+        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
 
         while(true) {
             int select = viewer.getIdx(DTOs);
@@ -436,11 +384,11 @@ public class ClientController {
     }
 
     public void orderDetermination(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
         int storeIdx = viewer.getIdx(storeDTOs);
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
-            ArrayList<OrdersDTO> orderDTOs = getAllOrderDTOWithStore(storeDTOs.get(storeIdx));
+            ArrayList<OrdersDTO> orderDTOs = getAllHoldOrderDTO(storeDTOs.get(storeIdx));
             while (orderDTOs.size() > 0) {
                 int idx = viewer.getIdx(orderDTOs);
 
@@ -479,8 +427,21 @@ public class ClientController {
         }
     }
 
+    public <T> void modificationMenu(T info) throws IOException {
+        ArrayList<MenuDTO> menuDTOs = viewMenu(info);
+        int idx = viewer.getIdx();
+        MenuDTO selected = menuDTOs.get(idx);
+        Pair<String, Integer> modificationInfo = viewer.modificationMenuScreen(selected);
+        selected.setName(modificationInfo.first());
+        selected.setPrice(modificationInfo.second());
+
+        Protocol requestModification = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.MENU, 0, selected);
+        //전달한 메뉴 DTO를 update
+        dos.write(requestModification.getBytes());
+    }
+
     public void setRunningTime(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> DTOs = getAllStoreDTOWithUser(userInfo);
+        ArrayList<StoreDTO> DTOs = getAllStoreDTO(userInfo);
 
         while(DTOs.size() > 0) {
             viewer.viewDTOs(DTOs);
@@ -504,43 +465,8 @@ public class ClientController {
         }
     }
 
-    public void modificationUser(UserDTO userInfo) throws IOException {
-        //개인정보 및 비밀번호 수정
-        boolean escapeFlag = true;
-        while(!escapeFlag) {
-            int option = viewer.modifiUserScreenAndGetOption();
-
-            switch (option) {
-                case 1:
-                    viewer.changeUserPW(userInfo);
-                    break;
-
-                case 2:
-                    viewer.changeUserName(userInfo);
-                    break;
-
-                case 3:
-                    viewer.changeUserAge(userInfo);
-                    break;
-
-                case 4:
-                    escapeFlag = false;
-                    break;
-
-                default:
-                    System.out.println(ErrorMessage.OUT_OF_BOUND);
-                    break;
-            }
-        }
-
-        Protocol userModification = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.USER, 0, userInfo);
-        //데이터로 전달한 DTO로 변경, pk로 찾아오면 될것임.
-        dos.write(userModification.getBytes());
-        viewer.showSaveMessage();
-    }
-
     public void orderCancel(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllHoldOrderDTOWithUser(userInfo);
+        ArrayList<OrdersDTO> DTOs = getAllHoldOrderDTO(userInfo);
 
         while(true) {
             int select = viewer.getIdx(DTOs);
@@ -567,55 +493,47 @@ public class ClientController {
         viewer.viewDTOs(getAllOwnerAndUserDTO());
     }
 
-    public void viewStoreWithUser(UserDTO userInfo) throws IOException {
-        viewer.viewDTOs(getAllStoreDTOWithUser(userInfo));
+    public void viewStore() throws IOException {
+        viewer.viewDTOs(getAllStoreDTO());
     }
 
-    public void viewMenuWithUser(UserDTO userInfo) throws IOException {
-        ArrayList<StoreDTO> storeDTOs = getAllStoreDTOWithUser(userInfo);
+    public <T> void viewStore(T info) throws IOException {
+        viewer.viewDTOs(getAllStoreDTO(info));
+    }
+
+    public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(info);
         int idx = viewer.getIdx(storeDTOs);
-        viewer.viewDTOs(getAllMenuDTOWithStore(storeDTOs.get(idx)));
+
+        Protocol requestMenu = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, storeDTOs.get(idx));
+        dos.write(requestMenu.getBytes());
+
+        int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
+        ArrayList<MenuDTO> result = new ArrayList<>();
+        for(int i = 0; i < classificationListLength; i++) {
+            classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+
+            int menuListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            ArrayList<MenuDTO> menuDTOs = new ArrayList<>();
+            for (int j = 0; j < menuListLength; j++) {
+                MenuDTO cur = (MenuDTO) new Protocol(dis.readAllBytes()).getData();
+                menuDTOs.add(cur);
+                result.add(cur);
+            }
+
+            viewer.viewDTO(classificationDTOs.get(i));
+            viewer.viewDTOs(menuDTOs, result.size());
+        }
+
+        return result;
     }
 
-    public void viewOrderWithUser(UserDTO userInfo) throws IOException {
-        viewer.viewDTOs(getAllOrderDTOWithUser(userInfo));
+    public <T> void viewOrder(T info) throws IOException {
+        viewer.viewDTOs(getAllOrderDTO(info));
     }
 
     public void viewAccountInfo(UserDTO userInfo) {
         viewer.searchAccountScreen(userInfo);
-    }
-
-    public void viewStoreInUserRun() throws IOException {
-        boolean iteration = true;
-        while (iteration) {
-            int searchStoreOption = viewer.searchStoreScreenAndGetOption();
-
-            switch (searchStoreOption) {
-                case 1:
-                    String classificationName = viewer.getClassificationName(getAllClassificationDTO());
-
-                    ClassificationDTO target = new ClassificationDTO();
-                    target.setName(classificationName);
-                    Protocol requestClassification = new Protocol(ProtocolType.SEARCH, ProtocolCode.CLASSIFICATION, 0, target);
-                    dos.write(requestClassification.getBytes());
-                    target = (ClassificationDTO) new Protocol(dis.readAllBytes()).getData();
-                    ArrayList<StoreDTO> DTOs = getAllStoreDTOWithClassification(target);
-
-                    viewer.viewDTOs(DTOs);
-                    break;
-
-                case 2:
-                    String storeName = viewer.getStoreName(getAllStoreDTO());
-                    viewer.viewDTOs(getAllStoreDTOWithName(storeName));
-                    break;
-
-                case 3:
-                    iteration = false;
-                    break;
-
-                default:
-                    System.out.println(ErrorMessage.OUT_OF_BOUND);
-            }
-        }
     }
 }

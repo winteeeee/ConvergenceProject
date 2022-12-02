@@ -189,11 +189,6 @@ public class Server
             }
         }
 
-        else if (protocol.getType() == ProtocolType.DELETE) {
-            //보류
-
-        }
-
         else if (protocol.getType() == ProtocolType.RESPONSE) {
             if (protocol.getCode() == ProtocolCode.ACCEPT) {
                 //응답 Y
