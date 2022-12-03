@@ -40,6 +40,10 @@ public class OwnerService {
         return storeDAO.insertStore(store);
     }
 
+    public List<StoreDTO> getStoreWithUser_pk(Long user_pk) {
+        return storeDAO.selectAllWithUserPk(user_pk);
+    }
+
 
     public void insertMenu(MenuDTO menu, List<Long> detailsList) {
         Long menu_id = menuDAO.insertMenu(menu);

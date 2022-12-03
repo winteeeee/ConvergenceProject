@@ -130,10 +130,6 @@ public class UserService {
     }
 
 
-    public List<StoreDTO> getStoreWithUser_pk(Long user_pk) {
-        return storeDAO.selectAllWithUserPk(user_pk);
-    }
-
     public List<ClassificationDTO> getMenuGroups(Long store_id) {
         return classificationDAO.selectAllWithStore_id(store_id);
     }
