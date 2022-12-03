@@ -86,19 +86,6 @@ public class ClientController {
         viewer.logout();
     }
 
-    public ArrayList<StoreRegistDTO> getAllStoreRegistDTO() throws IOException {
-        Protocol requestAllRegistStoreDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.REGIST), 0, null);
-        dos.write(requestAllRegistStoreDTOs.getBytes());
-
-        ArrayList<StoreRegistDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        for(int i = 0; i < listLength; i++) {
-            DTOs.add((StoreRegistDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
     public ArrayList<OrdersDTO> getAllOrderDTO() throws IOException {
         Protocol requestAllOrderDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.ORDER, 0, null);
         dos.write(requestAllOrderDTOs.getBytes());
@@ -121,21 +108,6 @@ public class ClientController {
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
         for(int i = 0; i < listLength; i++) {
             DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
-    public <T> ArrayList<OrdersDTO> getAllHoldOrderDTO(T info) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(info);
-        ArrayList<OrdersDTO> result = new ArrayList<>();
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            OrdersDTO cur = DTOs.get(i);
-
-            if(cur.getStatusEnum().getName().equals("HOLD")) {
-                result.add(cur);
-            }
         }
 
         return DTOs;
@@ -255,7 +227,7 @@ public class ClientController {
     }
 
     public void registStoreDetermination() throws IOException {
-        ArrayList<StoreRegistDTO> DTOs = getAllStoreRegistDTO();
+        ArrayList<StoreDTO> DTOs = getAllStoreDTO();
 
         while(DTOs.size() > 0) {
             int idx = viewer.getIdx(DTOs);
@@ -296,7 +268,7 @@ public class ClientController {
     public void registStore(UserDTO userInfo) throws IOException {
         String[] storeInfo = viewer.getStoreInfo();
 
-        StoreRegistDTO newStore = new StoreRegistDTO();
+        StoreDTO newStore = new StoreDTO();
         newStore.setName(storeInfo[0]);
         newStore.setComment(storeInfo[1]);
         newStore.setAddress(storeInfo[2]);
@@ -453,7 +425,7 @@ public class ClientController {
         int storeIdx = viewer.getIdx(storeDTOs);
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
-            ArrayList<OrdersDTO> orderDTOs = getAllHoldOrderDTO(storeDTOs.get(storeIdx));
+            ArrayList<OrdersDTO> orderDTOs = getAllOrderDTO(storeDTOs.get(storeIdx));
             while (orderDTOs.size() > 0) {
                 int idx = viewer.getIdx(orderDTOs);
 
@@ -570,7 +542,7 @@ public class ClientController {
     }
 
     public void orderCancel(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllHoldOrderDTO(userInfo);
+        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
 
         while(true) {
             int select = viewer.getIdx(DTOs);
