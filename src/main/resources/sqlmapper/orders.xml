@@ -5,6 +5,7 @@
 
 <mapper namespace="mapper.OrdersMapper">
     <resultMap id="result" type="OrdersDTO">
+        <result property="id" column="id"/>
         <result property="details" column="details"/>
         <result property="price" column="price"/>
         <result property="menu_id" column="menu_id"/>

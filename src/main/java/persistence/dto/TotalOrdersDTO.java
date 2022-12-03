@@ -14,13 +14,17 @@ public class TotalOrdersDTO extends DTO {
     private Long id;
     private OrdersStatus status;
     private LocalDateTime regdate;
-    private Long store_id;           // FK
-    private Long user_pk;   // FK
+    private Integer price;
+    private Long store_id;          // FK
+    private Long user_pk;           // FK
 
-    public TotalOrdersDTO(Long id, String status, LocalDateTime regdate, Long store_id, Long user_pk) {
+    public TotalOrdersDTO() {  }
+
+    public TotalOrdersDTO(Long id, OrdersStatus status, LocalDateTime regdate, Integer price, Long store_id, Long user_pk) {
         this.id = id;
-        this.status = OrdersStatus.of(status);
+        this.status = status;
         this.regdate = regdate;
+        this.price = price;
         this.store_id = store_id;
         this.user_pk = user_pk;
     }

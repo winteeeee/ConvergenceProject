@@ -51,6 +51,6 @@ public class Serializer {
     }
 
     public static byte[] enumToByteArray(Enum val) {
-        return intToByteArray(val.getCode());
+        return intToByteArray(0); // TODO val.getCode() 이용해서 string으로 변환 해야함
     }
 }

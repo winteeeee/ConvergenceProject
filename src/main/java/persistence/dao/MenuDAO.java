@@ -54,10 +54,12 @@ public class MenuDAO extends DAO<MenuDTO>{
             });
     }
 
-    public List<MenuDTO> selectAllWithClassification_id(Long classification_id) {
+    public List<MenuDTO> selectAllWithClassification_id(Long classification_id, RegistStatus status) {
         String stmt = sqlMapperPath + "selectAllWithClassification_id";
         MenuDTO dto = MenuDTO.builder()
-                .classification_id(classification_id).build();
+                .classification_id(classification_id)
+                .status(status)
+                .build();
 
         return selectList((SqlSession session) -> {
                 return session.selectList(stmt, dto);

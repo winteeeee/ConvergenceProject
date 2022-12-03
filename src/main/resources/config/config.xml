@@ -9,7 +9,8 @@
         <typeAlias alias="OrdersDTO" type="persistence.dto.OrdersDTO"/>
         <typeAlias alias="ReviewDTO" type="persistence.dto.ReviewDTO"/>
         <typeAlias alias="StoreDTO" type="persistence.dto.StoreDTO"/>
-        <typeAlias alias="StoreRegistDTO" type="persistence.dto.StoreRegistDTO"/>
+        <typeAlias alias="StatisticsDTO" type="persistence.dto.StatisticsDTO"/>
+        <typeAlias alias="TotalOrdersDTO" type="persistence.dto.TotalOrdersDTO"/>
         <typeAlias alias="UserDTO" type="persistence.dto.UserDTO"/>
         <typeAlias alias="ClassificationDTO" type="persistence.dto.ClassificationDTO"/>
     </typeAliases>
@@ -29,9 +30,10 @@
         <mapper resource="sqlmapper/menu.xml"/>
         <mapper resource="sqlmapper/details.xml"/>
         <mapper resource="sqlmapper/orders.xml"/>
+        <mapper resource="sqlmapper/totalOrders.xml"/>
         <mapper resource="sqlmapper/review.xml"/>
+        <mapper resource="sqlmapper/statistics.xml"/>
         <mapper resource="sqlmapper/store.xml"/>
-        <mapper resource="sqlmapper/storeRegist.xml"/>
         <mapper resource="sqlmapper/user.xml"/>
         <mapper resource="sqlmapper/classification.xml"/>
     </mappers>
