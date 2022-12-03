@@ -60,26 +60,30 @@ public class Client
 
     private void adminRun() throws IOException {
         boolean login = true;
-        final int REGIST_STORE_DETERMINATION = 1;
-        final int VIEW_ALL_STORE = 2;
-        final int VIEW_OWNER_AND_USER = 3;
-        final int LOGOUT = 4;
+        final int REGIST_OWNER_DETERMINATION = 1;
+        final int REGIST_STORE_DETERMINATION = 2;
+        final int REGIST_MENU_DETERMINATION = 3;
+        final int STATISTICAL_INFO_VIEW = 4;
+        final int LOGOUT = 5;
 
         while(login) {
             con.showAdminScreen(me);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
+                case REGIST_OWNER_DETERMINATION:
+                    con.registOwnerDetermination();
+                    break;
+
                 case REGIST_STORE_DETERMINATION:
                     con.registStoreDetermination();
                     break;
 
-                case VIEW_ALL_STORE:
-                    con.viewAllStore();
+                case REGIST_MENU_DETERMINATION:
+                    con.registMenuDetermination();
                     break;
 
-                case VIEW_OWNER_AND_USER:
-                    con.viewOwnerAndUser();
+                case STATISTICAL_INFO_VIEW:
                     break;
 
                 case LOGOUT:
@@ -96,33 +100,28 @@ public class Client
 
     private void ownerRun() throws IOException {
         boolean login = true;
-        final int REQUEST_STORE_REGIST = 1;
-        final int REGIST_MENU = 2;
-        final int MODIFICATION_MENU = 3;
-        final int MODIFICATION_MANAGEMENT_TIME = 4;
-        final int DETERMINATION_ORDER = 5;
-        final int VIEW_STORE_INFO = 6;
-        final int VIEW_MENU_INFO = 7;
-        final int LOGOUT = 8;
+        final int STORE_REGIST_REQUEST = 1;
+        final int MENU_REGIST_REQUEST = 2;
+        final int MANAGEMENT_TIME_MODIFICATION = 3;
+        final int DETERMINATION_ORDER = 4;
+        final int VIEW_REVIEW = 5;
+        final int STATISTICAL_INFO_VIEW = 6;
+        final int LOGOUT = 7;
 
         while(login) {
             con.showOwnerScreen(me);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
-                case REQUEST_STORE_REGIST:
+                case STORE_REGIST_REQUEST:
                     con.registStore(me);
                     break;
 
-                case REGIST_MENU:
-                    con.registMenu(me);
+                case MENU_REGIST_REQUEST:
+                    con.registMenuAndOption(me);
                     break;
 
-                case MODIFICATION_MENU:
-                    con.modificationMenu(me);
-                    break;
-
-                case MODIFICATION_MANAGEMENT_TIME:
+                case MANAGEMENT_TIME_MODIFICATION:
                     con.setRunningTime(me);
                     break;
 
@@ -130,12 +129,10 @@ public class Client
                     con.orderDetermination(me);
                     break;
 
-                case VIEW_STORE_INFO:
-                    con.viewStore(me);
+                case VIEW_REVIEW:
                     break;
 
-                case VIEW_MENU_INFO:
-                    con.viewMenu(me);
+                case STATISTICAL_INFO_VIEW:
                     break;
 
                 case LOGOUT:
@@ -152,20 +149,23 @@ public class Client
 
     private void userRun() throws IOException {
         boolean login = true;
-        final int VIEW_STORE = 1;
-        final int REGIST_ORDER = 2;
-        final int CANCEL_ORDER = 3;
-        final int VIEW_ORDER = 4;
-        final int REGIST_REVIEW = 5;
-        final int VIEW_REVIEW = 6;
-        final int VIEW_ACCOUNT_INFO = 7;
-        final int LOGOUT = 8;
+        final int USER_MODIFICATION = 1;
+        final int VIEW_STORE = 2;
+        final int REGIST_ORDER = 3;
+        final int CANCEL_ORDER = 4;
+        final int VIEW_ORDER = 5;
+        final int REGIST_REVIEW = 6;
+        final int LOGOUT = 7;
 
         while(login) {
             con.showUserScreen(me);
 
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
+                case USER_MODIFICATION:
+                    con.modificationUser(me);
+                    break;
+
                 case VIEW_STORE:
                     con.viewStore();
                     break;
@@ -184,14 +184,6 @@ public class Client
 
                 case REGIST_REVIEW:
                     con.registReview(me);
-                    break;
-
-                case VIEW_REVIEW:
-                    con.viewReview(me);
-                    break;
-
-                case VIEW_ACCOUNT_INFO:
-                    con.viewAccountInfo(me);
                     break;
 
                 case LOGOUT:
