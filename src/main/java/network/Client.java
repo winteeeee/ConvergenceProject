@@ -72,6 +72,7 @@ public class Client
             int option = Integer.parseInt(keyInput.readLine());
             switch (option) {
                 case REGIST_OWNER_DETERMINATION:
+                    con.registOwnerDetermination();
                     break;
 
                 case REGIST_STORE_DETERMINATION:

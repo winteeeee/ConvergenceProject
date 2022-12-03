@@ -209,6 +209,23 @@ public class ClientController {
         return DTOs;
     }
 
+    public ArrayList<UserDTO> getAllOwnerDTO() throws IOException {
+        Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, null);
+        dos.write(requestAllUserDTOs.getBytes());
+
+        ArrayList<UserDTO> DTOs = new ArrayList<>();
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        for(int i = 0; i < listLength; i++) {
+            UserDTO cur = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+            String curAuthority = cur.getAuthorityEnum().getName();
+            if (curAuthority.equals("OWNER")) {
+                DTOs.add(cur);
+            }
+        }
+
+        return DTOs;
+    }
+
     public ArrayList<UserDTO> getAllOwnerAndUserDTO() throws IOException {
         Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, null);
         dos.write(requestAllUserDTOs.getBytes());
@@ -224,6 +241,44 @@ public class ClientController {
         }
 
         return DTOs;
+    }
+
+    public void registOwnerDetermination() throws IOException {
+        ArrayList<UserDTO> DTOs = getAllOwnerDTO();
+
+        while(DTOs.size() > 0) {
+            int idx = viewer.getIdx(DTOs);
+
+            if (0 <= idx && idx < DTOs.size()) {
+                while (true) {
+                    String ans = viewer.getDetermination();
+
+                    if (ans.equals("Y") || ans.equals("y")) {
+                        viewer.showAcceptMessage();
+                        Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.USER | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
+                        dos.write(registAccept.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else if (ans.equals("N") || ans.equals("n")) {
+                        viewer.showRefusalMessage();
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.USER | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
+                        dos.write(registRefuse.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else {
+                        System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    }
+                }
+            }
+
+            else {
+                break;
+            }
+        }
     }
 
     public void registStoreDetermination() throws IOException {
@@ -249,6 +304,7 @@ public class ClientController {
                         viewer.showRefusalMessage();
                         Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하시오.
+                        dos.write(registRefuse.getBytes());
                         DTOs.remove(idx);
                         break;
                     }
