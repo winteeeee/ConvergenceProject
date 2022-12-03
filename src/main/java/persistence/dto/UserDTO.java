@@ -19,6 +19,19 @@ public class UserDTO extends DTO {
     private String phone;
     private Integer age;
 
+    public UserDTO() {  }
+
+    public UserDTO(Long pk, RegistStatus status, Authority authority, String id, String pw, String name, String phone, Integer age) {
+        this.pk = pk;
+        this.status = status;
+        this.authority = authority;
+        this.id = id;
+        this.pw = pw;
+        this.name = name;
+        this.phone = phone;
+        this.age = age;
+    }
+
     public UserDTO(Long pk, String status, String authority, String id, String pw, String name, String phone, Integer age) {
         this.pk = pk;
         this.status = RegistStatus.of(status);
@@ -29,6 +42,7 @@ public class UserDTO extends DTO {
         this.phone = phone;
         this.age = age;
     }
+
 
     public UserDTO(byte[] arr) {
         setMembersByByteArray(arr);

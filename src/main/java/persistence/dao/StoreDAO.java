@@ -22,6 +22,8 @@ public class StoreDAO extends DAO<StoreDTO>{
                 .address(store.getAddress())
                 .open_time(store.getOpen_time())
                 .close_time(store.getClose_time())
+                .review_count(0)
+                .star_rating(0)
                 .user_pk(store.getUser_pk()).build();
 
         return insert((SqlSession session) -> {

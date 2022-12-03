@@ -37,11 +37,7 @@ public class Protocol {
 
     private DTO byteArrayToData(byte type, byte code, byte[] arr) {
         if (type == ProtocolType.REGISTER) {
-            if (code == ProtocolCode.STORE) {
-                return new StoreRegistDTO(arr);
-            }
-
-            else if (code == ProtocolCode.ORDER) {
+            if (code == ProtocolCode.ORDER) {
                 return new OrdersDTO(arr);
             }
 
@@ -69,10 +65,6 @@ public class Protocol {
 
             else if (code == ProtocolCode.STORE) {
                 return new StoreDTO(arr);
-            }
-
-            else if (code == (ProtocolCode.STORE | ProtocolCode.REGIST)) {
-                return new StoreRegistDTO(arr);
             }
 
             else if (code == ProtocolCode.USER) {

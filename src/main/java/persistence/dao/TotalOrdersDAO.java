@@ -18,7 +18,8 @@ public class TotalOrdersDAO extends DAO<TotalOrdersDTO> {     // TODO 전부 매
         String stmt = sqlMapperPath + "insertTotalOrders";
         TotalOrdersDTO dto = TotalOrdersDTO.builder()
                 .status(OrdersStatus.HOLD)
-                .regdate(totalOrders.getRegdate())
+                .regdate(LocalDateTime.now())
+                .price(totalOrders.getPrice())
                 .store_id(totalOrders.getStore_id())
                 .user_pk(totalOrders.getUser_pk())
                 .build();

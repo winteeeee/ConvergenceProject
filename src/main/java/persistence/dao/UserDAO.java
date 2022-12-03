@@ -66,7 +66,7 @@ public class UserDAO extends DAO<UserDTO>{
     }
 
     public UserDTO selectOneWithPk(Long pk) {
-        String stmt = sqlMapperPath + "selectOneWithUserPk";
+        String stmt = sqlMapperPath + "selectOneWithPk";
         UserDTO dto = UserDTO.builder()
                 .pk(pk)
                 .build();
@@ -77,7 +77,7 @@ public class UserDAO extends DAO<UserDTO>{
     }
 
     public UserDTO selectOneWithId(String id) {
-        String stmt = sqlMapperPath + "selectOneWithUserId";
+        String stmt = sqlMapperPath + "selectOneWithId";
         UserDTO dto = UserDTO.builder()
                 .id(id)
                 .build();
@@ -90,7 +90,7 @@ public class UserDAO extends DAO<UserDTO>{
     public int update(UserDTO user) {
         String stmt = sqlMapperPath + "update";
         UserDTO dto = UserDTO.builder()
-                .id(user.getId())
+                .pk(user.getPk())
                 .pw(user.getPw())
                 .name(user.getName())
                 .phone(user.getPhone())
@@ -103,7 +103,7 @@ public class UserDAO extends DAO<UserDTO>{
     }
 
     public int updateStatus(Long pk, RegistStatus status) {
-        String stmt = sqlMapperPath + "update";
+        String stmt = sqlMapperPath + "updateStatus";
         UserDTO dto = UserDTO.builder()
                 .pk(pk)
                 .status(status)

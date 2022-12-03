@@ -19,9 +19,9 @@ public class MenuDTO extends DTO {
 
     public MenuDTO() {  }
 
-    public MenuDTO(Long id, String status, String name, Integer price, Integer stock, Long Classification_id) {
+    public MenuDTO(Long id, RegistStatus status, String name, Integer price, Integer stock, Long Classification_id) {
         this.id = id;
-        this.status = RegistStatus.of(status);
+        this.status = status;
         this.name = name;
         this.price = price;
         this.stock = stock;

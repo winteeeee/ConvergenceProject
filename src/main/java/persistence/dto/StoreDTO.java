@@ -25,9 +25,9 @@ public class StoreDTO extends DTO {
 
     public StoreDTO() {  }
 
-    public StoreDTO(Long id, String status, String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
+    public StoreDTO(Long id, RegistStatus status, String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
         this.id = id;
-        this.status = RegistStatus.of(status);
+        this.status = status;
         this.name = name;
         this.comment = comment;
         this.phone = phone;

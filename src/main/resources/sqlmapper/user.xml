@@ -48,13 +48,13 @@
                 age=#{age},
             </if>
         </set>
-        WHERE id=#{id}
+        WHERE pk=#{pk}
     </update>
 
     <update id="updateStatus">
         UPDATE user
         SET status=#{status}
-        WHERE id=#{id}
+        WHERE pk=#{pk}
     </update>
 
     <select id="selectAllWithStatus" resultMap="result">

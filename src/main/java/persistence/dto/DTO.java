@@ -127,19 +127,31 @@ public abstract class DTO implements Serializable {
                     memberVal = result;
                 }
                 else if (type.contains("Authority")) {
-                    byte[] codeByteArray = new byte[INT_LENGTH];
-                    System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    memberVal = Authority.of(Deserializer.byteArrayToInt(codeByteArray));
+                    byte[] lengthByteArray = new byte[INT_LENGTH];
+                    System.arraycopy(lengthByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
+                    int length = Deserializer.byteArrayToInt(lengthByteArray);
+
+                    byte[] stringByteArray = new byte[length];
+                    System.arraycopy(stringByteArray, 0, arr, idx, length); idx += length;
+                    memberVal = Authority.of(new String(stringByteArray));
                 }
                 else if (type.contains("OrderStatus")) {
-                    byte[] codeByteArray = new byte[INT_LENGTH];
-                    System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    memberVal = OrdersStatus.of(Deserializer.byteArrayToInt(codeByteArray));
+                    byte[] lengthByteArray = new byte[INT_LENGTH];
+                    System.arraycopy(lengthByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
+                    int length = Deserializer.byteArrayToInt(lengthByteArray);
+
+                    byte[] stringByteArray = new byte[length];
+                    System.arraycopy(stringByteArray, 0, arr, idx, length); idx += length;
+                    memberVal = OrdersStatus.of(new String(stringByteArray));
                 }
                 else if (type.contains("RegistStatus")) {
-                    byte[] codeByteArray = new byte[INT_LENGTH];
-                    System.arraycopy(codeByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    memberVal = RegistStatus.of(Deserializer.byteArrayToInt(codeByteArray));
+                    byte[] lengthByteArray = new byte[INT_LENGTH];
+                    System.arraycopy(lengthByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
+                    int length = Deserializer.byteArrayToInt(lengthByteArray);
+
+                    byte[] stringByteArray = new byte[length];
+                    System.arraycopy(stringByteArray, 0, arr, idx, length); idx += length;
+                    memberVal = RegistStatus.of(new String(stringByteArray));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

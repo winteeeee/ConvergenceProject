@@ -26,7 +26,7 @@
     <select id="selectAllWithClassification_id" resultMap="result">
         SELECT *
         FROM menu
-        WHERE classification_id=#{classification_id}
+        WHERE classification_id=#{classification_id} AND status=#{status}
     </select>
 
     <select id="selectOneWithId" resultMap="result">

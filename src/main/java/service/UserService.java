@@ -40,8 +40,9 @@ public class UserService {
         return userDAO.selectOneWithId(id);
     }
 
-    public int update(UserDTO user) {
-        return userDAO.update(user);
+    public UserDTO update(UserDTO user) {
+        userDAO.update(user);
+        return userDAO.selectOneWithPk(user.getPk());
     }
 
     public List<StoreDTO> getAllStore() {
@@ -52,7 +53,13 @@ public class UserService {
         return reviewDAO.selectAllWithStoreId(store_id, page);
     }
 
-    public synchronized void order(TotalOrdersDTO totalOrders, List<OrdersDTO> ordersList) {
+    public synchronized int order(TotalOrdersDTO totalOrders, List<OrdersDTO> ordersList) {
+        Integer sumPrice = 0;
+        for (OrdersDTO orders : ordersList) {
+            sumPrice += orders.getPrice();
+        }
+        totalOrders.setPrice(sumPrice);
+
         Long total_order_id = totalOrdersDAO.insertTotalOrders(totalOrders);
         boolean flag = true;
 
@@ -67,7 +74,7 @@ public class UserService {
                 map.put(orders.getMenu_id(), map.get(orders.getMenu_id()) + 1);
             }
             else {
-                map.put(orders.getMenu_id(), 0);
+                map.put(orders.getMenu_id(), 1);
             }
         }
 
@@ -78,15 +85,18 @@ public class UserService {
             }
         }
 
+
         if (flag) {
             for (OrdersDTO orders : ordersList) {
                 orders.setTotal_orders_id(total_order_id);
                 ordersDAO.insertOrders(orders);
                 menuDAO.updateForInsert(orders.getMenu_id());
             }
+            return 1;
         }
         else {
             totalOrdersDAO.updateStatus(total_order_id, OrdersStatus.CANCEL);
+            return 0;
         }
     }
 
@@ -129,7 +139,7 @@ public class UserService {
     }
 
     public List<MenuDTO> getMenusWithGroup_id(Long classification_id) {
-        return menuDAO.selectAllWithClassification_id(classification_id);
+        return menuDAO.selectAllWithClassification_id(classification_id, RegistStatus.ACCEPT);
     }
 
 
@@ -142,7 +152,7 @@ public class UserService {
         return detailsDAO.selectAllWithMenu_id(menu_id);
     }
 
-    public ClassificationDTO getGroupWithId(Long id) {
-        return classificationDAO.selectOneWithId(id);
+    public ClassificationDTO getGroupWithId(Long store_id) {
+        return classificationDAO.selectOneWithId(store_id);
     }
 }

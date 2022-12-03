@@ -3,8 +3,10 @@ package service;
 import persistence.dao.*;
 import persistence.dto.*;
 import persistence.enums.OrdersStatus;
+import persistence.enums.RegistStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerService {
@@ -14,12 +16,20 @@ public class OwnerService {
     private TotalOrdersDAO totalOrdersDAO;
     private OrdersDAO ordersDAO;
     private ReviewDAO reviewDAO;
+    private ClassificationDAO classificationDAO;
+    private StatisticsDAO statisticsDAO;
+    private DetailsDAO detailsDAO;
 
-    public OwnerService(UserDAO userDAO, StoreDAO storeDAO, MenuDAO menuDAO, OrdersDAO ordersDAO) {
+    public OwnerService(UserDAO userDAO, StoreDAO storeDAO, MenuDAO menuDAO, TotalOrdersDAO totalOrdersDAO, OrdersDAO ordersDAO, ReviewDAO reviewDAO, ClassificationDAO classificationDAO, StatisticsDAO statisticsDAO, DetailsDAO detailsDAO) {
         this.userDAO = userDAO;
         this.storeDAO = storeDAO;
         this.menuDAO = menuDAO;
+        this.totalOrdersDAO = totalOrdersDAO;
         this.ordersDAO = ordersDAO;
+        this.reviewDAO = reviewDAO;
+        this.classificationDAO = classificationDAO;
+        this.statisticsDAO = statisticsDAO;
+        this.detailsDAO = detailsDAO;
     }
 
     public Long insertOwner(UserDTO user) {
@@ -55,7 +65,12 @@ public class OwnerService {
     }
 
     public int acceptOrders(Long id) {
-        return totalOrdersDAO.updateStatus(id, OrdersStatus.IN_DELIVERY);
+        if (totalOrdersDAO.selectOneWithId(id).getStatusEnum() != OrdersStatus.CANCEL) {
+            return totalOrdersDAO.updateStatus(id, OrdersStatus.IN_DELIVERY);
+        }
+        else {
+            return 0;
+        }
     }
 
     public int cancelOrders(Long id) {
@@ -74,5 +89,27 @@ public class OwnerService {
         return reviewDAO.updateOwnerComment(review_id, comment);
     }
 
-    // TODO 1.7 통계정보
+    public List<StatisticsDTO> getStatistics(Long store_id) {
+        List<ClassificationDTO> groups = classificationDAO.selectAllWithStore_id(store_id);
+        List<MenuDTO> menus;
+        List<StatisticsDTO> result = new ArrayList<>();
+
+        for (ClassificationDTO group : groups) {
+            menus = menuDAO.selectAllWithClassification_id(group.getId(), RegistStatus.ACCEPT);
+
+            for(MenuDTO dto : menus) {
+                result.add(statisticsDAO.selectOneForOwner(dto.getId(), dto.getName()));
+            }
+        }
+
+        return result;
+    }
+
+    public void insertDetails(DetailsDTO details) {
+        detailsDAO.insertDetails(details);
+    }
+
+    public void insertClassification(ClassificationDTO classification) {
+        classificationDAO.insertClassification(classification);
+    }
 }
