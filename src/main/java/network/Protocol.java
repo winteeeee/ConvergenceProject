@@ -63,10 +63,6 @@ public class Protocol {
             return new StoreDTO(arr);
         }
 
-        else if (code == (ProtocolCode.STORE | ProtocolCode.REGIST)) {
-            return new StoreRegistDTO(arr);
-        }
-
         else if (code == ProtocolCode.USER) {
             return new UserDTO(arr);
         }

@@ -436,11 +436,11 @@ public class ClientController {
             details += optionIdxes.get(optionIdxes.size() - 1);
 
             OrdersDTO newOrder = new OrdersDTO();
-            newOrder.setStatus(OrdersStatus.HOLD.getCode());
+           /* newOrder.setStatus(OrdersStatus.HOLD.getCode());
             newOrder.setRegdate(LocalDateTime.now());
             newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
             newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
-            newOrder.setUser_pk(userInfo.getPk());
+            newOrder.setUser_pk(userInfo.getPk());*/
             newOrder.setDetails(details);
 
             Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
@@ -464,11 +464,11 @@ public class ClientController {
                 Pair<String, Integer> reviewInfo = viewer.getReviewInfo();
 
                 ReviewDTO newReivew = new ReviewDTO();
-                newReivew.setContents(reviewInfo.first());
+                /*newReivew.setContents(reviewInfo.first());
                 newReivew.setRegdate(LocalDateTime.now());
                 newReivew.setStar_rating(reviewInfo.second());
                 newReivew.setUser_pk(userInfo.getPk());
-                newReivew.setOrders_id(DTOs.get(select).getId());
+                newReivew.setOrders_id(DTOs.get(select).getId());*/
 
                 Protocol registReview = new Protocol(ProtocolType.REGISTER, ProtocolCode.REVIEW, 0, newReivew);
                 //데이터로 전달한 녀석을 리뷰 테이블에 insert
@@ -642,7 +642,7 @@ public class ClientController {
             int select = viewer.getIdx(DTOs);
 
             if(0 <= select && select < DTOs.size()) {
-                DTOs.get(select).setStatus(OrdersStatus.CANCEL.getCode());
+               // DTOs.get(select).setStatus(OrdersStatus.CANCEL.getCode());
                 Protocol requestCancel = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.ORDER, 0, DTOs.get(select));
                 //데이터로 전달한 DTO로 변경
                 dos.write(requestCancel.getBytes());
