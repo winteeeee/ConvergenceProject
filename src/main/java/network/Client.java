@@ -80,6 +80,7 @@ public class Client
                     break;
 
                 case REGIST_MENU_DETERMINATION:
+                    con.registMenuDetermination();
                     break;
 
                 case STATISTICAL_INFO_VIEW:

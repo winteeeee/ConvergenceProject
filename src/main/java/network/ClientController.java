@@ -321,6 +321,44 @@ public class ClientController {
         }
     }
 
+    public void registMenuDetermination() throws IOException {
+        ArrayList<MenuDTO> DTOs = getAllMenuDTO();
+
+        while(DTOs.size() > 0) {
+            int idx = viewer.getIdx(DTOs);
+
+            if (0 <= idx && idx < DTOs.size()) {
+                while (true) {
+                    String ans = viewer.getDetermination();
+
+                    if (ans.equals("Y") || ans.equals("y")) {
+                        viewer.showAcceptMessage();
+                        Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.MENU | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
+                        dos.write(registAccept.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else if (ans.equals("N") || ans.equals("n")) {
+                        viewer.showRefusalMessage();
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.MENU | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
+                        dos.write(registRefuse.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else {
+                        System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    }
+                }
+            }
+
+            else {
+                break;
+            }
+        }
+    }
+
     public void registStore(UserDTO userInfo) throws IOException {
         String[] storeInfo = viewer.getStoreInfo();
 
