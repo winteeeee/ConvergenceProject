@@ -2,14 +2,11 @@ package persistence.dto;
 
 import network.Deserializer;
 import network.Serializer;
-
 import persistence.enums.Authority;
 import persistence.enums.Enum;
 import persistence.enums.OrdersStatus;
 import persistence.enums.RegistStatus;
-
 import sharing.Serializable;
-
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,15 +34,35 @@ public abstract class DTO implements Serializable {
                     arr = Serializer.longToByteArray((long)memberVal);
                 }
                 else if (type.contains("String")) {
-                    arr = ((String)memberVal).getBytes();
+                    if((String)memberVal != null) {
+                        arr = ((String) memberVal).getBytes();
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
+
                     isDynamic = true;
                 }
                 else if (type.contains("LocalDateTime")) {
-                    arr = Serializer.dateToByteArray((LocalDateTime)memberVal);
+                    if((LocalDateTime)memberVal != null) {
+                        arr = Serializer.dateToByteArray((LocalDateTime) memberVal);
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
+
                     isDynamic = true;
                 }
                 else if (type.contains("enums")) {
-                    arr = Serializer.enumToByteArray((Enum)memberVal);
+                    if((Enum)memberVal != null) {
+                        arr = Serializer.enumToByteArray((Enum) memberVal);
+                    }
+
+                    else {
+                        arr = new byte[0];
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -93,7 +110,7 @@ public abstract class DTO implements Serializable {
                 else if (type.equals("long")) {
                     byte[] longByteArray = new byte[LONG_LENGTH];
                     System.arraycopy(longByteArray, 0, arr, idx, LONG_LENGTH); idx += LONG_LENGTH;
-                    memberVal = Deserializer.byteArrayToInt(longByteArray);
+                    memberVal = Deserializer.byteArrayToLong(longByteArray);
                 }
                 else if (type.contains("String")) {
                     byte[] lengthByteArray = new byte[INT_LENGTH];
@@ -105,26 +122,13 @@ public abstract class DTO implements Serializable {
                     memberVal = new String(stringByteArray);
                 }
                 else if (type.contains("LocalDateTime")) {
-                    byte[] yearByteArray = new byte[INT_LENGTH];
-                    byte[] monthByteArray = new byte[INT_LENGTH];
-                    byte[] dayByteArray = new byte[INT_LENGTH];
-                    byte[] hourByteArray = new byte[INT_LENGTH];
-                    byte[] minuteByteArray = new byte[INT_LENGTH];
+                    byte[] lengthByteArray = new byte[INT_LENGTH];
+                    System.arraycopy(lengthByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
+                    int length = Deserializer.byteArrayToInt(lengthByteArray);
 
-                    System.arraycopy(yearByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    System.arraycopy(monthByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    System.arraycopy(dayByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    System.arraycopy(hourByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-                    System.arraycopy(minuteByteArray, 0, arr, idx, INT_LENGTH); idx += INT_LENGTH;
-
-                    int year = Deserializer.byteArrayToInt(yearByteArray);
-                    int month = Deserializer.byteArrayToInt(monthByteArray);
-                    int day = Deserializer.byteArrayToInt(dayByteArray);
-                    int hour = Deserializer.byteArrayToInt(hourByteArray);
-                    int minute = Deserializer.byteArrayToInt(minuteByteArray);
-
-                    LocalDateTime result = LocalDateTime.of(year, month, day, hour, minute);
-                    memberVal = result;
+                    byte[] dateByteArray = new byte[length];
+                    System.arraycopy(dateByteArray, 0, arr, idx, length); idx += length;
+                    memberVal = Deserializer.byteArrayToDate(dateByteArray);
                 }
                 else if (type.contains("Authority")) {
                     byte[] lengthByteArray = new byte[INT_LENGTH];
@@ -153,6 +157,8 @@ public abstract class DTO implements Serializable {
                     System.arraycopy(stringByteArray, 0, arr, idx, length); idx += length;
                     memberVal = RegistStatus.of(new String(stringByteArray));
                 }
+
+                classMembers[i].set(this, memberVal);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
