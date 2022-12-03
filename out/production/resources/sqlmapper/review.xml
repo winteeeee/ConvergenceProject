@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.ReviewMapper">
+    <resultMap id="result" type="ReviewDTO">
+        <result property="id" column="id"/>
+        <result property="contents" column="contents"/>
+        <result property="regdate" column="regdate"/>
+        <result property="star_rating" column="star_rating"/>
+        <result property="user_pk" column="user_pk"/>
+        <result property="orders_id" column="orders_id"/>
+    </resultMap>
+
+    <insert id="insertReview">
+        INSERT INTO review (contents, regdate, star_rating, user_pk, orders_id)
+        VALUES (#{contents}, #{regdate}, #{star_rating}, #{user_pk}, #{orders_id});
+    </insert>
+
+    <update id="updateForInsert">
+        UPDATE store
+        SET review_count = review_count + 1,
+            star_rating = star_rating + #{star_rating}
+        WHERE store.id = (
+            SELECT store_id
+            FROM orders
+            WHERE orders.id = #{orders_id}
+        );
+    </update>
+
+    <select id="selectAllWithUser_pk" resultMap="result">
+        SELECT *
+        FROM review
+        WHERE user_pk=#{user_pk}
+    </select>
+
+    <update id="updateReviewCntAndStarRate">
+        UPDATE store
+        SET review_count = review_count + 1, start_rating = start_rating + #{start_rating}
+        WHERE id=#{id}
+    </update>
+</mapper>

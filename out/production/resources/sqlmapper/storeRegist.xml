@@ -30,12 +30,6 @@
         WHERE status=#{status}
     </select>
 
-    <select id="selectOneWithId" resultMap="result">
-        SELECT *
-        FROM store_regist
-        WHERE id=#{id}
-    </select>
-
     <update id="updateStatus">
         UPDATE store_regist
         SET status=#{status}

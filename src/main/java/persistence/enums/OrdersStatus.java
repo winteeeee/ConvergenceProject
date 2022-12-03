@@ -9,25 +9,23 @@ import java.util.stream.Stream;
 
 @Getter
 public enum OrdersStatus implements Enum {
-    HOLD(0, "접수대기"),
-    IN_DELIVERY(1, "배달중"),
-    CANCEL(2, "취소"),
-    COMPLETE(3, "배달완료");
+    HOLD( "접수대기"),
+    IN_DELIVERY("배달중"),
+    CANCEL("취소"),
+    COMPLETE("배달완료");
 
-    private static final Map<Integer, String> CODE_MAP = Collections.unmodifiableMap(
+    private static final Map<String, String> CODE_MAP = Collections.unmodifiableMap(
             Stream.of(values()).collect(Collectors.toMap(OrdersStatus::getCode, OrdersStatus::name))
     );
 
-    public static OrdersStatus of(int code) {
+    public static OrdersStatus of(String code) {
         return OrdersStatus.valueOf(CODE_MAP.get(code));
     }
 
-    private final int code;
-    private final String title;
+    private final String code;
 
-    OrdersStatus(int code, String title) {
+    OrdersStatus(String code) {
         this.code = code;
-        this.title = title;
     }
 
     @Override

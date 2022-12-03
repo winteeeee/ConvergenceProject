@@ -3,7 +3,6 @@ package persistence.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import persistence.MyBatisConnectionFactory;
 import persistence.dto.ReviewDTO;
 
 import java.time.LocalDateTime;
@@ -16,56 +15,66 @@ public class ReviewDAO extends DAO<ReviewDTO> {
         super(sqlSessionFactory, "mapper.ReviewMapper.");
     }
 
-    @Override
-    protected List<ReviewDTO> selectList(SqlSession session, Object[] arg) {
-        return session.selectList(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected ReviewDTO selectOne(SqlSession session, Object[] arg) {
-        return null;
-    }
-    @Override
-    protected int insert(SqlSession session, Object[] arg) throws Exception {
-        return session.insert(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int update(SqlSession session, Object[] arg) {
-        return session.update(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int delete(SqlSession session, Object[] arg) { return 0; }
 
-    public int insertReview(String contents, LocalDateTime regdate, Integer star_rating, Long user_pk, Long orders_id) {
-        String stmt = "insertReview";
-        ReviewDTO reviewDTO = new ReviewDTO(null, contents, regdate, star_rating, user_pk, orders_id);
+    public int insertReview(ReviewDTO review) {
+        String stmt = sqlMapperPath + "insertReview";
+        ReviewDTO dto = ReviewDTO.builder()
+                .comment(review.getComment())
+                .regdate(LocalDateTime.now())
+                .star_rating(review.getStar_rating())
+                .user_pk(review.getUser_pk())
+                .total_orders_id(review.getTotal_orders_id()).build();
 
-        return insert(stmt, reviewDTO);
+        return insert((SqlSession session) -> {
+            return session.insert(stmt, dto);
+        });
     }
 
-    public int updateForInsert(Integer star_rating, Long orders_id) {
-        String stmt = "updateForInsert";
-        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, star_rating, null, orders_id);
+    public int updateOwnerComment(Long id, String owner_comment) {
+        String stmt = sqlMapperPath + "updateOwnerComment";
+        ReviewDTO dto = ReviewDTO.builder()
+                .id(id)
+                .owner_comment(owner_comment).build();
 
-        return update(stmt, reviewDTO);
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
     }
 
-    public List<ReviewDTO> selectAllWithUser_pk(Long user_pk) {
-        String stmt = "selectAllWithUser_pk";
-        ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setUser_pk(user_pk);
+    public int updateForInsert(Integer star_rating, Long total_orders_id) {
+        String stmt = sqlMapperPath + "updateForInsert";
+        ReviewDTO dto = ReviewDTO.builder()
+                .star_rating(star_rating)
+                .total_orders_id(total_orders_id).build();
 
-        return selectList(stmt, reviewDTO);
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
     }
 
-    public List<ReviewDTO> getReviewList(Long user_pk, Integer page) {
-        String stmt = "getReviewList";
+    public List<ReviewDTO> selectAllWithStoreId(Long store_id, Integer page) {
+        String stmt = sqlMapperPath + "selectAllWithStoreId";
 
-        page = (page - 1) * 2;
+        page = (page - 1) * 2; // <- (page - 1) * pageSize
+        Map<String, Object> map = new HashMap();
+        map.put("store_id", store_id);
+        map.put("page", page);
 
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, map);
+        });
+    }
+
+    public List<ReviewDTO> selectAllWithUserPk(Long user_pk, Integer page) {  // TODO 페이지 사이즈도 인자로 받도록 만드는게 좋을 것 같음
+        String stmt = sqlMapperPath + "selectAllWithUserPk";
+
+        page = (page - 1) * 2; // <- (page - 1) * pageSize
         Map<String, Object> map = new HashMap();
         map.put("user_pk", user_pk);
         map.put("page", page);
 
-        return selectList(stmt, map);
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, map);
+        });
     }
 }
