@@ -2,6 +2,8 @@ package network;
 
 import org.testng.internal.collections.Pair;
 import persistence.dto.*;
+import persistence.enums.Authority;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,10 +19,11 @@ public class Viewer {
         System.out.println();
         System.out.println("관리자 " + userInfo.getName() + "님 환영합니다.");
         System.out.println("무엇을 하시겠습니까?");
-        System.out.println("[1] 가게 등록 신청 승인 / 거절");
-        System.out.println("[2] 가게 정보 조회");
-        System.out.println("[3] 고객과 점주 정보 조회");
-        System.out.println("[4] 로그아웃");
+        System.out.println("[1] 점주 가입 승인/거절");
+        System.out.println("[2] 가게 등록 신청 승인/거절");
+        System.out.println("[3] 메뉴 등록 신청 승인/거절");
+        System.out.println("[4] 통계정보 열람");
+        System.out.println("[5] 로그아웃");
         System.out.print("입력 : ");
     }
 
@@ -29,12 +32,11 @@ public class Viewer {
         System.out.println("점주 " + userInfo.getName() + "님 환영합니다.");
         System.out.println("무엇을 하시겠습니까?");
         System.out.println("[1] 가게 등록 신청");
-        System.out.println("[2] 메뉴 등록");
-        System.out.println("[3] 메뉴 수정");
+        System.out.println("[2] 메뉴 등록 신청");
         System.out.println("[3] 운영 시간 설정");
         System.out.println("[4] 주문 접수 / 거절");
-        System.out.println("[5] 가게 정보 조회");
-        System.out.println("[6] 메뉴 정보 조회");
+        System.out.println("[5] 리뷰/별점 조회 및 리뷰 답글 등록");
+        System.out.println("[6] 통계정보 열람");
         System.out.println("[7] 로그아웃");
         System.out.print("입력 : ");
     }
@@ -49,16 +51,67 @@ public class Viewer {
         System.out.println("[4] 주문 취소");
         System.out.println("[5] 주문 조회");
         System.out.println("[6] 리뷰 등록");
-        System.out.println("[7] 리뷰 조회");
-        System.out.println("[8] 계정 정보 조회");
-        System.out.println("[9] 로그아웃");
+        System.out.println("[7] 로그아웃");
         System.out.print("입력 : ");
+    }
+
+    public int initScreen(BufferedReader keyInput) throws IOException {
+        System.out.println("********** 음식 주문 시스템 **********");
+        System.out.println("[환영합니다]");
+        System.out.println("[1] 로그인");
+        System.out.println("[2] 회원가입");
+        System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public int registScreen(BufferedReader keyInput) throws IOException {
+        System.out.println("[1] 점주 회원가입");
+        System.out.println("[2] 고객 회원가입");
+        System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public UserDTO ownerRegistScreen(BufferedReader keyInput) throws IOException {
+        UserDTO userInfo = new UserDTO();
+
+        System.out.print("ID : ");
+        userInfo.setId(keyInput.readLine());
+        System.out.print("PW : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.print("이름 : ");
+        userInfo.setName(keyInput.readLine());
+        System.out.print("전화번호 : ");
+        userInfo.setPhone(keyInput.readLine());
+        System.out.print("나이 : ");
+        userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        userInfo.setAuthority(Authority.OWNER.getCode());
+
+        return userInfo;
+    }
+
+    public UserDTO userRegistScreen(BufferedReader keyInput) throws IOException {
+        UserDTO userInfo = new UserDTO();
+
+        System.out.print("ID : ");
+        userInfo.setId(keyInput.readLine());
+        System.out.print("PW : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.print("이름 : ");
+        userInfo.setName(keyInput.readLine());
+        System.out.print("전화번호 : ");
+        userInfo.setPhone(keyInput.readLine());
+        System.out.print("나이 : ");
+        userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        userInfo.setAuthority(Authority.USER.getCode());
+
+        return userInfo;
     }
 
     public UserDTO loginScreen(BufferedReader keyInput) throws IOException {
         UserDTO userInfo = new UserDTO();
 
-        System.out.println("********** 음식 주문 시스템 **********");
         System.out.print("ID : ");
         userInfo.setId(keyInput.readLine());
         System.out.print("PW : ");
@@ -67,15 +120,56 @@ public class Viewer {
         return userInfo;
     }
 
-    public void searchAccountScreen(UserDTO userInfo) {
-        System.out.println("[계정 정보 조회]");
-        System.out.println("ID : " + userInfo.getId());
-        System.out.println("이름 : " + userInfo.getName());
-        System.out.println("나이 : " + userInfo.getAge());
+    public int modifiUserScreenAndGetOption() throws IOException {
+        System.out.println("변경할 정보를 선택해주세요.");
+        System.out.println("[1] 비밀번호");
+        System.out.println("[2] 이름");
+        System.out.println("[3] 나이");
+        System.out.println("[4] 전화번호");
+        System.out.println("[5] 종료");
+        System.out.print("입력 : ");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public void changeUserPW(UserDTO userInfo) throws IOException {
+        System.out.println("새로운 비밀번호를 입력하세요.");
+        System.out.print("입력 : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.println();
+    }
+
+    public void changeUserName(UserDTO userInfo) throws IOException {
+        System.out.println("새로운 이름을 입력하세요.");
+        System.out.print("입력 : ");
+        userInfo.setName(keyInput.readLine());
+        System.out.println();
+    }
+
+    public void changeUserAge(UserDTO userInfo) throws IOException {
+        System.out.println("새로운 나이를 입력하세요.");
+        System.out.print("입력 : ");
+        userInfo.setAge(Integer.parseInt(keyInput.readLine()));
+        System.out.println();
+    }
+
+    public void changeUserPhoneNumber(UserDTO userInfo) throws IOException {
+        System.out.println("새로운 전화번호를 입력하세요.");
+        System.out.print("입력 : ");
+        userInfo.setPw(keyInput.readLine());
+        System.out.println();
     }
 
     public void logout() {
         System.out.println("로그아웃합니다.\n");
+    }
+
+    public int registMenuAndOptionScreen() throws IOException {
+        System.out.println("[1] 메뉴 등록");
+        System.out.println("[2] 옵션 등록");
+        System.out.print("입력(범위 외 입력 시 종료) : ");
+
+        return Integer.parseInt(keyInput.readLine());
     }
 
     public StoreDTO selectStore(ArrayList<StoreDTO> storeDTOs) throws IOException {
@@ -135,7 +229,7 @@ public class Viewer {
     }
 
     public MenuDTO setNewMenu(ClassificationDTO selectedClass) throws IOException {
-        System.out.println("메뉴 정보를 등록합니다.");
+        System.out.println("메뉴를 등록합니다.");
         System.out.print("메뉴 이름 : ");
         String name = keyInput.readLine();
         System.out.print("가격 : ");
@@ -150,6 +244,21 @@ public class Viewer {
         newMenu.setStock(stock);
 
         return newMenu;
+    }
+
+    public DetailsDTO setNewOption(StoreDTO storeInfo) throws IOException {
+        System.out.println("옵션을 등록합니다.");
+        System.out.print("메뉴명 : ");
+        String name = keyInput.readLine();
+        System.out.print("추가 금액 : ");
+        int price = Integer.parseInt(keyInput.readLine());
+
+        DetailsDTO newOption = new DetailsDTO();
+        newOption.setName(name);
+        newOption.setPrice(price);
+        newOption.setStore_id(storeInfo.getId());
+
+        return newOption;
     }
 
     public int getIdx() throws IOException {
@@ -232,6 +341,11 @@ public class Viewer {
 
     public void showReviewCompleteMessage() {
         System.out.println("리뷰가 등록되었습니다.");
+        System.out.println();
+    }
+
+    public void showRegistUserCompleteMessage() {
+        System.out.println("회원가입이 완료되었습니다.");
         System.out.println();
     }
 

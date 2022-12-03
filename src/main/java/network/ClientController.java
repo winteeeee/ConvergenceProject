@@ -24,13 +24,50 @@ public class ClientController {
     }
 
     public UserDTO login() throws IOException {
-        UserDTO user = viewer.loginScreen(keyInput);
+        final int LOGIN = 1;
+        final int OWNER_REGIST = 1;
+        final int REGIST = 2;
+        final int USER_REGIST = 2;
 
-        Protocol findUser = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, user);
-        dos.write(findUser.getBytes());
-        UserDTO me = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+        while (true) {
+            int option = viewer.initScreen(keyInput);
 
-        return me;
+            if(option == LOGIN) {
+                UserDTO user = viewer.loginScreen(keyInput);
+                Protocol findUser = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, user);
+                dos.write(findUser.getBytes());
+                UserDTO me = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+
+                return me;
+            }
+
+            else if(option == REGIST) {
+                int registOption = viewer.registScreen(keyInput);
+                UserDTO userInfo = new UserDTO();
+
+                if(registOption == OWNER_REGIST) {
+                    userInfo = viewer.ownerRegistScreen(keyInput);
+                }
+
+                else if(registOption == USER_REGIST) {
+                    userInfo = viewer.userRegistScreen(keyInput);
+                }
+
+                else {
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+                }
+
+                if(registOption == OWNER_REGIST || registOption == USER_REGIST) {
+                    Protocol registUser = new Protocol(ProtocolType.REGISTER, (byte)(ProtocolCode.USER | ProtocolCode.REGIST), 0, userInfo);
+                    dos.write(registUser.getBytes());
+                    viewer.showRegistUserCompleteMessage();
+                }
+            }
+
+            else {
+                System.out.println(ErrorMessage.OUT_OF_BOUND);
+            }
+        }
     }
 
     public void showAdminScreen(UserDTO userInfo) {
@@ -47,19 +84,6 @@ public class ClientController {
 
     public void showLogoutMessage() {
         viewer.logout();
-    }
-
-    public ArrayList<StoreRegistDTO> getAllStoreRegistDTO() throws IOException {
-        Protocol requestAllRegistStoreDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.REGIST), 0, null);
-        dos.write(requestAllRegistStoreDTOs.getBytes());
-
-        ArrayList<StoreRegistDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
-        for(int i = 0; i < listLength; i++) {
-            DTOs.add((StoreRegistDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
     }
 
     public ArrayList<OrdersDTO> getAllOrderDTO() throws IOException {
@@ -84,21 +108,6 @@ public class ClientController {
         int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
         for(int i = 0; i < listLength; i++) {
             DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
-        }
-
-        return DTOs;
-    }
-
-    public <T> ArrayList<OrdersDTO> getAllHoldOrderDTO(T info) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(info);
-        ArrayList<OrdersDTO> result = new ArrayList<>();
-
-        for(int i = 0; i < DTOs.size(); i++) {
-            OrdersDTO cur = DTOs.get(i);
-
-            if(cur.getStatusEnum().getName().equals("HOLD")) {
-                result.add(cur);
-            }
         }
 
         return DTOs;
@@ -200,6 +209,23 @@ public class ClientController {
         return DTOs;
     }
 
+    public ArrayList<UserDTO> getAllOwnerDTO() throws IOException {
+        Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, null);
+        dos.write(requestAllUserDTOs.getBytes());
+
+        ArrayList<UserDTO> DTOs = new ArrayList<>();
+        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        for(int i = 0; i < listLength; i++) {
+            UserDTO cur = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+            String curAuthority = cur.getAuthorityEnum().getName();
+            if (curAuthority.equals("OWNER")) {
+                DTOs.add(cur);
+            }
+        }
+
+        return DTOs;
+    }
+
     public ArrayList<UserDTO> getAllOwnerAndUserDTO() throws IOException {
         Protocol requestAllUserDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, null);
         dos.write(requestAllUserDTOs.getBytes());
@@ -217,8 +243,46 @@ public class ClientController {
         return DTOs;
     }
 
+    public void registOwnerDetermination() throws IOException {
+        ArrayList<UserDTO> DTOs = getAllOwnerDTO();
+
+        while(DTOs.size() > 0) {
+            int idx = viewer.getIdx(DTOs);
+
+            if (0 <= idx && idx < DTOs.size()) {
+                while (true) {
+                    String ans = viewer.getDetermination();
+
+                    if (ans.equals("Y") || ans.equals("y")) {
+                        viewer.showAcceptMessage();
+                        Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.USER | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
+                        dos.write(registAccept.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else if (ans.equals("N") || ans.equals("n")) {
+                        viewer.showRefusalMessage();
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.USER | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
+                        dos.write(registRefuse.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else {
+                        System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    }
+                }
+            }
+
+            else {
+                break;
+            }
+        }
+    }
+
     public void registStoreDetermination() throws IOException {
-        ArrayList<StoreRegistDTO> DTOs = getAllStoreRegistDTO();
+        ArrayList<StoreDTO> DTOs = getAllStoreDTO();
 
         while(DTOs.size() > 0) {
             int idx = viewer.getIdx(DTOs);
@@ -240,6 +304,45 @@ public class ClientController {
                         viewer.showRefusalMessage();
                         Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.STORE | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
                         //전달한 가게 등록 DTO의 정보를 가게 등록 테이블에서 삭제하시오.
+                        dos.write(registRefuse.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else {
+                        System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    }
+                }
+            }
+
+            else {
+                break;
+            }
+        }
+    }
+
+    public void registMenuDetermination() throws IOException {
+        ArrayList<MenuDTO> DTOs = getAllMenuDTO();
+
+        while(DTOs.size() > 0) {
+            int idx = viewer.getIdx(DTOs);
+
+            if (0 <= idx && idx < DTOs.size()) {
+                while (true) {
+                    String ans = viewer.getDetermination();
+
+                    if (ans.equals("Y") || ans.equals("y")) {
+                        viewer.showAcceptMessage();
+                        Protocol registAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.MENU | ProtocolCode.ACCEPT), 0, DTOs.get(idx));
+                        dos.write(registAccept.getBytes());
+                        DTOs.remove(idx);
+                        break;
+                    }
+
+                    else if (ans.equals("N") || ans.equals("n")) {
+                        viewer.showRefusalMessage();
+                        Protocol registRefuse = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.MENU | ProtocolCode.REFUSAL), 0, DTOs.get(idx));
+                        dos.write(registRefuse.getBytes());
                         DTOs.remove(idx);
                         break;
                     }
@@ -259,7 +362,7 @@ public class ClientController {
     public void registStore(UserDTO userInfo) throws IOException {
         String[] storeInfo = viewer.getStoreInfo();
 
-        StoreRegistDTO newStore = new StoreRegistDTO();
+        StoreDTO newStore = new StoreDTO();
         newStore.setName(storeInfo[0]);
         newStore.setComment(storeInfo[1]);
         newStore.setAddress(storeInfo[2]);
@@ -270,10 +373,25 @@ public class ClientController {
         dos.write(requestStoreRegist.getBytes());
     }
 
-    public void registMenu(UserDTO userInfo) throws IOException {
+    public void registMenuAndOption(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
         StoreDTO storeInfo = viewer.selectStore(storeDTOs);
 
+        int option;
+        do {
+            option = viewer.registMenuAndOptionScreen();
+
+            if(option == 1) {
+                registMenu(storeInfo);
+            }
+
+            else if(option == 2) {
+                registOption(storeInfo);
+            }
+        } while(option == 1 || option == 2);
+    }
+
+    public void registMenu(StoreDTO storeInfo) throws IOException {
         ArrayList<ClassificationDTO> classificationDTOs = getAllClassificationDTO(storeInfo);
         ClassificationDTO selectedClass = viewer.selectClassification(classificationDTOs);
 
@@ -294,33 +412,46 @@ public class ClientController {
         }
     }
 
+    public void registOption(StoreDTO storeInfo) throws IOException {
+        DetailsDTO newOption = viewer.setNewOption(storeInfo);
+
+        Protocol registOption = new Protocol(ProtocolType.REGISTER, ProtocolCode.OPTION, 0, newOption);
+        dos.write(registOption.getBytes());
+    }
+
     public void registOrder(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
         int storeIdx = viewer.getIdx(storeDTOs);
+        LocalDateTime now = LocalDateTime.of(1, 1, 1, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
+        if(storeDTOs.get(storeIdx).getOpen_time().isAfter(now) && storeDTOs.get(storeIdx).getClose_time().isBefore(now)) {
+            ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
+            int menuIdx = viewer.getIdx(menuDTOs);
 
-        ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
-        int menuIdx = viewer.getIdx(menuDTOs);
+            ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
+            ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
+            String details = null;
+            for (int i = 0; i < optionIdxes.size() - 1; i++) {
+                details += (optionIdxes.get(i) + ", ");
+            }
+            details += optionIdxes.get(optionIdxes.size() - 1);
 
-        ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
-        ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
-        String details = null;
-        for(int i = 0; i < optionIdxes.size() - 1; i++) {
-            details += (optionIdxes.get(i) + ", ");
+            OrdersDTO newOrder = new OrdersDTO();
+            newOrder.setStatus(OrdersStatus.HOLD.getCode());
+            newOrder.setRegdate(LocalDateTime.now());
+            newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
+            newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
+            newOrder.setUser_pk(userInfo.getPk());
+            newOrder.setDetails(details);
+
+            Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
+            dos.write(registOrder.getBytes());
+            //등록할 주문 정보를 보냄
+            viewer.showOrderCompleteMessage();
         }
-        details += optionIdxes.get(optionIdxes.size() - 1);
 
-        OrdersDTO newOrder = new OrdersDTO();
-        newOrder.setStatus(OrdersStatus.HOLD.getCode());
-        newOrder.setRegdate(LocalDateTime.now());
-        newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
-        newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
-        newOrder.setUser_pk(userInfo.getPk());
-        newOrder.setDetails(details);
-
-        Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
-        dos.write(registOrder.getBytes());
-        //등록할 주문 정보를 보냄
-        viewer.showOrderCompleteMessage();
+        else {
+            System.out.println(ErrorMessage.OUT_OF_TIME);
+        }
     }
 
     public void registReview(UserDTO userInfo) throws IOException {
@@ -388,7 +519,7 @@ public class ClientController {
         int storeIdx = viewer.getIdx(storeDTOs);
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
-            ArrayList<OrdersDTO> orderDTOs = getAllHoldOrderDTO(storeDTOs.get(storeIdx));
+            ArrayList<OrdersDTO> orderDTOs = getAllOrderDTO(storeDTOs.get(storeIdx));
             while (orderDTOs.size() > 0) {
                 int idx = viewer.getIdx(orderDTOs);
 
@@ -425,6 +556,45 @@ public class ClientController {
                 }
             }
         }
+    }
+
+    public void modificationUser(UserDTO userInfo) throws IOException {
+        //개인정보 및 비밀번호 수정
+        boolean escapeFlag = false;
+        while(!escapeFlag) {
+            int option = viewer.modifiUserScreenAndGetOption();
+
+            switch (option) {
+                case 1:
+                    viewer.changeUserPW(userInfo);
+                    break;
+
+                case 2:
+                    viewer.changeUserName(userInfo);
+                    break;
+
+                case 3:
+                    viewer.changeUserAge(userInfo);
+                    break;
+
+                case 4:
+                    viewer.changeUserPhoneNumber(userInfo);
+                    break;
+
+                case 5:
+                    escapeFlag = true;
+                    break;
+
+                default:
+                    System.out.println(ErrorMessage.OUT_OF_BOUND);
+                    break;
+            }
+        }
+
+        Protocol userModification = new Protocol(ProtocolType.MODIFICATION, ProtocolCode.USER, 0, userInfo);
+        //데이터로 전달한 DTO로 변경, pk로 찾아오면 될것임.
+        dos.write(userModification.getBytes());
+        viewer.showSaveMessage();
     }
 
     public <T> void modificationMenu(T info) throws IOException {
@@ -466,7 +636,7 @@ public class ClientController {
     }
 
     public void orderCancel(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllHoldOrderDTO(userInfo);
+        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
 
         while(true) {
             int select = viewer.getIdx(DTOs);
@@ -485,20 +655,23 @@ public class ClientController {
 
     }
 
-    public void viewAllStore() throws IOException {
-        viewer.viewDTOs(getAllStoreDTO());
-    }
-
-    public void viewOwnerAndUser() throws IOException {
-        viewer.viewDTOs(getAllOwnerAndUserDTO());
-    }
-
     public void viewStore() throws IOException {
-        viewer.viewDTOs(getAllStoreDTO());
-    }
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
 
-    public <T> void viewStore(T info) throws IOException {
-        viewer.viewDTOs(getAllStoreDTO(info));
+        int idx = viewer.getIdx(storeDTOs);
+        while(0 <= idx && idx < storeDTOs.size()) {
+            idx = viewer.getIdx();
+            Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
+            dos.write(requestReview.getBytes());
+
+            int reviewListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (int i = 0; i < reviewListLength; i++) {
+                reviewDTOs.add((ReviewDTO) new Protocol(dis.readAllBytes()).getData());
+            }
+
+            viewer.viewDTOs(reviewDTOs);
+        }
     }
 
     public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
@@ -531,9 +704,5 @@ public class ClientController {
 
     public <T> void viewOrder(T info) throws IOException {
         viewer.viewDTOs(getAllOrderDTO(info));
-    }
-
-    public void viewAccountInfo(UserDTO userInfo) {
-        viewer.searchAccountScreen(userInfo);
     }
 }
