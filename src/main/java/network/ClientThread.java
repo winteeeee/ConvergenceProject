@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.ProtocolFamily;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 class ClientThread extends Thread {
@@ -172,16 +173,16 @@ class ClientThread extends Thread {
 
     private void review_search(StoreDTO storeDTO) throws IOException {
         Integer max_page = ownerService.getMaxPage(storeDTO.getId());
-        send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, max_page, null);
-        dos.write(send_protocol.getBytes());
+        dos.write(Serializer.intToByteArray(max_page));
 
         List<ReviewDTO> reviewDTOs;
-        Protocol temp_protocol;
+        int page;
         byte[] temp;
         while((temp = dis.readAllBytes()) != null) {
-            temp_protocol = new Protocol(temp);
-            reviewDTOs = ownerService.getReviewList(storeDTO.getId(), temp_protocol.getDataLength());
+            page = Deserializer.byteArrayToInt(temp);
+            reviewDTOs = ownerService.getReviewList(storeDTO.getId(), page);
 
+            dos.write(Serializer.intToByteArray(reviewDTOs.size()));
             for(int i = 0; i < reviewDTOs.size(); i++) {
                 send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, reviewDTOs.get(i));
                 dos.write(send_protocol.getBytes());
@@ -191,36 +192,41 @@ class ClientThread extends Thread {
 
     private void order_history_search() throws IOException {
         List<TotalOrdersDTO>totalOrdersDTOs = userService.getOrders(user.getPk());
+        dos.write(Serializer.intToByteArray(totalOrdersDTOs.size()));
+
         for(int i = 0; i < totalOrdersDTOs.size(); i++) {
-            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, totalOrdersDTOs.size(), totalOrdersDTOs.get(i));
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, totalOrdersDTOs.get(i));
             dos.write(send_protocol.getBytes());
         }
     }
 
     private void store_history_search(StoreDTO storeDTO) throws IOException {
         List<StatisticsDTO> statisticsDTOs = ownerService.getStatistics(storeDTO.getId());
+        dos.write(Serializer.intToByteArray(statisticsDTOs.size()));
+
         for(int i = 0; i < statisticsDTOs.size(); i++) {
-            StatisticsDTO statisticsDTO = statisticsDTOs.get(i);
-            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, statisticsDTOs.size(), statisticsDTO);
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, statisticsDTOs.get(i));
             dos.write(send_protocol.getBytes());
         }
     }
 
     private void store_history_search() throws IOException {
         List<StatisticsDTO> statisticsDTOs = adminService.getStatistics();
+        dos.write(Serializer.intToByteArray(statisticsDTOs.size()));
+
         for(int i = 0; i < statisticsDTOs.size(); i++) {
             StatisticsDTO statisticsDTO = statisticsDTOs.get(i);
-            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, statisticsDTOs.size(), statisticsDTO);
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, statisticsDTO);
             dos.write(send_protocol.getBytes());
         }
     }
 
     private void store_search() throws IOException {
         List<StoreDTO>stores = userService.getAllStore();
-        StoreDTO store;
+        dos.write(Serializer.intToByteArray(stores.size()));
+
         for(int i = 0; i < stores.size(); i++) {
-            store = stores.get(i);
-            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, stores.size(), store);
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, stores.get(i));
             dos.write(send_protocol.getBytes());
         }
     }
@@ -270,6 +276,9 @@ class ClientThread extends Thread {
         dos.write(send_protocol.getBytes());
     }
 
+    /*
+    * 바뀔거 같은 느낌
+    * */
     private void order_register(TotalOrdersDTO totalOrdersDTO) throws IOException {
         List<OrdersDTO> ordersDTOs = null;
         readBuf = dis.readAllBytes();
@@ -312,8 +321,17 @@ class ClientThread extends Thread {
         dos.write(send_protocol.getBytes());
     }
 
-    private void menu_register(MenuDTO menuDTO) {
-        //ownerService.insertMenu(menuDTO);
+    private void menu_register(MenuDTO menuDTO) throws IOException {
+        byte[] temp = dis.readAllBytes();
+        int option_size = Deserializer.byteArrayToInt(temp);
+
+        List<Long> option_list = new ArrayList<>();
+        for(int i = 0; i < option_size; i++) {
+            temp = dis.readAllBytes();
+            DetailsDTO optionDTO = new DetailsDTO(temp);
+            option_list.add(optionDTO.getId());
+        }
+        ownerService.insertMenu(menuDTO, option_list);
     }
 
     private void store_register(StoreDTO storeDTO) throws IOException {
