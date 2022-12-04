@@ -39,10 +39,6 @@ public class StoreDTO extends DTO {
         this.user_pk = user_pk;
     }
 
-    public StoreDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
-
     public void setStatus(String status) {
         this.status = RegistStatus.of(status);
     }

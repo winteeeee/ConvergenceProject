@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ClassificationDTO extends DTO{
+public class ClassificationDTO{
     private Long id;
     private String name;
     private Long store_id;      // FK
@@ -18,9 +18,5 @@ public class ClassificationDTO extends DTO{
         this.id = id;
         this.name = name;
         this.store_id = store_id;
-    }
-
-    public ClassificationDTO(byte[] arr) {
-        setMembersByByteArray(arr);
     }
 }
