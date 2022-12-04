@@ -115,19 +115,78 @@ class ClientThread extends Thread {
                 order_history_search();
             }
             else if (code == ProtocolCode.REVIEW) {
-                review_search();
+                review_search((StoreDTO)data);
             }
         }
         else if (type == ProtocolType.RESPONSE) {
+            if (code == (ProtocolCode.STORE | ProtocolCode.ACCEPT)) {
+                store_regist_accept((StoreDTO)data);
+            }
+            else if (code == (ProtocolCode.STORE | ProtocolCode.REFUSAL)) {
+                store_regist_refuse((StoreDTO)data);
+            }
+            else if (code == (ProtocolCode.MENU | ProtocolCode.ACCEPT)) {
+                menu_regist_accept((MenuDTO)data);
+            }
+            else if (code == (ProtocolCode.MENU | ProtocolCode.REFUSAL)) {
+                menu_regist_refuse((MenuDTO)data);
+            }
+            else if (code == (ProtocolCode.USER | ProtocolCode.ACCEPT)) {
+                user_regist_accpet((UserDTO)data);
+            }
+            else if (code == (ProtocolCode.USER | ProtocolCode.REFUSAL)) {
+                user_regist_refuse((UserDTO)data);
+            }
+            else {
 
+            }
         }
         else {
 
         }
     }
 
-    private void review_search() {
+    private void user_regist_refuse(UserDTO userDTO) {
+        adminService.rejectUser(userDTO.getPk());
+    }
 
+    private void user_regist_accpet(UserDTO userDTO) {
+        adminService.acceptUser(userDTO.getPk());
+    }
+
+    private void menu_regist_refuse(MenuDTO menuDTO) {
+        adminService.rejectMenu(menuDTO.getId());
+    }
+
+    private void menu_regist_accept(MenuDTO menuDTO) {
+        adminService.acceptMenu(menuDTO.getId());
+    }
+
+    private void store_regist_refuse(StoreDTO storeDTO) {
+        adminService.rejectStore(storeDTO.getId());
+    }
+
+    private void store_regist_accept(StoreDTO storeDTO) {
+        adminService.acceptStore(storeDTO.getId());
+    }
+
+    private void review_search(StoreDTO storeDTO) throws IOException {
+        Integer max_page = ownerService.getMaxPage(storeDTO.getId());
+        send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, max_page, null);
+        dos.write(send_protocol.getBytes());
+
+        List<ReviewDTO> reviewDTOs;
+        Protocol temp_protocol;
+        byte[] temp;
+        while((temp = dis.readAllBytes()) != null) {
+            temp_protocol = new Protocol(temp);
+            reviewDTOs = ownerService.getReviewList(storeDTO.getId(), temp_protocol.getDataLength());
+
+            for(int i = 0; i < reviewDTOs.size(); i++) {
+                send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, reviewDTOs.get(i));
+                dos.write(send_protocol.getBytes());
+            }
+        }
     }
 
     private void order_history_search() throws IOException {

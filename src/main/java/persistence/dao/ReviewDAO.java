@@ -4,6 +4,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import persistence.dto.ReviewDTO;
+import persistence.dto.StatisticsDTO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -75,6 +76,18 @@ public class ReviewDAO extends DAO<ReviewDTO> {
 
         return selectList((SqlSession session) -> {
             return session.selectList(stmt, map);
+        });
+    }
+
+    public ReviewDTO selectOneWithTotalOrdersId(Long total_orders_id) {
+        String stmt = sqlMapperPath + "selectOneWithTotalOrdersId";
+        ReviewDTO dto = ReviewDTO.builder()
+                .user_pk(0l)
+                .total_orders_id(total_orders_id).build();
+
+        return selectOne((SqlSession session) -> {
+            ReviewDTO temp = session.selectOne(stmt, dto);
+            return (temp != null) ? temp : dto;
         });
     }
 }

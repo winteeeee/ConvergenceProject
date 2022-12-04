@@ -116,4 +116,16 @@ public class OwnerService {
     public void insertClassification(ClassificationDTO classification) {
         classificationDAO.insertClassification(classification);
     }
+
+    public int getMaxPage(Long store_id) {
+        int reviewCnt = 0;
+        List<TotalOrdersDTO> list = totalOrdersDAO.selectAllWithStoreId(store_id);
+        for(TotalOrdersDTO dto : list) {
+            if(reviewDAO.selectOneWithTotalOrdersId(dto.getId()).getUser_pk() != 0) {
+                reviewCnt++;
+            }
+        }
+
+        return (reviewCnt&1) == 0 ? reviewCnt/2 : reviewCnt/2 + 1;
+    }
 }
