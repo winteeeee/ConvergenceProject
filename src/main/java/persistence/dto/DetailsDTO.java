@@ -21,8 +21,4 @@ public class DetailsDTO extends DTO {
         this.price = price;
         this.store_id = store_id;
     }
-
-    public DetailsDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
 }

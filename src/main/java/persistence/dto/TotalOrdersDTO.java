@@ -29,10 +29,6 @@ public class TotalOrdersDTO extends DTO {
         this.user_pk = user_pk;
     }
 
-    public TotalOrdersDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
-
     public void setStatus(String status) {
         this.status = OrdersStatus.of(status);
     }
