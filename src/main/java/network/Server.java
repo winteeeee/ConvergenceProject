@@ -16,6 +16,9 @@ import java.util.Scanner;
 * 클라이언트와 소켓에 각각 Buffer를 달아 줌
 * 서버 소켓은 또 다른 클라이언트의 통신을 받을 수 있게함
 * */
+
+//ip : 112.217.167.202
+//port : 5000
 public class Server {
     private static final int PORT = 5000;
     private ServerSocket serverSocket;

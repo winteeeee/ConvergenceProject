@@ -75,7 +75,7 @@ class ClientThread extends Thread {
                 review_register((ReviewDTO)data);
             }
             else if (code == ProtocolCode.ORDER) {
-                order_register((OrdersDTO)data);
+                order_register((TotalOrdersDTO)data);
             }
             else {
 
@@ -211,12 +211,24 @@ class ClientThread extends Thread {
         dos.write(send_protocol.getBytes());
     }
 
-    private void order_register(OrdersDTO orderDTO) throws IOException {
-        send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
-        if (openTime < LocalDateTime.now() && LocalDateTime.now() < closeTime) {
-            if (userService. == 1) {
-                send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
-            }
+    private void order_register(TotalOrdersDTO totalOrdersDTO) throws IOException {
+        List<OrdersDTO> ordersDTOs = null;
+        readBuf = dis.readAllBytes();
+        Protocol temp_protocol = new Protocol(readBuf);
+
+        OrdersDTO data = (OrdersDTO)temp_protocol.getData();
+        int size = temp_protocol.getDataLength();
+
+        ordersDTOs.add(data);
+
+        for(int i = 1; i < size; i++) {
+            readBuf = dis.readAllBytes();
+            temp_protocol = new Protocol(readBuf);
+            data = (OrdersDTO)temp_protocol.getData();
+            ordersDTOs.add(data);
+        }
+        if (userService.order(totalOrdersDTO, ordersDTOs) == 1) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         dos.write(send_protocol.getBytes());
     }
