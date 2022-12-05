@@ -1,5 +1,7 @@
 package network;
 
+import persistence.MyBatisConnectionFactory;
+import persistence.dao.*;
 import persistence.dto.*;
 import persistence.enums.Authority;
 import service.AdminService;
@@ -27,9 +29,20 @@ class ClientThread extends Thread {
     private byte[] readBuf = new byte[BUF_SIZE];
     private Protocol send_protocol;
 
-    private UserService userService;
-    private OwnerService ownerService;
-    private AdminService adminService;
+    private StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private StatisticsDAO statisticsDAO = new StatisticsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+
+    private UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
+    private OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, totalOrdersDAO, ordersDAO, reviewDAO, classificationDAO, statisticsDAO, detailsDAO);
+    private AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO, totalOrdersDAO, statisticsDAO);
+
     private int id;
     private UserDTO user;
     private String authority;
@@ -238,7 +251,7 @@ class ClientThread extends Thread {
 
     private void user_search(UserDTO userDTO) throws IOException {
         UserDTO temp = userService.getUserWithId(userDTO.getId());
-        if (temp.getPw().equals(userDTO.getPw())) {
+        if (temp != null && temp.getPw().equals(userDTO.getPw())) {
             user = temp;
             authority = user.getAuthority();
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, user);
@@ -363,7 +376,7 @@ class ClientThread extends Thread {
     }
 
     private void store_register(StoreDTO storeDTO) throws IOException {
-        if (ownerService.insertStore(storeDTO) == 1) {
+        if (ownerService.insertStore(storeDTO) != 0) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         else {
@@ -373,7 +386,7 @@ class ClientThread extends Thread {
     }
 
     private void user_register(UserDTO userDTO) throws IOException {
-        if ( userService.insertUser(userDTO) == 1) {
+        if (userService.insertUser(userDTO) != 0) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         else {

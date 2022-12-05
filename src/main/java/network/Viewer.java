@@ -156,7 +156,7 @@ public class Viewer {
     public void changeUserPhoneNumber(UserDTO userInfo) throws IOException {
         System.out.println("새로운 전화번호를 입력하세요.");
         System.out.print("입력 : ");
-        userInfo.setPw(keyInput.readLine());
+        userInfo.setPhone(keyInput.readLine());
         System.out.println();
     }
 
