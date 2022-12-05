@@ -407,7 +407,12 @@ public class ClientController {
         dos.write(Serializer.intToByteArray(selectedOption.size()));
         //보낼 옵션 리스트의 크기
         for(int i = 0; i < selectedOption.size(); i++) {
-            dos.write(optionDTOs.get(selectedOption.get(i)).getBytes());
+            try {
+                dos.write(Serializer.getBytes(optionDTOs.get(selectedOption.get(i))));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             //옵션들의 정보들을 쭉 보낸다.
         }
     }

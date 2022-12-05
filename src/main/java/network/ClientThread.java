@@ -351,7 +351,12 @@ class ClientThread extends Thread {
         List<Long> option_list = new ArrayList<>();
         for(int i = 0; i < option_size; i++) {
             temp = dis.readAllBytes();
-            DetailsDTO optionDTO = new DetailsDTO(temp);
+            DetailsDTO optionDTO = null;
+            try {
+                optionDTO = (DetailsDTO) Deserializer.getObject(temp);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             option_list.add(optionDTO.getId());
         }
         ownerService.insertMenu(menuDTO, option_list);
