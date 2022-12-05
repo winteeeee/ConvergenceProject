@@ -17,9 +17,14 @@ class ClientThread extends Thread {
     Socket socket;
     private DataInputStream dis;
     private DataOutputStream dos;
+
+    private InputStream is;
+    private OutputStream os;
     private BufferedReader br;
     private BufferedWriter bw;
-    private byte[] readBuf;
+
+    private final int BUF_SIZE = 1024;
+    private byte[] readBuf = new byte[BUF_SIZE];
     private Protocol send_protocol;
 
     private UserService userService;
@@ -45,12 +50,10 @@ class ClientThread extends Thread {
             bw = new BufferedWriter(new OutputStreamWriter(dos));
 
             while (dis.read(readBuf) != -1) {
-                //readBuf = dis.readAllBytes();
-                //readBuf = br.readLine().getBytes();
+                System.out.println("Thread" + id);
                 Protocol protocol = new Protocol(readBuf);
 
                 selectFunction(protocol);
-
             }
         } catch (IOException e) {
             System.out.println("    Thread " + id + " is closed. ");
@@ -110,13 +113,15 @@ class ClientThread extends Thread {
                 else {
                     store_history_search();
                 }
-
             }
             else if (code == (ProtocolCode.ORDER | ProtocolCode.HISTORY)) {
                 order_history_search();
             }
             else if (code == ProtocolCode.REVIEW) {
                 review_search((StoreDTO)data);
+            }
+            else if (code == ProtocolCode.MENU) {
+                menu_search((StoreDTO)data);
             }
         }
         else if (type == ProtocolType.RESPONSE) {
@@ -242,6 +247,24 @@ class ClientThread extends Thread {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
         }
         dos.write(send_protocol.getBytes());
+    }
+
+    private void menu_search(StoreDTO storeDTO) throws IOException {
+        List<ClassificationDTO> classificationDTOs = userService.getMenuGroups(storeDTO.getId());
+        dos.write(Serializer.intToByteArray(classificationDTOs.size()));
+
+        for (ClassificationDTO classificationDTO : classificationDTOs) {
+            List<MenuDTO> menuDTOs = userService.getMenusWithGroup_id(classificationDTO.getId());
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, classificationDTO);
+            dos.write(send_protocol.getBytes());
+
+            dos.write(Serializer.intToByteArray(menuDTOs.size()));
+
+            for(MenuDTO menuDTO : menuDTOs) {
+                send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, menuDTO);
+                dos.write(send_protocol.getBytes());
+            }
+        }
     }
 
     private void order_modify(OrdersDTO orderDTO) throws IOException {
