@@ -18,8 +18,12 @@ public class Protocol {
         data = d;
     }
 
-    public byte[] getBytes() {
-        byte[] dataByteArray = data.getBytes();
+    public Protocol(byte[] arr) {
+        byteArrayToProtocol(arr);
+    }
+
+    public byte[] getBytes() throws Exception {
+        byte[] dataByteArray = Serializer.getBytes(data);
         dataLength = dataByteArray.length;
         byte[] typeAndCodeByteArray = Serializer.bitsToByteArray(type, code);
         byte[] dataLengthByteArray = Serializer.intToByteArray(dataLength);
@@ -35,40 +39,40 @@ public class Protocol {
         return resultArray;
     }
 
-    private DTO byteArrayToData(byte type, byte code, byte[] arr) {
+    private DTO byteArrayToData(byte type, byte code, byte[] arr) throws Exception {
         if (type == ProtocolType.REGISTER) {
             if (code == ProtocolCode.ORDER) {
-                return new OrdersDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
-                return new ReviewDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
         else if (type == ProtocolType.MODIFICATION || type == ProtocolType.SEARCH) {
             if (code == ProtocolCode.MENU) {
-                return new MenuDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.OPTION) {
-                return new DetailsDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.ORDER) {
-                return new OrdersDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
-                return new ReviewDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.STORE) {
-                return new StoreDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.USER) {
-                return new UserDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
@@ -107,7 +111,13 @@ public class Protocol {
         int dataLength = Deserializer.byteArrayToInt(dataLengthByteArray);
         byte[] dataArray = new byte[dataLength];
         System.arraycopy(dataArray, 0, arr, 2 + INT_LENGTH, dataLength); pos += dataLength;
-        DTO data = byteArrayToData(type, code, dataArray);
+        DTO data = null;
+        try {
+            data = byteArrayToData(type, code, dataArray);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return new Protocol(type, code, dataLength, data);
     }

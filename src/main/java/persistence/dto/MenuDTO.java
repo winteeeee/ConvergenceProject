@@ -28,10 +28,6 @@ public class MenuDTO extends DTO {
         this.classification_id = Classification_id;
     }
 
-    public MenuDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
-
     public void setStatus(String status) {
         this.status = RegistStatus.of(status);
     }

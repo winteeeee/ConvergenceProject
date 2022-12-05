@@ -6,6 +6,7 @@
 <mapper namespace="mapper.StoreMapper">
     <resultMap id="result" type="StoreDTO">
         <result property="id" column="id"/> <!--PK, 자동 생성-->
+        <result property="status" column="status"/>
         <result property="name" column="name"/>
         <result property="comment" column="comment"/>
         <result property="phone" column="phone"/>
@@ -18,8 +19,8 @@
     </resultMap>
 
     <insert id="insertStore">
-        INSERT INTO store (name, comment, phone, address, review_count, star_rating, open_time, close_time, user_pk)
-        VALUES (#{name}, #{comment}, #{phone}, #{address}, #{review_count}, #{star_rating}, #{open_time}, #{close_time}, #{user_pk})
+        INSERT INTO store (status, name, comment, phone, address, review_count, star_rating, open_time, close_time, user_pk)
+        VALUES (#{status}, #{name}, #{comment}, #{phone}, #{address}, #{review_count}, #{star_rating}, #{open_time}, #{close_time}, #{user_pk})
     </insert>
 
     <select id="selectAll" resultMap="result">
@@ -27,9 +28,27 @@
         FROM store
     </select>
 
-    <select id="selectAllWithUser_pk" resultMap="result">
+    <select id="selectAllWithUserPk" resultMap="result">
         SELECT *
         FROM store
         WHERE user_pk=#{user_pk}
     </select>
+
+    <select id="selectAllWithStatus" resultMap="result">
+        SELECT *
+        FROM store
+        WHERE status=#{status}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE store
+        SET status=#{status}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateTime">
+        UPDATE store
+        SET open_time=#{open_time}, close_time=#{close_time}
+        WHERE id=#{id}
+    </update>
 </mapper>

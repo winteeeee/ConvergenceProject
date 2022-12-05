@@ -5,31 +5,61 @@
 
 <mapper namespace="mapper.UserMapper">
     <resultMap id="result" type="UserDTO">
-        <result property="pk" column="pk"/> <!--PK, 자동 생성-->
-
+        <result property="pk" column="pk"/>
+        <result property="status" column="status"/>
+        <result property="authority" column="authority"/>
         <result property="id" column="id"/>
         <result property="pw" column="pw"/>
         <result property="name" column="name"/>
         <result property="phone" column="phone"/>
         <result property="age" column="age"/>
-
-        <result property="authority" column="authority"/>
     </resultMap>
 
-    <insert id="insertUser">
-        INSERT INTO user (authority, id, pw, name, phone, age)
-        VALUES (#{authority}, #{id}, #{pw}, #{name}, #{phone}, #{age})
+    <insert id="insertUser" useGeneratedKeys = "true" keyProperty="pk" keyColumn="pk">
+        INSERT INTO user (status, authority, id, pw, name, phone, age)
+        VALUES (#{status}, #{authority}, #{id}, #{pw}, #{name}, #{phone}, #{age})
     </insert>
 
-    <select id="selectOneWithUserPk" resultMap="result">
+    <select id="selectOneWithPk" resultMap="result">
         SELECT *
         FROM user
         WHERE pk=#{pk}
     </select>
 
-    <select id="selectOneWithUserId" resultMap="result">
+    <select id="selectOneWithId" resultMap="result">
         SELECT *
         FROM user
         WHERE id=#{id}
+    </select>
+
+    <update id="update">
+        UPDATE user
+        <set>
+            <if test="pw != null">
+                pw=#{pw},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="age != null">
+                age=#{age},
+            </if>
+        </set>
+        WHERE pk=#{pk}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE user
+        SET status=#{status}
+        WHERE pk=#{pk}
+    </update>
+
+    <select id="selectAllWithStatus" resultMap="result">
+        SELECT *
+        FROM user
+        WHERE status=#{status}
     </select>
 </mapper>

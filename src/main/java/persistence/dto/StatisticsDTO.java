@@ -23,7 +23,4 @@ public class StatisticsDTO extends DTO {
         this.price = price;
         this.count = count;
     }
-    public StatisticsDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
 }

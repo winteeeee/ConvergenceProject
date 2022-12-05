@@ -6,36 +6,21 @@
 <mapper namespace="mapper.OrdersMapper">
     <resultMap id="result" type="OrdersDTO">
         <result property="id" column="id"/>
-        <result property="regdate" column="regdate"/>
         <result property="details" column="details"/>
         <result property="price" column="price"/>
-        <result property="comment" column="comment"/>
-        <result property="status" column="status"/>
         <result property="menu_id" column="menu_id"/>
         <result property="total_orders_id" column="total_orders_id"/>
-        <result property="store_id" column="store_id"/>
     </resultMap>
 
-    <insert id="insertOrders">
-        INSERT INTO orders (status, regdate, details, price, comment, menu_id, total_orders_id, store_id)
-        VALUES (#{status}, #{regdate}, #{details}, #{price}, #{comment}, #{menu_id}, #{total_orders_id}, #{store_id})
+    <insert id="insertOrders" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO orders (details, price, menu_id, total_orders_id)
+        VALUES (#{details}, #{price}, #{menu_id}, #{total_orders_id})
     </insert>
 
-    <select id="selectAllWithStore_id" resultMap="result">
-        SELECT *
-        FROM orders
-        WHERE store_id=#{store_id}
-    </select>
-
-    <select id="selectAllWithTotal_Orders_id" resultMap="result">
+    <select id="selectAllWithTotalOrdersId">
         SELECT *
         FROM orders
         WHERE total_orders_id=#{total_orders_id}
     </select>
 
-    <update id="updateStatus">
-        UPDATE orders
-        SET status=#{status}
-        WHERE id=#{id}
-    </update>
 </mapper>
