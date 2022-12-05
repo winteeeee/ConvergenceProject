@@ -1,8 +1,9 @@
 package network;
 
+import network.*;
 import org.testng.internal.collections.Pair;
 import persistence.dto.*;
-import persistence.enums.OrdersStatus;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

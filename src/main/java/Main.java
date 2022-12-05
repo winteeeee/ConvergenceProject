@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class Main {
+public class Main { // temp
     static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
