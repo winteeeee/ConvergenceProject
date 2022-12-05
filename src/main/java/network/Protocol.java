@@ -18,6 +18,10 @@ public class Protocol {
         data = d;
     }
 
+    public Protocol(byte[] arr) {
+        byteArrayToProtocol(arr);
+    }
+
     public byte[] getBytes() throws Exception {
         byte[] dataByteArray = Serializer.getBytes(data);
         dataLength = dataByteArray.length;
