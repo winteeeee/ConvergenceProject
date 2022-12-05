@@ -72,7 +72,7 @@ public class Protocol {
             }
 
             else if (code == ProtocolCode.USER) {
-                return new UserDTO(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
