@@ -44,7 +44,6 @@ public class ClientController {
                 UserDTO me = null;
                 if (dis.read(readBuf) != -1) {
                     me = (UserDTO) new Protocol(readBuf).getData();
-                    readBuf = new byte[BUF_SIZE];
                     return me;
                 }
             }
@@ -68,7 +67,16 @@ public class ClientController {
                 if(registOption == OWNER_REGIST || registOption == USER_REGIST) {
                     Protocol registUser = new Protocol(ProtocolType.REGISTER, ProtocolCode.USER, 0, userInfo);
                     dos.write(registUser.getBytes());
-                    viewer.showRegistUserCompleteMessage();
+                    if (dis.read(readBuf) != -1) {
+                        Protocol protocol = new Protocol(readBuf);
+
+                        if (protocol.getCode() == ProtocolCode.ACCEPT) {
+                            viewer.showRegistUserCompleteMessage();
+                        }
+                        else {
+                            System.out.println("실패!"); // TODO
+                        }
+                    }
                 }
             }
 

@@ -29,23 +29,23 @@ class ClientThread extends Thread {
     private byte[] readBuf = new byte[BUF_SIZE];
     private Protocol send_protocol;
 
-    private StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private StatisticsDAO statisticsDAO = new StatisticsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static StatisticsDAO statisticsDAO = new StatisticsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
 
-    private UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
-    private OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, totalOrdersDAO, ordersDAO, reviewDAO, classificationDAO, statisticsDAO, detailsDAO);
-    private AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO, totalOrdersDAO, statisticsDAO);
+    private static UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
+    private static OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, totalOrdersDAO, ordersDAO, reviewDAO, classificationDAO, statisticsDAO, detailsDAO);
+    private static AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO, totalOrdersDAO, statisticsDAO);
 
     private int id;
     private UserDTO user;
-    private String authority;
+    private Authority authority;
     private long store_id;
 
     ClientThread (Socket socket, int id) {
@@ -106,7 +106,7 @@ class ClientThread extends Thread {
                 store_modify((StoreDTO)data);
             }
             else if (code == ProtocolCode.ORDER) {
-                order_modify((OrdersDTO)data);
+                order_modify((TotalOrdersDTO)data);
             }
             else {
 
@@ -119,6 +119,9 @@ class ClientThread extends Thread {
             else if (code == ProtocolCode.STORE) {
                 store_search();
             }
+            else if (code == ProtocolCode.ORDER) {
+                order_search((UserDTO)data);
+            }
             else if (code == (ProtocolCode.STORE | ProtocolCode.HISTORY)) {
                 if(authority.equals(Authority.OWNER)) {
                     store_history_search((StoreDTO)data);
@@ -126,9 +129,6 @@ class ClientThread extends Thread {
                 else {
                     store_history_search();
                 }
-            }
-            else if (code == (ProtocolCode.ORDER | ProtocolCode.HISTORY)) {
-                order_history_search();
             }
             else if (code == ProtocolCode.REVIEW) {
                 review_search((StoreDTO)data);
@@ -162,6 +162,16 @@ class ClientThread extends Thread {
         }
         else {
 
+        }
+    }
+
+    private void order_search(UserDTO userDTO) throws IOException {
+        List<TotalOrdersDTO>totalOrdersDTOs = userService.getOrders(user.getPk());
+        dos.write(Serializer.intToByteArray(totalOrdersDTOs.size()));
+
+        for(int i = 0; i < totalOrdersDTOs.size(); i++) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, totalOrdersDTOs.get(i));
+            dos.write(send_protocol.getBytes());
         }
     }
 
@@ -208,16 +218,6 @@ class ClientThread extends Thread {
         }
     }
 
-    private void order_history_search() throws IOException {
-        List<TotalOrdersDTO>totalOrdersDTOs = userService.getOrders(user.getPk());
-        dos.write(Serializer.intToByteArray(totalOrdersDTOs.size()));
-
-        for(int i = 0; i < totalOrdersDTOs.size(); i++) {
-            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, totalOrdersDTOs.get(i));
-            dos.write(send_protocol.getBytes());
-        }
-    }
-
     private void store_history_search(StoreDTO storeDTO) throws IOException {
         List<StatisticsDTO> statisticsDTOs = ownerService.getStatistics(storeDTO.getId());
         dos.write(Serializer.intToByteArray(statisticsDTOs.size()));
@@ -253,7 +253,7 @@ class ClientThread extends Thread {
         UserDTO temp = userService.getUserWithId(userDTO.getId());
         if (temp != null && temp.getPw().equals(userDTO.getPw())) {
             user = temp;
-            authority = user.getAuthority();
+            authority = user.getAuthorityEnum();
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, user);
         }
         else {
@@ -280,8 +280,8 @@ class ClientThread extends Thread {
         }
     }
 
-    private void order_modify(OrdersDTO orderDTO) throws IOException {
-        if (userService.cancelOrder(orderDTO.getTotal_orders_id()) == 1) {
+    private void order_modify(TotalOrdersDTO totalOrdersDTO) throws IOException {
+        if (userService.cancelOrder(totalOrdersDTO.getId()) != 0) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         else {
@@ -386,7 +386,16 @@ class ClientThread extends Thread {
     }
 
     private void user_register(UserDTO userDTO) throws IOException {
-        if (userService.insertUser(userDTO) != 0) {
+        boolean flag = false;
+
+        if (userDTO.getAuthorityEnum().equals(Authority.USER)) {
+            flag = userService.insertUser(userDTO) != 0;
+        }
+        else if (userDTO.getAuthorityEnum().equals(Authority.OWNER)) {
+            flag = ownerService.insertOwner(userDTO) != 0;
+        }
+
+        if (flag) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         else {

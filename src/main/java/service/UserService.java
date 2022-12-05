@@ -37,7 +37,14 @@ public class UserService {
     }
 
     public UserDTO getUserWithId(String id) {
-        return userDAO.selectOneWithId(id);
+        UserDTO user = userDAO.selectOneWithId(id);
+
+        if (!user.getStatusEnum().equals(RegistStatus.ACCEPT)) {
+            user = null;
+
+        }
+
+        return user;
     }
 
     public UserDTO update(UserDTO user) {

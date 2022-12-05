@@ -11,6 +11,10 @@ public class Deserializer {
     final static int LONG_LENGTH = 8;
 
     public static Object getObject(byte[] objInfo) throws Exception {
+        if (objInfo.length < INT_LENGTH) {
+            return null;
+        }
+
         int idx = INT_LENGTH;
 
         /* find class */

@@ -40,7 +40,7 @@ public class Client
         while(true){
             me = con.login();
 
-            if(me != null) {
+            if (me != null) {
                 String userAuthority = me.getAuthorityEnum().getName();
                 if (userAuthority.equals(Authority.ADMIN.getName())) {
                     adminRun();
