@@ -38,37 +38,37 @@ public class Protocol {
     private DTO byteArrayToData(byte type, byte code, byte[] arr) throws Exception {
         if (type == ProtocolType.REGISTER) {
             if (code == ProtocolCode.ORDER) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
         else if (type == ProtocolType.MODIFICATION || type == ProtocolType.SEARCH) {
             if (code == ProtocolCode.MENU) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.OPTION) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.ORDER) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.STORE) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.USER) {
-                return (DTO) Serializer.getObject(arr);
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
