@@ -76,10 +76,6 @@ public class Protocol {
             }
         }
 
-        else if (type == ProtocolType.DELETE) {
-            //보류
-        }
-
         else if (type == ProtocolType.RESPONSE) {
             if (code == ProtocolCode.ACCEPT) {
                 return null;
