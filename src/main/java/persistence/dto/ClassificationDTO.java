@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ClassificationDTO{
+public class ClassificationDTO extends DTO{
     private Long id;
     private String name;
     private Long store_id;      // FK
