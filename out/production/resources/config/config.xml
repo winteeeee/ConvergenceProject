@@ -9,9 +9,10 @@
         <typeAlias alias="OrdersDTO" type="persistence.dto.OrdersDTO"/>
         <typeAlias alias="ReviewDTO" type="persistence.dto.ReviewDTO"/>
         <typeAlias alias="StoreDTO" type="persistence.dto.StoreDTO"/>
-        <typeAlias alias="StoreRegistDTO" type="persistence.dto.StoreRegistDTO"/>
+        <typeAlias alias="StatisticsDTO" type="persistence.dto.StatisticsDTO"/>
         <typeAlias alias="TotalOrdersDTO" type="persistence.dto.TotalOrdersDTO"/>
         <typeAlias alias="UserDTO" type="persistence.dto.UserDTO"/>
+        <typeAlias alias="ClassificationDTO" type="persistence.dto.ClassificationDTO"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
@@ -21,7 +22,7 @@
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="url" value="jdbc:mysql://localhost/mydb?characterEncoding=utf8&amp;serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>
                 <property name="username" value="root"/>
-                <property name="password" value="Annabelle.1105"/>
+                <property name="password" value="eoghks0014"/>
             </dataSource>
         </environment>
     </environments>
@@ -29,10 +30,11 @@
         <mapper resource="sqlmapper/menu.xml"/>
         <mapper resource="sqlmapper/details.xml"/>
         <mapper resource="sqlmapper/orders.xml"/>
-        <mapper resource="sqlmapper/review.xml"/>
-        <mapper resource="sqlmapper/store.xml"/>
-        <mapper resource="sqlmapper/storeRegist.xml"/>
         <mapper resource="sqlmapper/totalOrders.xml"/>
+        <mapper resource="sqlmapper/review.xml"/>
+        <mapper resource="sqlmapper/statistics.xml"/>
+        <mapper resource="sqlmapper/store.xml"/>
         <mapper resource="sqlmapper/user.xml"/>
+        <mapper resource="sqlmapper/classification.xml"/>
     </mappers>
 </configuration>

@@ -1,13 +1,15 @@
 package persistence.enums;
 
 import lombok.Getter;
+
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum Authority implements Enum{
+public enum Authority implements Enum, Serializable {
     ADMIN("관리자"),
     OWNER("점주"),
     USER("사용자");

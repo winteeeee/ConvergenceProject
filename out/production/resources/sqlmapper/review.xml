@@ -6,16 +6,17 @@
 <mapper namespace="mapper.ReviewMapper">
     <resultMap id="result" type="ReviewDTO">
         <result property="id" column="id"/>
-        <result property="contents" column="contents"/>
+        <result property="comment" column="comment"/>
+        <result property="owner_comment" column="owner_comment"/>
         <result property="regdate" column="regdate"/>
         <result property="star_rating" column="star_rating"/>
         <result property="user_pk" column="user_pk"/>
-        <result property="orders_id" column="orders_id"/>
+        <result property="total_orders_id" column="total_orders_id"/>
     </resultMap>
 
     <insert id="insertReview">
-        INSERT INTO review (contents, regdate, star_rating, user_pk, orders_id)
-        VALUES (#{contents}, #{regdate}, #{star_rating}, #{user_pk}, #{orders_id});
+        INSERT INTO review (comment, owner_comment, regdate, star_rating, user_pk, total_orders_id)
+        VALUES (#{comment}, #{owner_comment}, #{regdate}, #{star_rating}, #{user_pk}, #{total_orders_id});
     </insert>
 
     <update id="updateForInsert">
@@ -23,21 +24,31 @@
         SET review_count = review_count + 1,
             star_rating = star_rating + #{star_rating}
         WHERE store.id = (
-            SELECT store_id
-            FROM orders
-            WHERE orders.id = #{orders_id}
+            SELECT total_orders_id
+            FROM total_orders_id
+            WHERE total_orders_id.id = #{total_orders_id}
         );
     </update>
 
-    <select id="selectAllWithUser_pk" resultMap="result">
+    <select id="selectAllWithStoreId" resultMap="result">
+        SELECT *
+        FROM review
+        WHERE store_id=#{store_id}
+        ORDER BY regdate DESC
+        LIMIT #{page}, 2
+    </select>
+
+    <select id="selectAllWithUserPk" resultMap="result">
         SELECT *
         FROM review
         WHERE user_pk=#{user_pk}
+        ORDER BY regdate DESC
+            LIMIT #{page}, 2
     </select>
 
-    <update id="updateReviewCntAndStarRate">
-        UPDATE store
-        SET review_count = review_count + 1, start_rating = start_rating + #{start_rating}
+    <update id="updateOwnerComment">
+        UPDATE review
+        SET owner_comment=#{owner_comment}
         WHERE id=#{id}
     </update>
 </mapper>

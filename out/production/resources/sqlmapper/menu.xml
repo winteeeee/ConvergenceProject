@@ -6,22 +6,27 @@
 <mapper namespace="mapper.MenuMapper">
     <resultMap id="result" type="MenuDTO">
         <result property="id" column="id"/>
-        <result property="group_name" column="group_name"/>
+        <result property="status" column="status"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>
         <result property="stock" column="stock"/>
-        <result property="store_id" column="store_id"/>
+        <result property="classification_id" column="classification_id"/>
     </resultMap>
 
-    <insert id="insertMenu">
-        INSERT INTO menu (group_name, name, price, stock, store_id)
-        VALUES (#{group_name}, #{name}, #{price}, #{stock}, #{store_id})
+    <insert id="insertMenu" useGeneratedKeys = "true" keyProperty="id" keyColumn="id">
+        INSERT INTO menu (status, name, price, stock, classification_id)
+        VALUES (#{status}, #{name}, #{price}, #{stock}, #{classification_id})
     </insert>
 
-    <select id="selectAllWithStore_id" resultMap="result">
+    <insert id="insertMenuDetails">
+        INSERT INTO menu_details_map (menu_id, details_id)
+        VALUES (#{menu_id}, #{details_id})
+    </insert>
+
+    <select id="selectAllWithClassification_id" resultMap="result">
         SELECT *
         FROM menu
-        WHERE store_id=#{store_id}
+        WHERE classification_id=#{classification_id} AND status=#{status}
     </select>
 
     <select id="selectOneWithId" resultMap="result">
@@ -40,6 +45,30 @@
                 price=#{price},
             </if>
         </set>
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE menu
+        SET status=#{status}
+        WHERE id=#{id}
+    </update>
+
+    <select id="selectAllWithStatus" resultMap="result">
+        SELECT *
+        FROM menu
+        WHERE status=#{status}
+    </select>
+
+    <update id="updateForInsert">
+        UPDATE menu
+        SET stock = stock - 1
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateStock">
+        UPDATE menu
+        SET stock=#{stock}
         WHERE id=#{id}
     </update>
 </mapper>

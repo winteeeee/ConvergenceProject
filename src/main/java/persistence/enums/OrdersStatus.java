@@ -2,13 +2,14 @@ package persistence.enums;
 
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum OrdersStatus implements Enum {
+public enum OrdersStatus implements Enum, Serializable {
     HOLD( "접수대기"),
     IN_DELIVERY("배달중"),
     CANCEL("취소"),
