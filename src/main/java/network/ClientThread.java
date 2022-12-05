@@ -29,19 +29,19 @@ class ClientThread extends Thread {
     private byte[] readBuf = new byte[BUF_SIZE];
     private Protocol send_protocol;
 
-    private static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
-    private static StatisticsDAO statisticsDAO = new StatisticsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final OrdersDAO ordersDAO = new OrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final ReviewDAO reviewDAO = new ReviewDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final UserDAO userDAO = new UserDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final ClassificationDAO classificationDAO = new ClassificationDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final TotalOrdersDAO totalOrdersDAO = new TotalOrdersDAO(MyBatisConnectionFactory.getSqlSessionFactory());
+    private static final StatisticsDAO statisticsDAO = new StatisticsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
 
-    private static UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
-    private static OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, totalOrdersDAO, ordersDAO, reviewDAO, classificationDAO, statisticsDAO, detailsDAO);
-    private static AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO, totalOrdersDAO, statisticsDAO);
+    private static final UserService userService = new UserService(ordersDAO, storeDAO, userDAO, menuDAO, reviewDAO, totalOrdersDAO, classificationDAO, detailsDAO);
+    private static final OwnerService ownerService = new OwnerService(userDAO, storeDAO, menuDAO, totalOrdersDAO, ordersDAO, reviewDAO, classificationDAO, statisticsDAO, detailsDAO);
+    private static final AdminService adminService = new AdminService(storeDAO, userDAO, menuDAO, totalOrdersDAO, statisticsDAO);
 
     private int id;
     private UserDTO user;
@@ -51,6 +51,7 @@ class ClientThread extends Thread {
     ClientThread (Socket socket, int id) {
         this.socket = socket;
         this.id = id;
+        authority = null;
     }
 
     @Override
@@ -94,6 +95,12 @@ class ClientThread extends Thread {
             else if (code == ProtocolCode.ORDER) {
                 order_register((TotalOrdersDTO)data);
             }
+            else if (code == ProtocolCode.CLASSIFICATION) {
+                classificaion_register((ClassificationDTO)data);
+            }
+            else if (code == ProtocolCode.OPTION) {
+                option_register((DetailsDTO)data);
+            }
             else {
 
             }
@@ -108,19 +115,40 @@ class ClientThread extends Thread {
             else if (code == ProtocolCode.ORDER) {
                 order_modify((TotalOrdersDTO)data);
             }
-            else {
-
+            else if (code == ProtocolCode.REVIEW){
+                review_modify((ReviewDTO)data);
             }
         }
         else if (type == ProtocolType.SEARCH) {
             if (code == ProtocolCode.USER) {
-                user_search((UserDTO)data);
+                /*
+                1. 로그인 기능
+                2. 보류 중인 점주 조회 -> authority == admin
+                * */
+                if (data != null) {
+                    user_search((UserDTO)data);
+                }
+                else if (data == null && authority.equals(Authority.ADMIN)) {
+                    user_search();
+                }
+
             }
             else if (code == ProtocolCode.STORE) {
-                store_search();
+                if (data == null) {
+                    store_search();
+                }
+                else {
+                    store_search((UserDTO)data);
+                }
             }
             else if (code == ProtocolCode.ORDER) {
-                order_search((UserDTO)data);
+                if (data.getClass().getName().contains("UserDTO")) {
+                    order_search((UserDTO)data);
+                }
+                else if (data.getClass().getName().contains("StoreDTO")) {
+                    order_search((StoreDTO)data);
+                }
+
             }
             else if (code == (ProtocolCode.STORE | ProtocolCode.HISTORY)) {
                 if(authority.equals(Authority.OWNER)) {
@@ -133,8 +161,29 @@ class ClientThread extends Thread {
             else if (code == ProtocolCode.REVIEW) {
                 review_search((StoreDTO)data);
             }
+
+            else if (code == (ProtocolCode.REVIEW | ProtocolCode.HISTORY)) {
+                review_searchWithoutPage((StoreDTO)data);
+            }
             else if (code == ProtocolCode.MENU) {
-                menu_search((StoreDTO)data);
+                if (data == null) {
+                    menu_search();
+                }
+                else {
+                    menu_search((StoreDTO)data);
+                }
+
+            }
+            else if (code == ProtocolCode.OPTION) {
+                if (data.getClass().getName().contains("MenuDTO")) {
+                    option_search((MenuDTO) data);
+                }
+                else {
+                    option_search((StoreDTO) data);
+                }
+            }
+            else if (code == ProtocolCode.CLASSIFICATION) {
+                classificaion_search((StoreDTO)data);
             }
         }
         else if (type == ProtocolType.RESPONSE) {
@@ -149,6 +198,12 @@ class ClientThread extends Thread {
             }
             else if (code == (ProtocolCode.MENU | ProtocolCode.REFUSAL)) {
                 menu_regist_refuse((MenuDTO)data);
+            }
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.ACCEPT)) {
+                order_regist_accept((TotalOrdersDTO)data);
+            }
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.REFUSAL)) {
+                order_regist_refuse((TotalOrdersDTO)data);
             }
             else if (code == (ProtocolCode.USER | ProtocolCode.ACCEPT)) {
                 user_regist_accpet((UserDTO)data);
@@ -165,13 +220,88 @@ class ClientThread extends Thread {
         }
     }
 
-    private void order_search(UserDTO userDTO) throws IOException {
-        List<TotalOrdersDTO>totalOrdersDTOs = userService.getOrders(user.getPk());
+    private void order_regist_accept(TotalOrdersDTO data) {
+        ownerService.acceptOrders(data.getId());
+    }
+
+    private void order_regist_refuse(TotalOrdersDTO data) {
+        ownerService.cancelOrders(data.getId());
+    }
+
+    private void classificaion_search(StoreDTO storeDTO) throws IOException {
+        List<ClassificationDTO>classificationDTOs = userService.getMenuGroups(storeDTO.getId());
+        dos.write(Serializer.intToByteArray(classificationDTOs.size()));
+        receive_ack();
+
+        for(ClassificationDTO classificationDTO : classificationDTOs) {
+            dos.write(new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, classificationDTO).getBytes());
+            receive_ack();
+        }
+    }
+
+    private void option_register(DetailsDTO optionDTO) throws IOException {
+        if (ownerService.insertDetails(optionDTO) != 0) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
+        }
+        else {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
+        }
+        dos.write(send_protocol.getBytes());
+    }
+
+    private void classificaion_register(ClassificationDTO classificationDTO) throws IOException {
+        if (ownerService.insertClassification(classificationDTO) != 0) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
+        }
+        else {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
+        }
+        dos.write(send_protocol.getBytes());
+    }
+
+    private void option_search(StoreDTO storeDTO) throws IOException {
+        List<DetailsDTO>detailsDTOs = ownerService.selectAllWithStoreId(storeDTO);
+        dos.write(Serializer.intToByteArray(detailsDTOs.size()));
+        receive_ack();
+
+        for(DetailsDTO detailsDTO : detailsDTOs) {
+            dos.write(new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, detailsDTO).getBytes());
+            receive_ack();
+        }
+    }
+
+    private void option_search(MenuDTO menuDTO) throws IOException {
+        List<DetailsDTO>detailsDTOs = userService.getDetailsWithMenuId(menuDTO.getId());
+        dos.write(Serializer.intToByteArray(detailsDTOs.size()));
+        receive_ack();
+
+        for(DetailsDTO detailsDTO : detailsDTOs) {
+            dos.write(new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, detailsDTO).getBytes());
+            receive_ack();
+        }
+    }
+
+    private void order_search(StoreDTO storeDTO) throws IOException {
+        List<TotalOrdersDTO>totalOrdersDTOs = ownerService.getTotalOrders(storeDTO.getId());
         dos.write(Serializer.intToByteArray(totalOrdersDTOs.size()));
+        receive_ack();
 
         for(int i = 0; i < totalOrdersDTOs.size(); i++) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, totalOrdersDTOs.get(i));
             dos.write(send_protocol.getBytes());
+            receive_ack();
+        }
+    }
+
+    private void order_search(UserDTO userDTO) throws IOException {
+        List<TotalOrdersDTO>totalOrdersDTOs = userService.getOrders(userDTO.getPk());
+        dos.write(Serializer.intToByteArray(totalOrdersDTOs.size()));
+        receive_ack();
+
+        for(int i = 0; i < totalOrdersDTOs.size(); i++) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, totalOrdersDTOs.get(i));
+            dos.write(send_protocol.getBytes());
+            receive_ack();
         }
     }
 
@@ -200,52 +330,113 @@ class ClientThread extends Thread {
     }
 
     private void review_search(StoreDTO storeDTO) throws IOException {
-        Integer max_page = ownerService.getMaxPage(storeDTO.getId());
+        int cur_page = 1;
+        int max_page = storeDTO.getReview_count() / 2 + (storeDTO.getReview_count() & 1);
         dos.write(Serializer.intToByteArray(max_page));
 
-        List<ReviewDTO> reviewDTOs;
-        int page;
-        byte[] temp;
-        while((temp = dis.readAllBytes()) != null) {
-            page = Deserializer.byteArrayToInt(temp);
-            reviewDTOs = ownerService.getReviewList(storeDTO.getId(), page);
+        while(true) {
+            if (dis.read(readBuf) != -1) {
+                cur_page = Deserializer.byteArrayToInt(readBuf);
+            }
 
+            if (!(1 <= cur_page && cur_page <= max_page)) {
+                break;
+            }
+
+            List<ReviewDTO> reviewDTOs = userService.getStoreReview(storeDTO.getId(), cur_page);
             dos.write(Serializer.intToByteArray(reviewDTOs.size()));
-            for(int i = 0; i < reviewDTOs.size(); i++) {
-                send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, reviewDTOs.get(i));
+
+            for(ReviewDTO reviewDTO : reviewDTOs) {
+                send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, reviewDTO);
                 dos.write(send_protocol.getBytes());
             }
+        }
+    }
+
+    private void review_searchWithoutPage(StoreDTO data) throws IOException {
+        List<ReviewDTO> reviewDTOs = ownerService.getAllReview(data);
+        dos.write(Serializer.intToByteArray(reviewDTOs.size()));
+        receive_ack();
+
+        for(ReviewDTO DTO : reviewDTOs) {
+            dos.write(new Protocol(ProtocolType.RESPONSE, ProtocolCode.REVIEW, 0, DTO).getBytes());
+            receive_ack();
         }
     }
 
     private void store_history_search(StoreDTO storeDTO) throws IOException {
         List<StatisticsDTO> statisticsDTOs = ownerService.getStatistics(storeDTO.getId());
         dos.write(Serializer.intToByteArray(statisticsDTOs.size()));
+        receive_ack();
 
         for(int i = 0; i < statisticsDTOs.size(); i++) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, statisticsDTOs.get(i));
             dos.write(send_protocol.getBytes());
+            receive_ack();
         }
     }
 
     private void store_history_search() throws IOException {
         List<StatisticsDTO> statisticsDTOs = adminService.getStatistics();
         dos.write(Serializer.intToByteArray(statisticsDTOs.size()));
+        receive_ack();
 
         for(int i = 0; i < statisticsDTOs.size(); i++) {
             StatisticsDTO statisticsDTO = statisticsDTOs.get(i);
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, statisticsDTO);
             dos.write(send_protocol.getBytes());
+            receive_ack();
+        }
+    }
+
+    private void store_search(UserDTO userDTO) throws IOException {
+        List<StoreDTO> storeDTOS = ownerService.getStoreWithUser_pk(userDTO.getPk());
+        dos.write(Serializer.intToByteArray(storeDTOS.size()));
+        receive_ack();
+
+        for(StoreDTO storeDTO : storeDTOS) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, storeDTO);
+            dos.write(send_protocol.getBytes());
+            receive_ack();
         }
     }
 
     private void store_search() throws IOException {
-        List<StoreDTO>stores = userService.getAllStore();
+        List<StoreDTO> stores;
+        if (authority.equals(Authority.USER)) {
+            stores = userService.getAllStore();
+        }
+        else {
+            stores = adminService.getHoldStoreList();
+
+        }
+
         dos.write(Serializer.intToByteArray(stores.size()));
+        receive_ack();
 
         for(int i = 0; i < stores.size(); i++) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, stores.get(i));
             dos.write(send_protocol.getBytes());
+            receive_ack();
+        }
+    }
+
+    private boolean receive_ack() throws IOException {
+        if (dis.read(readBuf) != -1) {
+            return true;
+        }
+        return false;
+    }
+
+    private void user_search() throws IOException {
+        List<UserDTO> userDTOs = adminService.getHoldUserList();
+        dos.write(Serializer.intToByteArray(userDTOs.size()));
+        receive_ack();
+
+        for(UserDTO userDTO : userDTOs) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, userDTO);
+            dos.write(send_protocol.getBytes());
+            receive_ack();
         }
     }
 
@@ -262,20 +453,36 @@ class ClientThread extends Thread {
         dos.write(send_protocol.getBytes());
     }
 
+    private void menu_search() throws IOException {
+        List<MenuDTO> menuDTOS = adminService.getHoldMenuList();
+        dos.write(Serializer.intToByteArray(menuDTOS.size()));
+        receive_ack();
+
+        for(MenuDTO menuDTO : menuDTOS) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, menuDTO);
+            dos.write(send_protocol.getBytes());
+            receive_ack();
+        }
+    }
+
     private void menu_search(StoreDTO storeDTO) throws IOException {
         List<ClassificationDTO> classificationDTOs = userService.getMenuGroups(storeDTO.getId());
         dos.write(Serializer.intToByteArray(classificationDTOs.size()));
+        receive_ack();
 
         for (ClassificationDTO classificationDTO : classificationDTOs) {
             List<MenuDTO> menuDTOs = userService.getMenusWithGroup_id(classificationDTO.getId());
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, classificationDTO);
             dos.write(send_protocol.getBytes());
+            receive_ack();
 
             dos.write(Serializer.intToByteArray(menuDTOs.size()));
+            receive_ack();
 
             for(MenuDTO menuDTO : menuDTOs) {
                 send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, menuDTO);
                 dos.write(send_protocol.getBytes());
+                receive_ack();
             }
         }
     }
@@ -300,6 +507,16 @@ class ClientThread extends Thread {
         dos.write(send_protocol.getBytes());
     }
 
+    private void review_modify(ReviewDTO data) throws IOException {
+        if (ownerService.updateOwnerComment(data.getId(), data.getOwner_comment()) == 1) {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
+        }
+        else {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
+        }
+        dos.write(send_protocol.getBytes());
+    }
+
     private void user_modify(UserDTO userDTO) throws IOException {
         UserDTO temp = userService.update(userDTO);
         if (temp != null) {
@@ -315,22 +532,41 @@ class ClientThread extends Thread {
     /*
     * 바뀔거 같은 느낌
     * */
+    private void send_ack() throws IOException {
+        Protocol protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACK, 0, null);
+        dos.write(protocol.getBytes());
+    }
+
     private void order_register(TotalOrdersDTO totalOrdersDTO) throws IOException {
-        List<OrdersDTO> ordersDTOs = null;
-        readBuf = dis.readAllBytes();
-        Protocol temp_protocol = new Protocol(readBuf);
-
-        OrdersDTO data = (OrdersDTO)temp_protocol.getData();
-        int size = temp_protocol.getDataLength();
-
-        ordersDTOs.add(data);
-
-        for(int i = 1; i < size; i++) {
-            readBuf = dis.readAllBytes();
-            temp_protocol = new Protocol(readBuf);
-            data = (OrdersDTO)temp_protocol.getData();
-            ordersDTOs.add(data);
+        StoreDTO storeDTO = null;
+        if (dis.read(readBuf) != -1) {
+            storeDTO = (StoreDTO) new Protocol(readBuf).getData();
+            send_ack();
         }
+
+        menu_search(storeDTO);
+
+        StoreDTO storeDTO1 = null;
+        if (dis.read(readBuf) != -1) {
+            storeDTO1 = (StoreDTO) new Protocol(readBuf).getData();
+            option_search(storeDTO1);
+        }
+
+        List<OrdersDTO> ordersDTOs = new ArrayList<>();
+        int list_length = 0;
+        if (dis.read(readBuf) != -1) {
+            list_length = Deserializer.byteArrayToInt(readBuf);
+            send_ack();
+        }
+
+        for(int i = 0; i < list_length; i++) {
+            if (dis.read(readBuf) != -1) {
+                ordersDTOs.add((OrdersDTO) new Protocol(readBuf).getData());
+                send_ack();
+            }
+        }
+
+        totalOrdersDTO.setUser_pk(user.getPk());
         if (userService.order(totalOrdersDTO, ordersDTOs) == 1) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
@@ -358,17 +594,18 @@ class ClientThread extends Thread {
     }
 
     private void menu_register(MenuDTO menuDTO) throws IOException {
-        byte[] temp = dis.readAllBytes();
-        int option_size = Deserializer.byteArrayToInt(temp);
+        int option_size = 0;
+        if (dis.read(readBuf) != -1) {
+            option_size = Deserializer.byteArrayToInt(readBuf);
+            send_ack();
+        }
 
         List<Long> option_list = new ArrayList<>();
         for(int i = 0; i < option_size; i++) {
-            temp = dis.readAllBytes();
             DetailsDTO optionDTO = null;
-            try {
-                optionDTO = (DetailsDTO) Deserializer.getObject(temp);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (dis.read(readBuf) != -1) {
+                optionDTO = (DetailsDTO) new Protocol(readBuf).getData();
+                send_ack();
             }
             option_list.add(optionDTO.getId());
         }
@@ -376,7 +613,9 @@ class ClientThread extends Thread {
     }
 
     private void store_register(StoreDTO storeDTO) throws IOException {
-        if (ownerService.insertStore(storeDTO) != 0) {
+        long temp = ownerService.insertStore(storeDTO);
+        System.out.println(temp);
+        if (temp != 0) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
         }
         else {

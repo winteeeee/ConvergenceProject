@@ -35,9 +35,10 @@ public class Viewer {
         System.out.println("[2] 메뉴 등록 신청");
         System.out.println("[3] 운영 시간 설정");
         System.out.println("[4] 주문 접수 / 거절");
-        System.out.println("[5] 리뷰/별점 조회 및 리뷰 답글 등록");
-        System.out.println("[6] 통계정보 열람");
-        System.out.println("[7] 로그아웃");
+        System.out.println("[5] 리뷰/별점 조회");
+        System.out.println("[6] 리뷰 답글 등록");
+        System.out.println("[7] 통계정보 열람");
+        System.out.println("[8] 로그아웃");
         System.out.print("입력 : ");
     }
 
@@ -167,6 +168,7 @@ public class Viewer {
     public int registMenuAndOptionScreen() throws IOException {
         System.out.println("[1] 메뉴 등록");
         System.out.println("[2] 옵션 등록");
+        System.out.println("[3] 분류 등록");
         System.out.print("입력(범위 외 입력 시 종료) : ");
 
         return Integer.parseInt(keyInput.readLine());
@@ -221,8 +223,21 @@ public class Viewer {
         System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
         while(selectedOption.size() < optionDTOs.size()) {
             System.out.print("입력 : ");
-            selectedOption.add(Integer.parseInt(keyInput.readLine()));
-            System.out.println("등록되었습니다.");
+            String curInput = keyInput.readLine();
+            if(!curInput.equals("")) {
+                int n = Integer.parseInt(curInput);
+                if(n < optionDTOs.size()) {
+                    selectedOption.add(n);
+                }
+
+                else {
+                    break;
+                }
+            }
+
+            else {
+                break;
+            }
         }
 
         return selectedOption;
@@ -237,7 +252,12 @@ public class Viewer {
         System.out.print("수량 : ");
         int stock = Integer.parseInt(keyInput.readLine());
 
-        MenuDTO newMenu = new MenuDTO();
+        MenuDTO newMenu = MenuDTO.builder()
+                .classification_id(selectedClass.getId())
+                .name(name)
+                .price(price)
+                .stock(stock)
+                .build();
         newMenu.setClassification_id(selectedClass.getId());
         newMenu.setName(name);
         newMenu.setPrice(price);
@@ -248,17 +268,32 @@ public class Viewer {
 
     public DetailsDTO setNewOption(StoreDTO storeInfo) throws IOException {
         System.out.println("옵션을 등록합니다.");
-        System.out.print("메뉴명 : ");
+        System.out.print("옵션명 : ");
         String name = keyInput.readLine();
         System.out.print("추가 금액 : ");
         int price = Integer.parseInt(keyInput.readLine());
 
-        DetailsDTO newOption = new DetailsDTO();
-        newOption.setName(name);
-        newOption.setPrice(price);
-        newOption.setStore_id(storeInfo.getId());
+        DetailsDTO newOption = DetailsDTO.builder()
+                .name(name)
+                .price(price)
+                .store_id(storeInfo.getId())
+                .build();
 
         return newOption;
+    }
+
+    public ClassificationDTO setNewClassification(StoreDTO storeInfo) throws IOException {
+        System.out.println("분류를 등록합니다.");
+        System.out.print("분류명 : ");
+        String name = keyInput.readLine();
+
+        ClassificationDTO newClassification = ClassificationDTO.builder()
+                .name(name)
+                .store_id(storeInfo.getId())
+                .build();
+
+
+        return newClassification;
     }
 
     public int getIdx() throws IOException {
@@ -313,17 +348,21 @@ public class Viewer {
     }
 
     public String[] getStoreInfo() throws IOException {
-        String[] result = new String[4];
+        String[] result = new String[6];
 
         System.out.println("[가게 등록]");
         System.out.print("상호명 : ");
         result[0] = keyInput.readLine();
-        System.out.println("간단한 가게 소개 : ");
+        System.out.print("간단한 가게 소개 : ");
         result[1] = keyInput.readLine();
         System.out.print("주소 : ");
         result[2] = keyInput.readLine();
         System.out.print("가게 전화번호 : ");
         result[3] = keyInput.readLine();
+        System.out.print("오픈 시간 : ");
+        result[4] = keyInput.readLine();
+        System.out.print("닫는 시간 : ");
+        result[5] = keyInput.readLine();
 
         return result;
     }
@@ -357,7 +396,6 @@ public class Viewer {
 
     public void viewClassificationDTO(ClassificationDTO DTO) {
         System.out.println(DTOToString.classificationDTOToString(DTO));
-        System.out.println();
     }
 
     public void viewClassificationDTOs(ArrayList<ClassificationDTO> DTOs) {
@@ -506,5 +544,22 @@ public class Viewer {
         } while(option != 3);
 
         return new Pair<>(name, price);
+    }
+
+    public int reviewSelect() throws IOException {
+        System.out.println("[1] 페이지 입력");
+        System.out.println("[2] 답글 등록");
+
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public int getReviewIdx() throws IOException {
+        System.out.print("답글을 달 리뷰 선택 : ");
+        return Integer.parseInt(keyInput.readLine());
+    }
+
+    public String getComment() throws IOException {
+        System.out.print("답글 내용 입력 : ");
+        return keyInput.readLine();
     }
 }

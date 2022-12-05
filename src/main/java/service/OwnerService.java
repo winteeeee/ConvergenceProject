@@ -89,6 +89,10 @@ public class OwnerService {
         return reviewDAO.selectAllWithStoreId(store_id, page);
     }
 
+    public List<ReviewDTO> getAllReview(StoreDTO store) {
+        return reviewDAO.selectAll(store.getId());
+    }
+
     public int updateOwnerComment(Long review_id, String comment) {
         return reviewDAO.updateOwnerComment(review_id, comment);
     }
@@ -109,23 +113,15 @@ public class OwnerService {
         return result;
     }
 
-    public void insertDetails(DetailsDTO details) {
-        detailsDAO.insertDetails(details);
+    public int insertDetails(DetailsDTO details) {
+        return detailsDAO.insertDetails(details);
     }
 
-    public void insertClassification(ClassificationDTO classification) {
-        classificationDAO.insertClassification(classification);
+    public int insertClassification(ClassificationDTO classification) {
+        return classificationDAO.insertClassification(classification);
     }
 
-    public int getMaxPage(Long store_id) {
-        int reviewCnt = 0;
-        List<TotalOrdersDTO> list = totalOrdersDAO.selectAllWithStoreId(store_id);
-        for(TotalOrdersDTO dto : list) {
-            if(reviewDAO.selectOneWithTotalOrdersId(dto.getId()).getUser_pk() != 0) {
-                reviewCnt++;
-            }
-        }
-
-        return (reviewCnt&1) == 0 ? reviewCnt/2 : reviewCnt/2 + 1;
+    public List<DetailsDTO> selectAllWithStoreId(StoreDTO store) {
+        return detailsDAO.selectAllWithStore_id(store.getId());
     }
 }
