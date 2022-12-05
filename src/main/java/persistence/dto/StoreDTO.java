@@ -1,15 +1,18 @@
 package persistence.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import persistence.enums.RegistStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 public class StoreDTO extends DTO {
     private Long id;
+    private RegistStatus status;
     private String name;
     private String comment;
     private String phone;
@@ -22,8 +25,9 @@ public class StoreDTO extends DTO {
 
     public StoreDTO() {  }
 
-    public StoreDTO(Long id, String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
+    public StoreDTO(Long id, RegistStatus status, String name, String comment, String phone, String address, Integer review_count, Integer star_rating, LocalDateTime open_time, LocalDateTime close_time, Long user_pk) {
         this.id = id;
+        this.status = status;
         this.name = name;
         this.comment = comment;
         this.phone = phone;
@@ -35,7 +39,15 @@ public class StoreDTO extends DTO {
         this.user_pk = user_pk;
     }
 
-    public StoreDTO(byte[] arr) {
-        setMembersByByteArray(arr);
+    public void setStatus(String status) {
+        this.status = RegistStatus.of(status);
+    }
+
+    public String getStatus() {
+        return status.getCode();
+    }
+
+    public RegistStatus getStatusEnum() {
+        return status;
     }
 }

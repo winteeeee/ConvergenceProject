@@ -3,9 +3,10 @@ package persistence.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import persistence.MyBatisConnectionFactory;
+import persistence.dto.StoreDTO;
 import persistence.dto.UserDTO;
 import persistence.enums.Authority;
+import persistence.enums.RegistStatus;
 
 import java.util.List;
 
@@ -15,55 +16,102 @@ public class UserDAO extends DAO<UserDTO>{
         super(sqlSessionFactory, "mapper.UserMapper.");
     }
 
-    @Override
-    protected List<UserDTO> selectList(SqlSession session, Object[] arg) {
-        return null;
-    }
-    @Override
-    protected UserDTO selectOne(SqlSession session, Object[] arg) {
-        return session.selectOne(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int insert(SqlSession session, Object[] arg) {
-        return session.insert(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int update(SqlSession session, Object[] arg) {
-        return session.update(sqlMapperPath + arg[0], arg[1]);
-    }
-    @Override
-    protected int delete(SqlSession session, Object[] arg) {
-        return 0;
+    public Long insertOwner(UserDTO owner) {
+        String stmt = sqlMapperPath + "insertUser";
+        UserDTO dto = UserDTO.builder()
+                .status(RegistStatus.HOLD)
+                .authority(Authority.OWNER)
+                .id(owner.getId())
+                .pw(owner.getPw())
+                .name(owner.getName())
+                .phone(owner.getPhone())
+                .age(owner.getAge())
+                .build();
+
+        insert((SqlSession session) -> {
+            return session.insert(stmt, dto);
+        });
+
+        return dto.getPk();
     }
 
-    public Long insertUser(Authority authority, String id, String pw, String name, String phone, Integer age) {
-        String stmt = "insertUser";
-        UserDTO user = new UserDTO(null, authority.getCode(), id, pw, name, phone, age);
-        insert(stmt, user);
+    public Long insertUser(UserDTO user) {
+        String stmt = sqlMapperPath + "insertUser";
+        UserDTO dto = UserDTO.builder()
+                .status(RegistStatus.ACCEPT)
+                .authority(Authority.USER)
+                .id(user.getId())
+                .pw(user.getPw())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .age(user.getAge())
+                .build();
 
-        return user.getPk();
+        insert((SqlSession session) -> {
+            return session.insert(stmt, dto);
+        });
+
+        return dto.getPk();
+    }
+
+    public List<UserDTO> selectAllWithStatus(RegistStatus status) {
+        String stmt = sqlMapperPath + "selectAllWithStatus";
+        StoreDTO dto = StoreDTO.builder()
+                .status(status)
+                .build();
+
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, dto);
+        });
     }
 
     public UserDTO selectOneWithPk(Long pk) {
-        String stmt = "selectOneWithUserPk";
-        UserDTO userDTO = new UserDTO();
-        userDTO.setPk(pk);
+        String stmt = sqlMapperPath + "selectOneWithPk";
+        UserDTO dto = UserDTO.builder()
+                .pk(pk)
+                .build();
 
-        return selectOne(stmt, userDTO);
+        return selectOne((SqlSession session) -> {
+            return session.selectOne(stmt, dto);
+        });
     }
 
     public UserDTO selectOneWithId(String id) {
-        String stmt = "selectOneWithUserId";
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(id);
+        String stmt = sqlMapperPath + "selectOneWithId";
+        UserDTO dto = UserDTO.builder()
+                .id(id)
+                .build();
 
-        return selectOne(stmt, userDTO);
+        return selectOne((SqlSession session) -> {
+            return session.selectOne(stmt, dto);
+        });
     }
 
-    public int update(String id, String pw, String name, String phone, Integer age) {
-        String stmt = "update";
-        UserDTO userDTO = new UserDTO(null, null, id, pw, name, phone, age);
+    public int update(UserDTO user) {
+        String stmt = sqlMapperPath + "update";
+        UserDTO dto = UserDTO.builder()
+                .pk(user.getPk())
+                .pw(user.getPw())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .age(user.getAge())
+                .build();
 
-        return update(stmt, userDTO);
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
     }
+
+    public int updateStatus(Long pk, RegistStatus status) {
+        String stmt = sqlMapperPath + "updateStatus";
+        UserDTO dto = UserDTO.builder()
+                .pk(pk)
+                .status(status)
+                .build();
+
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
+    }
+
 }

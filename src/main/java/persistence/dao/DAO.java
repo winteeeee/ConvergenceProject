@@ -15,17 +15,11 @@ public abstract class DAO<T> {
         this.sqlMapperPath = sqlMapperPath;
     }
 
-    protected abstract List<T> selectList(SqlSession session, Object[] arg) throws Exception;
-    protected abstract T selectOne(SqlSession session, Object[] arg) throws Exception;
-    protected abstract int insert(SqlSession session, Object[] arg) throws Exception;
-    protected abstract int update(SqlSession session, Object[] arg) throws Exception;
-    protected abstract int delete(SqlSession session, Object[] arg) throws Exception;
-
-    protected List<T> selectList(Object... arg) {
+    protected List<T> selectList(Executable<List<T>> exec) {
         List<T> dtos = new ArrayList<>();
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            dtos = selectList(session, arg);
+            dtos = exec.run(session);
             session.commit();
         }
         catch (Exception e) {
@@ -37,11 +31,11 @@ public abstract class DAO<T> {
         return dtos;
     }
 
-    protected T selectOne(Object... arg) {
+    protected T selectOne(Executable<T> exec) {
         T dto = null;
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            dto = selectOne(session, arg);
+            dto = exec.run(session);
             session.commit();
         }
         catch (Exception e) {
@@ -53,11 +47,11 @@ public abstract class DAO<T> {
         return dto;
     }
 
-    protected int insert(Object... arg) {
+    protected int insert(Executable<Integer> exec) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            sign = insert(session, arg);
+            sign = exec.run(session);
             session.commit();
         }
         catch (Exception e) {
@@ -69,11 +63,11 @@ public abstract class DAO<T> {
         return sign;
     }
 
-    protected int update(Object... arg) {
+    protected int update(Executable<Integer> exec) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            sign = update(session, arg);
+            sign = exec.run(session);
             session.commit();
         }
         catch (Exception e) {
@@ -85,11 +79,11 @@ public abstract class DAO<T> {
         return sign;
     }
 
-    protected int delete(Object... arg) {
+    protected int delete(Executable<Integer> exec) {
         int sign = 0;
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            sign = delete(session, arg);
+            sign = exec.run(session);
             session.commit();
         }
         catch (Exception e) {
