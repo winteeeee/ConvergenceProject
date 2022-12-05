@@ -29,6 +29,14 @@ public class Main { // temp
 
     static UserDTO user;
     public static void main(String[] args) {
+        userDAO.insertAdmin(UserDTO.builder()
+                .id("admin")
+                .pw("admin")
+                .age(23)
+                .name("ADMIN")
+                .phone("010-4265-6669")
+                .build()
+        );
     }
 
     public static void init() {

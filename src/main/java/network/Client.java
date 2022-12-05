@@ -41,7 +41,7 @@ public class Client
         while(true){
             me = con.login();
 
-            if(me != null) {
+            if (me != null) {
                 String userAuthority = me.getAuthorityEnum().getName();
                 if (userAuthority.equals(Authority.ADMIN.getName())) {
                     adminRun();
@@ -110,8 +110,9 @@ public class Client
         final int MANAGEMENT_TIME_MODIFICATION = 3;
         final int DETERMINATION_ORDER = 4;
         final int VIEW_REVIEW = 5;
-        final int STATISTICAL_INFO_VIEW = 6;
-        final int LOGOUT = 7;
+        final int REGIST_RECOMMENT = 6;
+        final int STATISTICAL_INFO_VIEW = 7;
+        final int LOGOUT = 8;
 
         while(login) {
             con.showOwnerScreen(me);
@@ -135,7 +136,11 @@ public class Client
                     break;
 
                 case VIEW_REVIEW:
-                    con.viewReviewOwner(me);
+                    con.viewReview(me);
+                    break;
+
+                case REGIST_RECOMMENT:
+                    con.registRecommnet(me);
                     break;
 
                 case STATISTICAL_INFO_VIEW:

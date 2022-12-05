@@ -16,6 +16,25 @@ public class UserDAO extends DAO<UserDTO>{
         super(sqlSessionFactory, "mapper.UserMapper.");
     }
 
+    public Long insertAdmin(UserDTO owner) {
+        String stmt = sqlMapperPath + "insertUser";
+        UserDTO dto = UserDTO.builder()
+                .status(RegistStatus.ACCEPT)
+                .authority(Authority.ADMIN)
+                .id(owner.getId())
+                .pw(owner.getPw())
+                .name(owner.getName())
+                .phone(owner.getPhone())
+                .age(owner.getAge())
+                .build();
+
+        insert((SqlSession session) -> {
+            return session.insert(stmt, dto);
+        });
+
+        return dto.getPk();
+    }
+
     public Long insertOwner(UserDTO owner) {
         String stmt = sqlMapperPath + "insertUser";
         UserDTO dto = UserDTO.builder()

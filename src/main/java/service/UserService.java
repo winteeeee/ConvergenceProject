@@ -37,7 +37,13 @@ public class UserService {
     }
 
     public UserDTO getUserWithId(String id) {
-        return userDAO.selectOneWithId(id);
+        UserDTO user = userDAO.selectOneWithId(id);
+
+        if (user != null && !user.getStatusEnum().equals(RegistStatus.ACCEPT)) {
+            user = null;
+        }
+
+        return user;
     }
 
     public UserDTO update(UserDTO user) {
@@ -56,7 +62,7 @@ public class UserService {
     public synchronized int order(TotalOrdersDTO totalOrders, List<OrdersDTO> ordersList) {
         Integer sumPrice = 0;
         for (OrdersDTO orders : ordersList) {
-            sumPrice += orders.getPrice();
+             sumPrice += orders.getPrice();
         }
         totalOrders.setPrice(sumPrice);
 
@@ -65,7 +71,7 @@ public class UserService {
 
         for (OrdersDTO orders : ordersList) {
             orders.setTotal_orders_id(total_order_id);
-            ordersDAO.insertOrders(orders);
+            //ordersDAO.insertOrders(orders);
         }
 
         HashMap<Long, Integer> map = new HashMap<>();
@@ -119,7 +125,7 @@ public class UserService {
     public int writeReview(ReviewDTO review) {
         TotalOrdersDTO totalOrders = totalOrdersDAO.selectOneWithId(review.getTotal_orders_id());
 
-        if(totalOrders.getStatusEnum() == OrdersStatus.COMPLETE && (1 <= review.getStar_rating() && review.getStar_rating() <= 5)) {
+        if(totalOrders.getStatusEnum().equals(OrdersStatus.COMPLETE) && (1 <= review.getStar_rating() && review.getStar_rating() <= 5)) {
             reviewDAO.insertReview(review);
             reviewDAO.updateForInsert(review.getStar_rating(), review.getTotal_orders_id());
             return 1;

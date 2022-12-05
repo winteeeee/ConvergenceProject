@@ -48,7 +48,8 @@ public class Protocol {
 
     private DTO byteArrayToData(byte type, byte code, byte[] arr) throws Exception {
         if (type == ProtocolType.REGISTER) {
-            if (code == ProtocolCode.ORDER) {
+            return (DTO) Deserializer.getObject(arr);
+            /*if (code == ProtocolCode.ORDER) {
                 return (DTO) Deserializer.getObject(arr);
             }
 
@@ -56,9 +57,14 @@ public class Protocol {
                 return (DTO) Deserializer.getObject(arr);
             }
 
+            else if (code == ProtocolCode.STORE) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
             else if (code == ProtocolCode.USER) {
                 return (DTO) Deserializer.getObject(arr);
             }
+            else if ()*/
         }
 
         else if (type == ProtocolType.MODIFICATION || type == ProtocolType.SEARCH) {
@@ -85,6 +91,17 @@ public class Protocol {
             else if (code == ProtocolCode.USER) {
                 return (DTO) Deserializer.getObject(arr);
             }
+            else if (code == (ProtocolCode.STORE | ProtocolCode.HISTORY)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.REVIEW | ProtocolCode.HISTORY)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.CLASSIFICATION) {
+                return (DTO) Deserializer.getObject(arr);
+            }
         }
 
         else if (type == ProtocolType.RESPONSE) {
@@ -99,11 +116,53 @@ public class Protocol {
             else if (code == ProtocolCode.USER) {
                 return (DTO) Deserializer.getObject(arr);
             }
+            else if (code == (ProtocolCode.USER | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if (code == (ProtocolCode.USER | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.MENU | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if (code == (ProtocolCode.MENU | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.STORE | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.STORE | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.OPTION)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.ORDER) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.REVIEW) {
+                return (DTO) Deserializer.getObject(arr);
+            }
         }
 
         try {
             throw new Exception("타입과 코드가 맞지 않음");
         } catch (Exception e) {
+            System.out.println(type + " " + code);
             e.printStackTrace();
         }
 

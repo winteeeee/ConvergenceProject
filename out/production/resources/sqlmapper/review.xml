@@ -24,18 +24,31 @@
         SET review_count = review_count + 1,
             star_rating = star_rating + #{star_rating}
         WHERE store.id = (
-            SELECT total_orders_id
-            FROM total_orders_id
-            WHERE total_orders_id.id = #{total_orders_id}
-        );
+            SELECT store_id
+            FROM total_orders
+            WHERE id = #{total_orders_id}
+        ) id
     </update>
 
     <select id="selectAllWithStoreId" resultMap="result">
-        SELECT *
-        FROM review
-        WHERE store_id=#{store_id}
-        ORDER BY regdate DESC
+        SELECT DISTINCT review.id, comment, owner_comment, review.regdate, star_rating
+        FROM review, (
+            SELECT *
+            FROM total_orders
+            WHERE store_id=#{store_id}
+        ) A
+        ORDER BY review.regdate DESC
         LIMIT #{page}, 2
+    </select>
+
+    <select id="selectAll" resultMap="result">
+        SELECT DISTINCT review.id, comment, owner_comment, review.regdate, star_rating
+        FROM review, (
+            SELECT *
+            FROM total_orders
+            WHERE store_id=#{store_id}
+        ) A
+        ORDER BY review.regdate DESC
     </select>
 
     <select id="selectAllWithUserPk" resultMap="result">
@@ -43,7 +56,7 @@
         FROM review
         WHERE user_pk=#{user_pk}
         ORDER BY regdate DESC
-            LIMIT #{page}, 2
+        LIMIT #{page}, 2
     </select>
 
     <update id="updateOwnerComment">
