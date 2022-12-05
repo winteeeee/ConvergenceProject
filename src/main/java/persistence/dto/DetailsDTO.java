@@ -1,10 +1,12 @@
 package persistence.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class DetailsDTO extends DTO {
     private Long id;
     private String name;
@@ -18,9 +20,5 @@ public class DetailsDTO extends DTO {
         this.name = name;
         this.price = price;
         this.store_id = store_id;
-    }
-
-    public DetailsDTO(byte[] arr) {
-        setMembersByByteArray(arr);
     }
 }
