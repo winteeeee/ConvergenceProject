@@ -44,10 +44,6 @@ public class UserDTO extends DTO {
     }
 
 
-    public UserDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
-
     public void setStatus(String status) {
         this.status = RegistStatus.of(status);
     }

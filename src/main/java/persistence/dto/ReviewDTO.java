@@ -29,8 +29,4 @@ public class ReviewDTO extends DTO {
         this.user_pk = user_pk;
         this.total_orders_id = total_orders_id;
     }
-
-    public ReviewDTO(byte[] arr) {
-        setMembersByByteArray(arr);
-    }
 }
