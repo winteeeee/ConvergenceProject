@@ -66,6 +66,17 @@ public class ReviewDAO extends DAO<ReviewDTO> {
         });
     }
 
+    public List<ReviewDTO> selectAll(Long store_id) {
+        String stmt = sqlMapperPath + "selectAll";
+
+        Map<String, Object> map = new HashMap();
+        map.put("store_id", store_id);
+
+        return selectList((SqlSession session) -> {
+            return session.selectList(stmt, map);
+        });
+    }
+
     public List<ReviewDTO> selectAllWithUserPk(Long user_pk, Integer page) {  // TODO 페이지 사이즈도 인자로 받도록 만드는게 좋을 것 같음
         String stmt = sqlMapperPath + "selectAllWithUserPk";
 

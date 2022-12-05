@@ -2,7 +2,9 @@ package network;
 
 import java.io.*;
 import java.net.*;
+
 import persistence.dto.*;
+import persistence.enums.Authority;
 
 public class Client
 {
@@ -24,12 +26,14 @@ public class Client
             System.err.println("서버를 찾지 못했습니다.");
         }catch(IOException e){
             System.err.println(e);
-        }finally{
-            try{
-                cliSocket.close();
-            }catch(IOException e){
-                System.out.println(e);
-            }
+        }
+    }
+
+    public void exit() {
+        try{
+            cliSocket.close();
+        }catch(IOException e){
+            System.out.println(e);
         }
     }
     
@@ -37,17 +41,17 @@ public class Client
         while(true){
             me = con.login();
 
-            if(me != null) {
+            if (me != null) {
                 String userAuthority = me.getAuthorityEnum().getName();
-                if (userAuthority.equals("ADMIN")) {
+                if (userAuthority.equals(Authority.ADMIN.getName())) {
                     adminRun();
                 }
 
-                else if (userAuthority.equals("OWNER")) {
+                else if (userAuthority.equals(Authority.OWNER.getName())) {
                     ownerRun();
                 }
 
-                else if (userAuthority.equals("USER")) {
+                else if (userAuthority.equals(Authority.USER.getName())) {
                     userRun();
                 }
             }
@@ -84,6 +88,7 @@ public class Client
                     break;
 
                 case STATISTICAL_INFO_VIEW:
+                    con.adminStatisticsView();
                     break;
 
                 case LOGOUT:
@@ -105,8 +110,9 @@ public class Client
         final int MANAGEMENT_TIME_MODIFICATION = 3;
         final int DETERMINATION_ORDER = 4;
         final int VIEW_REVIEW = 5;
-        final int STATISTICAL_INFO_VIEW = 6;
-        final int LOGOUT = 7;
+        final int REGIST_RECOMMENT = 6;
+        final int STATISTICAL_INFO_VIEW = 7;
+        final int LOGOUT = 8;
 
         while(login) {
             con.showOwnerScreen(me);
@@ -130,9 +136,15 @@ public class Client
                     break;
 
                 case VIEW_REVIEW:
+                    con.viewReview(me);
+                    break;
+
+                case REGIST_RECOMMENT:
+                    con.registRecommnet(me);
                     break;
 
                 case STATISTICAL_INFO_VIEW:
+                    con.ownerStatisticsView(me);
                     break;
 
                 case LOGOUT:

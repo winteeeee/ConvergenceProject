@@ -51,6 +51,9 @@ public class UserDTO extends DTO {
     public String getStatus() {
         return status.getCode();
     }
+    public RegistStatus getStatusEnum() {
+        return status;
+    }
 
     public void setAuthority(String authority) {
         this.authority = Authority.of(authority);

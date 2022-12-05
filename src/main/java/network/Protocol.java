@@ -24,10 +24,12 @@ public class Protocol {
 
     public byte[] getBytes() {
         byte[] dataByteArray = new byte[0];
-        try {
-            dataByteArray = Serializer.getBytes(data);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (data != null) {
+            try {
+                dataByteArray = Serializer.getBytes(data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         dataLength = dataByteArray.length;
         byte[] typeAndCodeByteArray = Serializer.bitsToByteArray(type, code);
@@ -37,22 +39,32 @@ public class Protocol {
         byte[] resultArray = new byte[resultArrayLength];
 
         int pos = 0;
-        System.arraycopy(resultArray, pos, typeAndCodeByteArray, 0, typeAndCodeByteArray.length); pos += typeAndCodeByteArray.length;
-        System.arraycopy(resultArray, pos, dataLengthByteArray, 0, dataLengthByteArray.length); pos += dataLengthByteArray.length;
-        System.arraycopy(resultArray, pos, dataByteArray, 0, dataByteArray.length); pos += dataByteArray.length;
+        System.arraycopy(typeAndCodeByteArray, 0, resultArray, pos, typeAndCodeByteArray.length); pos += typeAndCodeByteArray.length;
+        System.arraycopy(dataLengthByteArray, 0, resultArray, pos, dataLengthByteArray.length); pos += dataLengthByteArray.length;
+        System.arraycopy(dataByteArray, 0, resultArray, pos, dataByteArray.length); pos += dataByteArray.length;
 
         return resultArray;
     }
 
     private DTO byteArrayToData(byte type, byte code, byte[] arr) throws Exception {
         if (type == ProtocolType.REGISTER) {
-            if (code == ProtocolCode.ORDER) {
+            return (DTO) Deserializer.getObject(arr);
+            /*if (code == ProtocolCode.ORDER) {
                 return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REVIEW) {
                 return (DTO) Deserializer.getObject(arr);
             }
+
+            else if (code == ProtocolCode.STORE) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.USER) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if ()*/
         }
 
         else if (type == ProtocolType.MODIFICATION || type == ProtocolType.SEARCH) {
@@ -79,47 +91,102 @@ public class Protocol {
             else if (code == ProtocolCode.USER) {
                 return (DTO) Deserializer.getObject(arr);
             }
+            else if (code == (ProtocolCode.STORE | ProtocolCode.HISTORY)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.REVIEW | ProtocolCode.HISTORY)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.CLASSIFICATION) {
+                return (DTO) Deserializer.getObject(arr);
+            }
         }
 
         else if (type == ProtocolType.RESPONSE) {
             if (code == ProtocolCode.ACCEPT) {
-                return null;
+                return (DTO) Deserializer.getObject(arr);
             }
 
             else if (code == ProtocolCode.REFUSAL) {
                 return null;
+            }
+
+            else if (code == ProtocolCode.USER) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if (code == (ProtocolCode.USER | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if (code == (ProtocolCode.USER | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.MENU | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+            else if (code == (ProtocolCode.MENU | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.STORE | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.STORE | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.OPTION)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.ORDER) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.ACCEPT)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == (ProtocolCode.ORDER | ProtocolCode.REFUSAL)) {
+                return (DTO) Deserializer.getObject(arr);
+            }
+
+            else if (code == ProtocolCode.REVIEW) {
+                return (DTO) Deserializer.getObject(arr);
             }
         }
 
         try {
             throw new Exception("타입과 코드가 맞지 않음");
         } catch (Exception e) {
+            System.out.println(type + " " + code);
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public Protocol byteArrayToProtocol(byte[] arr) {
+    public void byteArrayToProtocol(byte[] arr) {
         final int INT_LENGTH = 4;
+        type = arr[0];
+        code = arr[1];
 
         int pos = 0;
-        byte type = arr[0];
-        byte code = arr[1];
         pos += 2;
         byte[] dataLengthByteArray = new byte[4];
-        System.arraycopy(dataLengthByteArray, 0, arr, pos, INT_LENGTH); pos += 4;
-        int dataLength = Deserializer.byteArrayToInt(dataLengthByteArray);
+        System.arraycopy(arr, pos, dataLengthByteArray, 0, INT_LENGTH); pos += 4;
+        dataLength = Deserializer.byteArrayToInt(dataLengthByteArray);
+
         byte[] dataArray = new byte[dataLength];
-        System.arraycopy(dataArray, 0, arr, 2 + INT_LENGTH, dataLength); pos += dataLength;
-        DTO data = null;
+        System.arraycopy(arr, 2 + INT_LENGTH, dataArray, 0, dataLength); pos += dataLength;
         try {
             data = byteArrayToData(type, code, dataArray);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        return new Protocol(type, code, dataLength, data);
     }
 }

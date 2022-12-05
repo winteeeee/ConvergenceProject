@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class Main {
+public class Main { // temp
     static StoreDAO storeDAO = new StoreDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static DetailsDAO detailsDAO = new DetailsDAO(MyBatisConnectionFactory.getSqlSessionFactory());
     static MenuDAO menuDAO = new MenuDAO(MyBatisConnectionFactory.getSqlSessionFactory());
@@ -29,6 +29,14 @@ public class Main {
 
     static UserDTO user;
     public static void main(String[] args) {
+        userDAO.insertAdmin(UserDTO.builder()
+                .id("admin")
+                .pw("admin")
+                .age(23)
+                .name("ADMIN")
+                .phone("010-4265-6669")
+                .build()
+        );
     }
 
     public static void init() {

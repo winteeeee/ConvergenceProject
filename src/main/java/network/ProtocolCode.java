@@ -1,7 +1,7 @@
 package network;
 
 public class ProtocolCode {
-    static final byte REGIST = 1;
+    static final byte ACK = 1;
     static final byte ACCEPT = 1 << 1;
     static final byte REFUSAL = 1 << 2;
 
