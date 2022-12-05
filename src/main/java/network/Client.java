@@ -87,6 +87,7 @@ public class Client
                     break;
 
                 case STATISTICAL_INFO_VIEW:
+                    con.adminStatisticsView();
                     break;
 
                 case LOGOUT:
@@ -133,9 +134,11 @@ public class Client
                     break;
 
                 case VIEW_REVIEW:
+                    con.viewReviewOwner(me);
                     break;
 
                 case STATISTICAL_INFO_VIEW:
+                    con.ownerStatisticsView(me);
                     break;
 
                 case LOGOUT:
