@@ -94,6 +94,46 @@ public class ClientController {
         viewer.logout();
     }
 
+    public ArrayList<StatisticsDTO> getAllStatDTO() throws IOException {
+        Protocol requestAllStatDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.HISTORY), 0, null);
+        dos.write(requestAllStatDTOs.getBytes());
+
+        ArrayList<StatisticsDTO> DTOs = new ArrayList<>();
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+        for(int i = 0; i < listLength; i++) {
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((StatisticsDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
+        }
+
+        return DTOs;
+    }
+
+    public ArrayList<StatisticsDTO> getAllStatDTO(StoreDTO info) throws IOException {
+        Protocol requestAllStatDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.HISTORY), 0, info);
+        dos.write(requestAllStatDTOs.getBytes());
+
+        ArrayList<StatisticsDTO> DTOs = new ArrayList<>();
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+        for(int i = 0; i < listLength; i++) {
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((StatisticsDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
+        }
+
+        return DTOs;
+    }
+
     public ArrayList<OrdersDTO> getAllOrderDTO() throws IOException {
         Protocol requestAllOrderDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.ORDER, 0, null);
         dos.write(requestAllOrderDTOs.getBytes());
@@ -130,6 +170,29 @@ public class ClientController {
         for(int i = 0; i < listLength; i++) {
             if (dis.read(readBuf) != -1) {
                 DTOs.add((OrdersDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
+        }
+
+        return DTOs;
+    }
+
+    public <T> ArrayList<TotalOrdersDTO> getAllTotalOrderDTO(T info) throws IOException {
+        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, (DTO) info);
+        dos.write(requestAllMyOrderDTOs.getBytes());
+        //info에 해당하는 모든 Orders 리스트를 가져옴
+
+        ArrayList<TotalOrdersDTO> DTOs = new ArrayList<>();
+        int listLength = 0;
+
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
+        for(int i = 0; i < listLength; i++) {
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((TotalOrdersDTO) new Protocol(readBuf).getData());
                 readBuf = new byte[BUF_SIZE];
             }
         }
@@ -466,6 +529,70 @@ public class ClientController {
         }
     }
 
+    public void viewReviewOwner(UserDTO me) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(me);
+        viewer.viewStoreDTOs(storeDTOs);
+        int idx = viewer.getIdx();
+
+        if(0 <= idx && idx < storeDTOs.size()) {
+            Protocol requestStat = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
+            dos.write(requestStat.getBytes());
+
+            int listLength = 0;
+            if(dis.read(readBuf) != -1) {
+                listLength = Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
+            ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for(int i = 0; i < listLength; i++) {
+                if(dis.read(readBuf) != -1) {
+                    reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());
+                }
+            }
+
+            viewer.viewReviewDTOs(reviewDTOs);
+        }
+
+        else {
+            System.out.println(ErrorMessage.OUT_OF_BOUND);
+        }
+    }
+
+    public void adminStatisticsView() throws IOException {
+        viewer.viewStatisticsDTOs(getAllStatDTO());
+    }
+
+    public void ownerStatisticsView(UserDTO me) throws IOException {
+        ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(me);
+        viewer.viewStoreDTOs(storeDTOs);
+        int idx = viewer.getIdx();
+
+        if(0 <= idx && idx < storeDTOs.size()) {
+            Protocol requestStat = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.STORE | ProtocolCode.HISTORY), 0, storeDTOs.get(idx));
+            dos.write(requestStat.getBytes());
+
+            int listLength = 0;
+            if(dis.read(readBuf) != -1) {
+                listLength = Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
+            ArrayList<StatisticsDTO> statDTOs = new ArrayList<>();
+            for(int i = 0; i < listLength; i++) {
+                if(dis.read(readBuf) != -1) {
+                    statDTOs.add((StatisticsDTO) new Protocol(readBuf).getData());
+                }
+            }
+
+            viewer.viewStatisticsDTOs(statDTOs);
+        }
+
+        else {
+            System.out.println(ErrorMessage.OUT_OF_BOUND);
+        }
+    }
+
     public void registStore(UserDTO userInfo) throws IOException {
         String[] storeInfo = viewer.getStoreInfo();
 
@@ -774,10 +901,10 @@ public class ClientController {
     }
 
     public void orderCancel(UserDTO userInfo) throws IOException {
-        ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
+        ArrayList<TotalOrdersDTO> DTOs = getAllTotalOrderDTO(userInfo);
 
         while(true) {
-            viewer.viewOrderDTOs(DTOs);
+            viewer.viewTotalOrderDTOs(DTOs);
             int select = viewer.getIdx();
 
             if(0 <= select && select < DTOs.size()) {
@@ -870,6 +997,6 @@ public class ClientController {
     }
 
     public void viewOrder(UserDTO info) throws IOException {
-        viewer.viewOrderDTOs(getAllOrderDTO(info));
+        viewer.viewTotalOrderDTOs(getAllTotalOrderDTO(info));
     }
 }
