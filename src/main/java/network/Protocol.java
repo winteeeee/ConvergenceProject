@@ -22,8 +22,13 @@ public class Protocol {
         byteArrayToProtocol(arr);
     }
 
-    public byte[] getBytes() throws Exception {
-        byte[] dataByteArray = Serializer.getBytes(data);
+    public byte[] getBytes() {
+        byte[] dataByteArray = new byte[0];
+        try {
+            dataByteArray = Serializer.getBytes(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         dataLength = dataByteArray.length;
         byte[] typeAndCodeByteArray = Serializer.bitsToByteArray(type, code);
         byte[] dataLengthByteArray = Serializer.intToByteArray(dataLength);
@@ -74,10 +79,6 @@ public class Protocol {
             else if (code == ProtocolCode.USER) {
                 return (DTO) Deserializer.getObject(arr);
             }
-        }
-
-        else if (type == ProtocolType.DELETE) {
-            //보류
         }
 
         else if (type == ProtocolType.RESPONSE) {
