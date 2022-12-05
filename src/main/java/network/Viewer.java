@@ -173,7 +173,7 @@ public class Viewer {
     }
 
     public StoreDTO selectStore(ArrayList<StoreDTO> storeDTOs) throws IOException {
-        viewDTOs(storeDTOs);
+        viewStoreDTOs(storeDTOs);
         StoreDTO storeInfo = null;
         while(true) {
             System.out.print("가게를 선택해주세요 : ");
@@ -193,7 +193,7 @@ public class Viewer {
     }
 
     public ClassificationDTO selectClassification(ArrayList<ClassificationDTO> classificationDTOs) throws IOException {
-        viewDTOs(classificationDTOs);
+        viewClassificationDTOs(classificationDTOs);
         ClassificationDTO selectedClass = null;
 
         while(true) {
@@ -216,7 +216,7 @@ public class Viewer {
     public ArrayList<Integer> selectOption(ArrayList<DetailsDTO> optionDTOs) throws IOException {
         ArrayList<Integer> selectedOption = new ArrayList<>();
 
-        viewDTOs(optionDTOs);
+        viewOptionDTOs(optionDTOs);
         System.out.println("등록할 옵션을 모두 선택하세요");
         System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
         while(selectedOption.size() < optionDTOs.size()) {
@@ -266,14 +266,8 @@ public class Viewer {
         return Integer.parseInt(keyInput.readLine());
     }
 
-    public <T> int getIdx(ArrayList<T> DTOs) throws IOException {
-        viewDTOs(DTOs);
-        System.out.print("대상을 선택하세요 : ");
-        return Integer.parseInt(keyInput.readLine());
-    }
-
     public ArrayList<Integer> getOptionIdxes(ArrayList<DetailsDTO> optionDTOs) throws IOException {
-        viewDTOs(optionDTOs);
+        viewOptionDTOs(optionDTOs);
         ArrayList<Integer> optionIdxes = new ArrayList<>();
 
         System.out.println("옵션을 선택하세요");
@@ -361,19 +355,79 @@ public class Viewer {
         System.out.println("변경사항이 저장되었습니다.");
     }
 
-    public <T> void viewDTOs(ArrayList<T> DTOs) {
-        viewDTOs(DTOs, 0);
+    public void viewClassificationDTO(ClassificationDTO DTO) {
+        System.out.println(DTOToString.classificationDTOToString(DTO));
+        System.out.println();
     }
 
-    public <T> void viewDTOs(ArrayList<T> DTOs, int startIdx) {
+    public void viewClassificationDTOs(ArrayList<ClassificationDTO> DTOs) {
         for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + (i + startIdx) + "] " + DTOs.get(i).toString());
+            System.out.println("[" + i + "] " + DTOToString.classificationDTOToString(DTOs.get(i)));
         }
         System.out.println();
     }
 
-    public <T> void viewDTO(T DTO) {
-        System.out.println("[" + DTO.toString() + "]");
+    public void viewOptionDTOs(ArrayList<DetailsDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.optionDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewMenuDTOs(ArrayList<MenuDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.menuDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewMenuDTOs(ArrayList<MenuDTO> DTOs, int startIdx) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + (i + startIdx) + "] " + DTOToString.menuDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewReviewDTOs(ArrayList<ReviewDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.reviewDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewStatisticsDTOs(ArrayList<StatisticsDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.statisticsDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewStoreDTOs(ArrayList<StoreDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.storeDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewOrderDTOs(ArrayList<OrdersDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.orderDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewTotalOrderDTOs(ArrayList<TotalOrdersDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.totalOrderDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
+    }
+
+    public void viewUserDTOs(ArrayList<UserDTO> DTOs) {
+        for(int i = 0; i < DTOs.size(); i++) {
+            System.out.println("[" + i + "] " + DTOToString.userDTOToString(DTOs.get(i)));
+        }
+        System.out.println();
     }
 
     public void viewPage(int curPage, int maxPage, int pageWidth) {

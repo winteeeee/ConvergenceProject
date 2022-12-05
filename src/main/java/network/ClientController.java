@@ -351,7 +351,8 @@ public class ClientController {
         ArrayList<UserDTO> DTOs = getAllOwnerDTO();
 
         while(DTOs.size() > 0) {
-            int idx = viewer.getIdx(DTOs);
+            viewer.viewUserDTOs(DTOs);
+            int idx = viewer.getIdx();
 
             if (0 <= idx && idx < DTOs.size()) {
                 while (true) {
@@ -389,7 +390,8 @@ public class ClientController {
         ArrayList<StoreDTO> DTOs = getAllStoreDTO();
 
         while(DTOs.size() > 0) {
-            int idx = viewer.getIdx(DTOs);
+            viewer.viewStoreDTOs(DTOs);
+            int idx = viewer.getIdx();
 
             if (0 <= idx && idx < DTOs.size()) {
                 while (true) {
@@ -429,7 +431,8 @@ public class ClientController {
         ArrayList<MenuDTO> DTOs = getAllMenuDTO();
 
         while(DTOs.size() > 0) {
-            int idx = viewer.getIdx(DTOs);
+            viewer.viewMenuDTOs(DTOs);
+            int idx = viewer.getIdx();
 
             if (0 <= idx && idx < DTOs.size()) {
                 while (true) {
@@ -530,13 +533,15 @@ public class ClientController {
 
     public void registOrder(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
-        int storeIdx = viewer.getIdx(storeDTOs);
+        viewer.viewStoreDTOs(storeDTOs);
+        int storeIdx = viewer.getIdx();
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
             LocalDateTime now = LocalDateTime.of(1, 1, 1, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
             if (storeDTOs.get(storeIdx).getOpen_time().isAfter(now) && storeDTOs.get(storeIdx).getClose_time().isBefore(now)) {
                 ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
-                int menuIdx = viewer.getIdx(menuDTOs);
+                viewer.viewMenuDTOs(menuDTOs);
+                int menuIdx = viewer.getIdx();
 
                 ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
                 ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
@@ -547,11 +552,7 @@ public class ClientController {
                 details += optionIdxes.get(optionIdxes.size() - 1);
 
                 OrdersDTO newOrder = new OrdersDTO();
-           /* newOrder.setStatus(OrdersStatus.HOLD.getCode());
-            newOrder.setRegdate(LocalDateTime.now());
-            newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
-            newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
-            newOrder.setUser_pk(userInfo.getPk());*/
+                newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
                 newOrder.setDetails(details);
 
                 Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
@@ -572,17 +573,16 @@ public class ClientController {
         ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
 
         while(true) {
-            int select = viewer.getIdx(DTOs);
+            viewer.viewOrderDTOs(DTOs);
+            int select = viewer.getIdx();
 
             if (0 <= select && select < DTOs.size()) {
                 Pair<String, Integer> reviewInfo = viewer.getReviewInfo();
 
                 ReviewDTO newReivew = new ReviewDTO();
-                /*newReivew.setContents(reviewInfo.first());
                 newReivew.setRegdate(LocalDateTime.now());
                 newReivew.setStar_rating(reviewInfo.second());
                 newReivew.setUser_pk(userInfo.getPk());
-                newReivew.setOrders_id(DTOs.get(select).getId());*/
 
                 Protocol registReview = new Protocol(ProtocolType.REGISTER, ProtocolCode.REVIEW, 0, newReivew);
                 //데이터로 전달한 녀석을 리뷰 테이블에 insert
@@ -637,8 +637,9 @@ public class ClientController {
                     }
                 }
 
-                viewer.viewDTO(classificationDTOs.get(i));
-                viewer.viewDTOs(reviewDTOs);
+
+                viewer.viewClassificationDTO(classificationDTOs.get(i));
+                viewer.viewReviewDTOs(reviewDTOs);
             }
             viewer.viewPage(curPage, maxPage, 5);
             curPage = viewer.getNextPage();
@@ -651,12 +652,14 @@ public class ClientController {
 
     public void orderDetermination(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
-        int storeIdx = viewer.getIdx(storeDTOs);
+        viewer.viewStoreDTOs(storeDTOs);
+        int storeIdx = viewer.getIdx();
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
             ArrayList<OrdersDTO> orderDTOs = getAllOrderDTO(storeDTOs.get(storeIdx));
             while (orderDTOs.size() > 0) {
-                int idx = viewer.getIdx(orderDTOs);
+                viewer.viewOrderDTOs(orderDTOs);
+                int idx = viewer.getIdx();
 
                 if (0 <= idx && idx < orderDTOs.size()) {
                     while (true) {
@@ -749,8 +752,8 @@ public class ClientController {
         ArrayList<StoreDTO> DTOs = getAllStoreDTO(userInfo);
 
         while(DTOs.size() > 0) {
-            viewer.viewDTOs(DTOs);
-            int idx = viewer.getIdx(DTOs);
+            viewer.viewStoreDTOs(DTOs);
+            int idx = viewer.getIdx();
 
             if (0 <= idx && idx < DTOs.size()) {
                 int[] changeTimeInfo = viewer.getChangeTimeInfo();
@@ -774,7 +777,8 @@ public class ClientController {
         ArrayList<OrdersDTO> DTOs = getAllOrderDTO(userInfo);
 
         while(true) {
-            int select = viewer.getIdx(DTOs);
+            viewer.viewOrderDTOs(DTOs);
+            int select = viewer.getIdx();
 
             if(0 <= select && select < DTOs.size()) {
                // DTOs.get(select).setStatus(OrdersStatus.CANCEL.getCode());
@@ -793,7 +797,9 @@ public class ClientController {
     public void viewStore() throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
 
-        int idx = viewer.getIdx(storeDTOs);
+        viewer.viewStoreDTOs(storeDTOs);
+        int idx = viewer.getIdx();
+
         while(0 <= idx && idx < storeDTOs.size()) {
             idx = viewer.getIdx();
             Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
@@ -813,13 +819,14 @@ public class ClientController {
                 }
             }
 
-            viewer.viewDTOs(reviewDTOs);
+            viewer.viewReviewDTOs(reviewDTOs);
         }
     }
 
     public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(info);
-        int idx = viewer.getIdx(storeDTOs);
+        viewer.viewStoreDTOs(storeDTOs);
+        int idx = viewer.getIdx();
 
         Protocol requestMenu = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, storeDTOs.get(idx));
         dos.write(requestMenu.getBytes());
@@ -855,14 +862,14 @@ public class ClientController {
                 result.add(cur);
             }
 
-            viewer.viewDTO(classificationDTOs.get(i));
-            viewer.viewDTOs(menuDTOs, result.size());
+            viewer.viewClassificationDTO(classificationDTOs.get(i));
+            viewer.viewMenuDTOs(menuDTOs, result.size());
         }
 
         return result;
     }
 
-    public <T> void viewOrder(T info) throws IOException {
-        viewer.viewDTOs(getAllOrderDTO(info));
+    public void viewOrder(UserDTO info) throws IOException {
+        viewer.viewOrderDTOs(getAllOrderDTO(info));
     }
 }

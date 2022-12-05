@@ -7,7 +7,7 @@ public class DTOToString {
         return "(분류) " + "이름 : " + dto.getName();
     }
 
-    public static String optuonDTOToString(DetailsDTO dto) {
+    public static String optionDTOToString(DetailsDTO dto) {
         return "(옵션) " + "이름 : " + dto.getName() + ", 가격 : " + dto.getPrice();
     }
 
@@ -27,7 +27,7 @@ public class DTOToString {
         return "(통계) " + "이름 : " + dto.getName() + ", 가격 : " + dto.getPrice() + ", 개수 : " + dto.getCount();
     }
 
-    public static String StoreDTOToString(StoreDTO dto) {
+    public static String storeDTOToString(StoreDTO dto) {
         return "(가게) " + "이름 : " + dto.getName() + ", 점주 전화번호 : " + dto.getPhone() + ", 가게 주소 : " + dto.getAddress()
                 + "\n가게 소개 : " + dto.getComment()
                 + "\n리뷰 수 : " + dto.getReview_count() + ", 별점 : " + dto.getStar_rating() + ", 여는 시간 : " + dto.getOpen_time() + ", 닫는 시간 : " + dto.getClose_time();
