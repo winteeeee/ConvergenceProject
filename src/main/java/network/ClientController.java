@@ -13,6 +13,10 @@ import java.util.ArrayList;
 public class ClientController {
     private DataInputStream dis;
     private DataOutputStream dos;
+
+    private final int BUF_SIZE = 1024;
+    private byte[] readBuf = new byte[BUF_SIZE];
+
     private BufferedReader keyInput;
     private Viewer viewer;
 
@@ -36,9 +40,13 @@ public class ClientController {
                 UserDTO user = viewer.loginScreen(keyInput);
                 Protocol findUser = new Protocol(ProtocolType.SEARCH, ProtocolCode.USER, 0, user);
                 dos.write(findUser.getBytes());
-                UserDTO me = (UserDTO) new Protocol(dis.readAllBytes()).getData();
 
-                return me;
+                UserDTO me = null;
+                if (dis.read(readBuf) != -1) {
+                    me = (UserDTO) new Protocol(readBuf).getData();
+                    readBuf = new byte[BUF_SIZE];
+                    return me;
+                }
             }
 
             else if(option == REGIST) {
@@ -58,7 +66,7 @@ public class ClientController {
                 }
 
                 if(registOption == OWNER_REGIST || registOption == USER_REGIST) {
-                    Protocol registUser = new Protocol(ProtocolType.REGISTER, (byte)(ProtocolCode.USER | ProtocolCode.REGIST), 0, userInfo);
+                    Protocol registUser = new Protocol(ProtocolType.REGISTER, ProtocolCode.USER, 0, userInfo);
                     dos.write(registUser.getBytes());
                     viewer.showRegistUserCompleteMessage();
                 }
@@ -91,9 +99,16 @@ public class ClientController {
         dos.write(requestAllOrderDTOs.getBytes());
 
         ArrayList<OrdersDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((OrdersDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -105,9 +120,18 @@ public class ClientController {
         //info에 해당하는 모든 Orders 리스트를 가져옴
 
         ArrayList<OrdersDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((OrdersDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((OrdersDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -118,9 +142,18 @@ public class ClientController {
         dos.write(searchStoreInfo.getBytes());
 
         ArrayList<StoreDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((StoreDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -132,9 +165,18 @@ public class ClientController {
         //info에 해당하는 모든 Store 리스트를 가져옴
 
         ArrayList<StoreDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((StoreDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((StoreDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -145,9 +187,17 @@ public class ClientController {
         dos.write(searchMenuInfo.getBytes());
 
         ArrayList<MenuDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((MenuDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((MenuDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -159,9 +209,17 @@ public class ClientController {
         //info가 지닌 모든 menu 리스트를 가져옴
 
         ArrayList<MenuDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((MenuDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((MenuDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -173,9 +231,17 @@ public class ClientController {
         //info가 지닌 모든 DetailsDTO 리스트를 가져옴
 
         ArrayList<DetailsDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((DetailsDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((DetailsDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -187,9 +253,17 @@ public class ClientController {
         //모든 카테고리DTO 리스트를 가져옴
 
         ArrayList<ClassificationDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((ClassificationDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -201,9 +275,17 @@ public class ClientController {
         //info가 지닌 모든 카테고리DTO 리스트를 가져옴
 
         ArrayList<ClassificationDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            DTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                DTOs.add((ClassificationDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
         }
 
         return DTOs;
@@ -214,9 +296,20 @@ public class ClientController {
         dos.write(requestAllUserDTOs.getBytes());
 
         ArrayList<UserDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+        if (dis.read(readBuf) != -1) {
+            listLength = Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            UserDTO cur = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+            UserDTO cur = null;
+
+            if (dis.read(readBuf) != -1) {
+                cur = (UserDTO) new Protocol(readBuf).getData();
+                readBuf = new byte[BUF_SIZE];
+            }
+
             String curAuthority = cur.getAuthorityEnum().getName();
             if (curAuthority.equals("OWNER")) {
                 DTOs.add(cur);
@@ -231,9 +324,20 @@ public class ClientController {
         dos.write(requestAllUserDTOs.getBytes());
 
         ArrayList<UserDTO> DTOs = new ArrayList<>();
-        int listLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int listLength = 0;
+
+        if (dis.read(readBuf) != -1) {
+            Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
+
         for(int i = 0; i < listLength; i++) {
-            UserDTO cur = (UserDTO) new Protocol(dis.readAllBytes()).getData();
+            UserDTO cur = null;
+            if (dis.read(readBuf) != -1) {
+                cur = (UserDTO) new Protocol(readBuf).getData();
+                readBuf = new byte[BUF_SIZE];
+            }
+
             String curAuthority = cur.getAuthorityEnum().getName();
             if (curAuthority.equals("OWNER") || curAuthority.equals("USER")) {
                 DTOs.add(cur);
@@ -427,35 +531,40 @@ public class ClientController {
     public void registOrder(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
         int storeIdx = viewer.getIdx(storeDTOs);
-        LocalDateTime now = LocalDateTime.of(1, 1, 1, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
-        if(storeDTOs.get(storeIdx).getOpen_time().isAfter(now) && storeDTOs.get(storeIdx).getClose_time().isBefore(now)) {
-            ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
-            int menuIdx = viewer.getIdx(menuDTOs);
 
-            ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
-            ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
-            String details = null;
-            for (int i = 0; i < optionIdxes.size() - 1; i++) {
-                details += (optionIdxes.get(i) + ", ");
-            }
-            details += optionIdxes.get(optionIdxes.size() - 1);
+        if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
+            LocalDateTime now = LocalDateTime.of(1, 1, 1, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
+            if (storeDTOs.get(storeIdx).getOpen_time().isAfter(now) && storeDTOs.get(storeIdx).getClose_time().isBefore(now)) {
+                ArrayList<MenuDTO> menuDTOs = getAllMenuDTO(storeDTOs.get(storeIdx));
+                int menuIdx = viewer.getIdx(menuDTOs);
 
-            OrdersDTO newOrder = new OrdersDTO();
+                ArrayList<DetailsDTO> optionDTOs = getAllOptionDTO(storeDTOs.get(storeIdx));
+                ArrayList<Integer> optionIdxes = viewer.getOptionIdxes(optionDTOs);
+                String details = null;
+                for (int i = 0; i < optionIdxes.size() - 1; i++) {
+                    details += (optionIdxes.get(i) + ", ");
+                }
+                details += optionIdxes.get(optionIdxes.size() - 1);
+
+                OrdersDTO newOrder = new OrdersDTO();
            /* newOrder.setStatus(OrdersStatus.HOLD.getCode());
             newOrder.setRegdate(LocalDateTime.now());
             newOrder.setStore_id(storeDTOs.get(storeIdx).getId());
             newOrder.setMenu_id(menuDTOs.get(menuIdx).getId());
             newOrder.setUser_pk(userInfo.getPk());*/
-            newOrder.setDetails(details);
+                newOrder.setDetails(details);
 
-            Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
-            dos.write(registOrder.getBytes());
-            //등록할 주문 정보를 보냄
-            viewer.showOrderCompleteMessage();
+                Protocol registOrder = new Protocol(ProtocolType.REGISTER, ProtocolCode.ORDER, 0, newOrder);
+                dos.write(registOrder.getBytes());
+                //등록할 주문 정보를 보냄
+                viewer.showOrderCompleteMessage();
+            } else {
+                System.out.println(ErrorMessage.OUT_OF_TIME);
+            }
         }
 
         else {
-            System.out.println(ErrorMessage.OUT_OF_TIME);
+            System.out.println(ErrorMessage.OUT_OF_BOUND);
         }
     }
 
@@ -495,25 +604,46 @@ public class ClientController {
             dos.write(requestReview.getBytes());
             dos.write(Serializer.intToByteArray(curPage));
 
-            final int MAX_PAGE = Deserializer.byteArrayToInt(dis.readAllBytes());
-            int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            int maxPage = 0;
+            if (dis.read(readBuf) != -1) {
+                maxPage = Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
+            int classificationListLength = 0;
+            if (dis.read(readBuf) != -1) {
+                classificationListLength = Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
             ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
             for (int i = 0; i < classificationListLength; i++) {
-                classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+                if (dis.read(readBuf) != -1) {
+                    classificationDTOs.add((ClassificationDTO) new Protocol(readBuf).getData());
+                    readBuf = new byte[BUF_SIZE];
+                }
 
-                int reviewListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+                int reviewListLength = 0;
+                if (dis.read(readBuf) != -1) {
+                    Deserializer.byteArrayToInt(readBuf);
+                    readBuf = new byte[BUF_SIZE];
+                }
+
                 ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
                 for (int j = 0; j < reviewListLength; j++) {
-                    reviewDTOs.add((ReviewDTO) new Protocol(dis.readAllBytes()).getData());
+                    if (dis.read(readBuf) != -1) {
+                        reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());
+                        readBuf = new byte[BUF_SIZE];
+                    }
                 }
 
                 viewer.viewDTO(classificationDTOs.get(i));
                 viewer.viewDTOs(reviewDTOs);
             }
-            viewer.viewPage(curPage, MAX_PAGE, 5);
+            viewer.viewPage(curPage, maxPage, 5);
             curPage = viewer.getNextPage();
 
-            if (!(1 <= curPage && curPage <= MAX_PAGE)) {
+            if (!(1 <= curPage && curPage <= maxPage)) {
                 break;
             }
         }
@@ -669,10 +799,18 @@ public class ClientController {
             Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
             dos.write(requestReview.getBytes());
 
-            int reviewListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            int reviewListLength = 0;
+            if (dis.read(readBuf) != -1) {
+                Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
             ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
             for (int i = 0; i < reviewListLength; i++) {
-                reviewDTOs.add((ReviewDTO) new Protocol(dis.readAllBytes()).getData());
+                if (dis.read(readBuf) != -1) {
+                    reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());
+                    readBuf = new byte[BUF_SIZE];
+                }
             }
 
             viewer.viewDTOs(reviewDTOs);
@@ -686,16 +824,33 @@ public class ClientController {
         Protocol requestMenu = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, storeDTOs.get(idx));
         dos.write(requestMenu.getBytes());
 
-        int classificationListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+        int classificationListLength = 0;
+
+        if (dis.read(readBuf) != -1) {
+            Deserializer.byteArrayToInt(readBuf);
+            readBuf = new byte[BUF_SIZE];
+        }
         ArrayList<ClassificationDTO> classificationDTOs = new ArrayList<>();
         ArrayList<MenuDTO> result = new ArrayList<>();
         for(int i = 0; i < classificationListLength; i++) {
-            classificationDTOs.add((ClassificationDTO) new Protocol(dis.readAllBytes()).getData());
+            if (dis.read(readBuf) != -1) {
+                classificationDTOs.add((ClassificationDTO) new Protocol(readBuf).getData());
+                readBuf = new byte[BUF_SIZE];
+            }
 
-            int menuListLength = Deserializer.byteArrayToInt(dis.readAllBytes());
+            int menuListLength = 0;
+            if (dis.read(readBuf) != -1) {
+                Deserializer.byteArrayToInt(readBuf);
+                readBuf = new byte[BUF_SIZE];
+            }
+
             ArrayList<MenuDTO> menuDTOs = new ArrayList<>();
             for (int j = 0; j < menuListLength; j++) {
-                MenuDTO cur = (MenuDTO) new Protocol(dis.readAllBytes()).getData();
+                MenuDTO cur = null;
+                if (dis.read(readBuf) != -1) {
+                    cur = (MenuDTO) new Protocol(readBuf).getData();
+                    readBuf = new byte[BUF_SIZE];
+                }
                 menuDTOs.add(cur);
                 result.add(cur);
             }

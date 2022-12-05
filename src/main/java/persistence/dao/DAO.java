@@ -55,7 +55,7 @@ public abstract class DAO<T> {
             session.commit();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            return 0;
         }
         finally {
             session.close();
@@ -71,7 +71,7 @@ public abstract class DAO<T> {
             session.commit();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            return 0;
         }
         finally {
             session.close();
@@ -87,7 +87,7 @@ public abstract class DAO<T> {
             session.commit();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            return 0;
         }
         finally {
             session.close();

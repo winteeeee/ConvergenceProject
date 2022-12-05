@@ -32,7 +32,7 @@ public class UserService {
         this.detailsDAO = detailsDAO;
     }
 
-    public Long insertUser(UserDTO user) {
+    public int insertUser(UserDTO user) {
         return userDAO.insertUser(user);
     }
 
