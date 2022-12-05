@@ -35,7 +35,7 @@ public class UserDAO extends DAO<UserDTO>{
         return dto.getPk();
     }
 
-    public Long insertUser(UserDTO user) {
+    public int insertUser(UserDTO user) {
         String stmt = sqlMapperPath + "insertUser";
         UserDTO dto = UserDTO.builder()
                 .status(RegistStatus.ACCEPT)
@@ -47,11 +47,11 @@ public class UserDAO extends DAO<UserDTO>{
                 .age(user.getAge())
                 .build();
 
-        insert((SqlSession session) -> {
+
+
+        return insert((SqlSession session) -> {
             return session.insert(stmt, dto);
         });
-
-        return dto.getPk();
     }
 
     public List<UserDTO> selectAllWithStatus(RegistStatus status) {

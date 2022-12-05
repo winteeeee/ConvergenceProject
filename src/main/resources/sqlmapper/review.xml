@@ -51,4 +51,11 @@
         SET owner_comment=#{owner_comment}
         WHERE id=#{id}
     </update>
+
+
+    <select id="selectOneWithTotalOrdersId" resultMap="result">
+        SELECT *
+        FROM review
+        WHERE total_orders_id=#{total_orders_id}
+    </select>
 </mapper>

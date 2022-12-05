@@ -16,21 +16,19 @@
         VALUES (#{name}, #{price}, #{store_id})
     </insert>
 
-<!--
-    <resultMap id="result" type="Map">
-        <result property="menu_id" column="menu_id"/>
-        <result property="option_id" column="option_id"/>
-    </resultMap>
-
-    <insert id="insertMenuOption">
-        INSERT INTO menu_option_map (menu_id, option_id)
-        VALUES (#{menu_id}, #{option_id})
-    </insert>
-
-    <select id="selectAllWithMenu_id">
+    <select id="selectAllWithStore_id" resultMap="result">
         SELECT *
-        FROM menu_option_map
-        WHERE menu_id=#{menu_id}
+        FROM details
+        WHERE store_id=#{store_id}
     </select>
--->
+
+    <select id="selectAllWithMenu_id" resultMap="result">
+        SELECT *
+        FROM details
+        WHERE id IN (
+            SELECT details_id
+            FROM menu_details_map
+            WHERE menu_id=#{menu_id}
+            )
+    </select>
 </mapper>

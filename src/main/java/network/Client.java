@@ -3,6 +3,7 @@ package network;
 import java.io.*;
 import java.net.*;
 import persistence.dto.*;
+import persistence.enums.Authority;
 
 public class Client
 {
@@ -24,12 +25,14 @@ public class Client
             System.err.println("서버를 찾지 못했습니다.");
         }catch(IOException e){
             System.err.println(e);
-        }finally{
-            try{
-                cliSocket.close();
-            }catch(IOException e){
-                System.out.println(e);
-            }
+        }
+    }
+
+    public void exit() {
+        try{
+            cliSocket.close();
+        }catch(IOException e){
+            System.out.println(e);
         }
     }
     
@@ -39,15 +42,15 @@ public class Client
 
             if(me != null) {
                 String userAuthority = me.getAuthorityEnum().getName();
-                if (userAuthority.equals("ADMIN")) {
+                if (userAuthority.equals(Authority.ADMIN.getName())) {
                     adminRun();
                 }
 
-                else if (userAuthority.equals("OWNER")) {
+                else if (userAuthority.equals(Authority.OWNER.getName())) {
                     ownerRun();
                 }
 
-                else if (userAuthority.equals("USER")) {
+                else if (userAuthority.equals(Authority.USER.getName())) {
                     userRun();
                 }
             }
