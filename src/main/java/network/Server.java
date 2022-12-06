@@ -21,7 +21,7 @@ import java.util.Scanner;
 //port : 5000
 public class Server {
     //private static final String IP = "127.0.0.1";
-    private static final String IP = "192.168.223.197";
+    private static final String IP = "192.168.0.7";
     private static final int PORT = 5000;
     private ServerSocket serverSocket;
     private Socket socket;

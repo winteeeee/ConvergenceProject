@@ -17,7 +17,7 @@
         VALUES (#{details}, #{price}, #{menu_id}, #{total_orders_id})
     </insert>
 
-    <select id="selectAllWithTotalOrdersId">
+    <select id="selectAllWithTotalOrdersId" resultMap="result">
         SELECT *
         FROM orders
         WHERE total_orders_id=#{total_orders_id}

@@ -575,8 +575,11 @@ class ClientThread extends Thread {
         }
 
         totalOrdersDTO.setUser_pk(user.getPk());
-        if (userService.order(totalOrdersDTO, ordersDTOs) == 1) {
+        if (userService.order(totalOrdersDTO, ordersDTOs) != 0) {
             send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
+        }
+        else {
+            send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.REFUSAL, 0, null);
         }
         dos.write(send_protocol.getBytes());
     }

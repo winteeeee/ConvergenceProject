@@ -117,4 +117,15 @@ public class MenuDAO extends DAO<MenuDTO>{
             return session.update(stmt, dto);
         });
     }
+
+    public int reverseStock(Long id) {
+        String stmt = sqlMapperPath + "reverseStock";
+        MenuDTO dto = MenuDTO.builder()
+                .id(id)
+                .build();
+
+        return update((SqlSession session) -> {
+            return session.update(stmt, dto);
+        });
+    }
 }

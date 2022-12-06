@@ -110,6 +110,11 @@ public class UserService {
 
         if(totalOrders.getStatusEnum() == OrdersStatus.HOLD) {
             totalOrdersDAO.updateStatus(total_order_id, OrdersStatus.CANCEL);
+            List<OrdersDTO> ordersDTOS = ordersDAO.selectAllWithTotal_orders_id(total_order_id);
+
+            for (OrdersDTO dto : ordersDTOS) {
+                menuDAO.reverseStock(dto.getMenu_id());
+            }
             return 1;
         }
         else {

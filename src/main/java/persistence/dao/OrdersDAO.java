@@ -27,7 +27,7 @@ public class OrdersDAO extends DAO<OrdersDTO> {
     }
 
     public List<OrdersDTO> selectAllWithTotal_orders_id (Long total_orders_id) {
-        String stmt = sqlMapperPath + "selectAllWithStore_id";
+        String stmt = sqlMapperPath + "selectAllWithTotalOrdersId";
         OrdersDTO dto = OrdersDTO.builder()
                 .total_orders_id(total_orders_id).build();
 

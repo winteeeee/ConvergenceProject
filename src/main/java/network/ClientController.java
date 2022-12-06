@@ -5,6 +5,7 @@ import org.testng.internal.collections.Pair;
 import persistence.PooledDataSource;
 import persistence.dto.*;
 import persistence.enums.OrdersStatus;
+import persistence.enums.RegistStatus;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -567,7 +568,11 @@ public class ClientController {
         int idx = viewer.getIdx();
         int curPage = 1;
 
-        if(idx >= storeDTOs.size()) {
+        if (idx >= storeDTOs.size()) {
+            return;
+        }
+        if (!storeDTOs.get(idx).getStatusEnum().equals(RegistStatus.ACCEPT)) {
+            System.out.println("승인 되지 않은 가게입니다.");
             return;
         }
 
@@ -665,6 +670,11 @@ public class ClientController {
     public void registMenuAndOption(UserDTO userInfo) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(userInfo);
         StoreDTO storeInfo = viewer.selectStore(storeDTOs);
+
+        if (!storeInfo.getStatusEnum().equals(RegistStatus.ACCEPT)) {
+            System.out.println("승인 되지 않은 가게입니다.");
+            return;
+        }
 
         int option;
         do {
@@ -1010,9 +1020,8 @@ public class ClientController {
     }
 
     public void orderCancel(UserDTO userInfo) throws IOException {
-        ArrayList<TotalOrdersDTO> DTOs = getAllTotalOrderDTO(userInfo);
-
         while(true) {
+            ArrayList<TotalOrdersDTO> DTOs = getAllTotalOrderDTO(userInfo);
             viewer.viewTotalOrderDTOs(DTOs);
             int select = viewer.getIdx();
 
