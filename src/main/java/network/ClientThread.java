@@ -351,10 +351,12 @@ class ClientThread extends Thread {
 
             List<ReviewDTO> reviewDTOs = userService.getStoreReview(storeDTO.getId(), cur_page);
             dos.write(Serializer.intToByteArray(reviewDTOs.size()));
+            receive_ack();
 
             for(ReviewDTO reviewDTO : reviewDTOs) {
                 send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, reviewDTO);
                 dos.write(send_protocol.getBytes());
+                receive_ack();
             }
         }
     }

@@ -585,12 +585,14 @@ public class ClientController {
             int reviewListLength = 0;
             if (dis.read(readBuf) != -1) {
                 reviewListLength = Deserializer.byteArrayToInt(readBuf);
+                send_ack();
             }
 
             ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
             for (int j = 0; j < reviewListLength; j++) {
                 if (dis.read(readBuf) != -1) {
-                    reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());;
+                    reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());
+                    send_ack();
                 }
             }
 
