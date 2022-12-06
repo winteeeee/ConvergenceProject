@@ -27,7 +27,7 @@
             SELECT store_id
             FROM total_orders
             WHERE id = #{total_orders_id}
-        ) id
+        )
     </update>
 
     <select id="selectAllWithStoreId" resultMap="result">

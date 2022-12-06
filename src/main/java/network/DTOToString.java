@@ -30,7 +30,7 @@ public class DTOToString {
     public static String storeDTOToString(StoreDTO dto) {
         return "(가게) " + "이름 : " + dto.getName() + ", 점주 전화번호 : " + dto.getPhone() + ", 가게 주소 : " + dto.getAddress()
                 + "\n가게 소개 : " + dto.getComment()
-                + "\n리뷰 수 : " + dto.getReview_count() + ", 별점 : " + dto.getStar_rating() + ", 여는 시간 : " + dto.getOpen_time() + ", 닫는 시간 : " + dto.getClose_time();
+                + "\n리뷰 수 : " + dto.getReview_count() + ", 별점 : " + dto.getStar_rating() + ", 여는 시간 : " + dto.getOpen_time().toLocalTime() + ", 닫는 시간 : " + dto.getClose_time().toLocalTime();
     }
 
     public static String totalOrderDTOToString(TotalOrdersDTO dto) {
