@@ -338,11 +338,16 @@ class ClientThread extends Thread {
     private void review_search(StoreDTO storeDTO) throws IOException {
         int cur_page = 1;
         int max_page = storeDTO.getReview_count() / 2 + (storeDTO.getReview_count() & 1);
+        if (max_page == 0) {
+            max_page = 1;
+        }
         dos.write(Serializer.intToByteArray(max_page));
+        receive_ack();
 
         while(true) {
             if (dis.read(readBuf) != -1) {
                 cur_page = Deserializer.byteArrayToInt(readBuf);
+                send_ack();
             }
 
             if (!(1 <= cur_page && cur_page <= max_page)) {
@@ -567,6 +572,10 @@ class ClientThread extends Thread {
             send_ack();
         }
 
+        if (list_length == 0) {
+            return;
+        }
+
         for(int i = 0; i < list_length; i++) {
             if (dis.read(readBuf) != -1) {
                 ordersDTOs.add((OrdersDTO) new Protocol(readBuf).getData());
@@ -594,7 +603,7 @@ class ClientThread extends Thread {
             }
         }
         else if (authority.equals(Authority.USER)) {
-            if (userService.writeReview(reviewDTO) == 1) {
+            if (userService.writeReview(reviewDTO) != 0) {
                 send_protocol = new Protocol(ProtocolType.RESPONSE, ProtocolCode.ACCEPT, 0, null);
             }
             else {

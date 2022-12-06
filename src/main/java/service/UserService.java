@@ -129,7 +129,9 @@ public class UserService {
     public int writeReview(ReviewDTO review) {
         TotalOrdersDTO totalOrders = totalOrdersDAO.selectOneWithId(review.getTotal_orders_id());
 
-        if(totalOrders.getStatusEnum().equals(OrdersStatus.COMPLETE) && (1 <= review.getStar_rating() && review.getStar_rating() <= 5)) {
+        if(totalOrders.getStatusEnum().equals(OrdersStatus.COMPLETE)
+                && (1 <= review.getStar_rating() && review.getStar_rating() <= 5)
+                && reviewDAO.selectOneWithTotalOrdersId(totalOrders.getId()).getComment() == null) {
             reviewDAO.insertReview(review);
             reviewDAO.updateForInsert(review.getStar_rating(), review.getTotal_orders_id());
             return 1;

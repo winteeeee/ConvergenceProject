@@ -61,6 +61,7 @@ public class Viewer {
         System.out.println("[환영합니다]");
         System.out.println("[1] 로그인");
         System.out.println("[2] 회원가입");
+        System.out.println("[3] 종료");
         System.out.print("입력 : ");
 
         return Integer.parseInt(keyInput.readLine());
@@ -221,12 +222,13 @@ public class Viewer {
         viewOptionDTOs(optionDTOs);
         System.out.println("등록할 옵션을 모두 선택하세요");
         System.out.println("범위 바깥 값을 입력하거나 모든 옵션을 선택하면 입력이 종료됩니다.");
+
         while(selectedOption.size() < optionDTOs.size()) {
             System.out.print("입력 : ");
             String curInput = keyInput.readLine();
             if(!curInput.equals("")) {
                 int n = Integer.parseInt(curInput);
-                if(n < optionDTOs.size()) {
+                if(0 <= n && n < optionDTOs.size()) {
                     selectedOption.add(n);
                 }
 

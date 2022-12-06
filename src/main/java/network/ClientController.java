@@ -37,6 +37,7 @@ public class ClientController {
         final int OWNER_REGIST = 1;
         final int REGIST = 2;
         final int USER_REGIST = 2;
+        final int TERMINATION = 3;
 
         while (true) {
             int option = viewer.initScreen(keyInput);
@@ -83,6 +84,10 @@ public class ClientController {
                         }
                     }
                 }
+            }
+
+            else if (option == TERMINATION) {
+                System.exit(0);
             }
 
             else {
@@ -180,31 +185,8 @@ public class ClientController {
         return DTOs;
     }
 
-    public <T> ArrayList<TotalOrdersDTO> getAllOrderDTO(T info) throws IOException {
-        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, (DTO) info);
-        dos.write(requestAllMyOrderDTOs.getBytes());
-        //info에 해당하는 모든 Orders 리스트를 가져옴
-
-        ArrayList<TotalOrdersDTO> DTOs = new ArrayList<>();
-        int listLength = 0;
-
-        if (dis.read(readBuf) != -1) {
-            listLength = Deserializer.byteArrayToInt(readBuf);
-            send_ack();
-        }
-
-        for(int i = 0; i < listLength; i++) {
-            if (dis.read(readBuf) != -1) {
-                DTOs.add((TotalOrdersDTO) new Protocol(readBuf).getData());
-                send_ack();
-            }
-        }
-
-        return DTOs;
-    }
-
-    public <T> ArrayList<TotalOrdersDTO> getAllTotalOrderDTO(T info) throws IOException {
-        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, (byte)(ProtocolCode.ORDER), 0, (DTO) info);
+    public ArrayList<TotalOrdersDTO> getAllTotalOrderDTO(DTO info) throws IOException {
+        Protocol requestAllMyOrderDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.ORDER, 0, info);
         dos.write(requestAllMyOrderDTOs.getBytes());
         //info에 해당하는 모든 Orders 리스트를 가져옴
 
@@ -568,7 +550,7 @@ public class ClientController {
         int idx = viewer.getIdx();
         int curPage = 1;
 
-        if (idx >= storeDTOs.size()) {
+        if (idx >= storeDTOs.size() || idx < 0) {
             return;
         }
         if (!storeDTOs.get(idx).getStatusEnum().equals(RegistStatus.ACCEPT)) {
@@ -582,10 +564,12 @@ public class ClientController {
         int maxPage = 0;
         if (dis.read(readBuf) != -1) {
             maxPage = Deserializer.byteArrayToInt(readBuf);
+            send_ack();
         }
 
         while(true) {
             dos.write(Serializer.intToByteArray(curPage));;
+            receive_ack();
 
             int reviewListLength = 0;
             if (dis.read(readBuf) != -1) {
@@ -840,6 +824,10 @@ public class ClientController {
                 dos.write(Serializer.intToByteArray(ordersDTOs.size()));
                 receive_ack();
 
+                if (ordersDTOs.size() == 0) {
+                    return;
+                }
+
                 for(int i = 0; i < ordersDTOs.size(); i++) {
                     dos.write(new Protocol(ProtocolType.RESPONSE, ProtocolCode.ORDER, 0, ordersDTOs.get(i)).getBytes());
                     receive_ack();
@@ -854,7 +842,7 @@ public class ClientController {
     }
 
     public void registReview(UserDTO userInfo) throws IOException {
-        ArrayList<TotalOrdersDTO> DTOs = getAllOrderDTO(userInfo);
+        ArrayList<TotalOrdersDTO> DTOs = getAllTotalOrderDTO(userInfo);
 
         while(true) {
             viewer.viewTotalOrderDTOs(DTOs);
@@ -889,8 +877,9 @@ public class ClientController {
         int storeIdx = viewer.getIdx();
 
         if(0 <= storeIdx && storeIdx < storeDTOs.size()) {
-            ArrayList<TotalOrdersDTO> orderDTOs = getAllOrderDTO(storeDTOs.get(storeIdx));
-            while (orderDTOs.size() > 0) {
+            ArrayList<TotalOrdersDTO> orderDTOs;
+            while (true) {
+                orderDTOs = getAllTotalOrderDTO(storeDTOs.get(storeIdx));
                 viewer.viewTotalOrderDTOs(orderDTOs);
                 int idx = viewer.getIdx();
 
@@ -1043,6 +1032,50 @@ public class ClientController {
     public void viewStore() throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO();
         viewer.viewStoreDTOs(storeDTOs);
+        int idx = viewer.getIdx();
+
+        int curPage = 1;
+
+        if (idx >= storeDTOs.size() || idx < 0) {
+            return;
+        }
+
+        Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
+        dos.write(requestReview.getBytes());
+
+        int maxPage = 0;
+        if (dis.read(readBuf) != -1) {
+            maxPage = Deserializer.byteArrayToInt(readBuf);
+            send_ack();
+        }
+
+        while(true) {
+            dos.write(Serializer.intToByteArray(curPage));;
+            receive_ack();
+
+            int reviewListLength = 0;
+            if (dis.read(readBuf) != -1) {
+                reviewListLength = Deserializer.byteArrayToInt(readBuf);
+                send_ack();
+            }
+
+            ArrayList<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (int j = 0; j < reviewListLength; j++) {
+                if (dis.read(readBuf) != -1) {
+                    reviewDTOs.add((ReviewDTO) new Protocol(readBuf).getData());
+                    send_ack();
+                }
+            }
+
+            viewer.viewReviewDTOs(reviewDTOs);
+            viewer.viewPage(curPage, maxPage, 5);
+            curPage = viewer.getNextPage();
+
+            if (!(1 <= curPage && curPage <= maxPage)) {
+                dos.write(Serializer.intToByteArray(curPage));
+                break;
+            }
+        }
     }
 
     public ArrayList<MenuDTO> viewMenu(DTO info) throws IOException {
