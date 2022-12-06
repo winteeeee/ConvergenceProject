@@ -71,7 +71,6 @@ public class UserService {
 
         for (OrdersDTO orders : ordersList) {
             orders.setTotal_orders_id(total_order_id);
-            //ordersDAO.insertOrders(orders);
         }
 
         HashMap<Long, Integer> map = new HashMap<>();

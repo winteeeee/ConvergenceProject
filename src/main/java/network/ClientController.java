@@ -4,6 +4,7 @@ import network.*;
 import org.testng.internal.collections.Pair;
 import persistence.PooledDataSource;
 import persistence.dto.*;
+import persistence.enums.OrdersStatus;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -47,7 +48,6 @@ public class ClientController {
                 UserDTO me = null;
                 if (dis.read(readBuf) != -1) {
                     me = (UserDTO) new Protocol(readBuf).getData();
-                    readBuf = new byte[BUF_SIZE];
                     return me;
                 }
             }
@@ -254,8 +254,8 @@ public class ClientController {
 
 
 
-    public <T> ArrayList<StoreDTO> getAllStoreDTO(T info) throws IOException {
-        Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, (DTO) info);
+    public ArrayList<StoreDTO> getAllStoreDTO(DTO info) throws IOException {
+        Protocol requestAllMyStoreDTOs = new Protocol(ProtocolType.SEARCH, ProtocolCode.STORE, 0, info);
         dos.write(requestAllMyStoreDTOs.getBytes());
         //info에 해당하는 모든 Store 리스트를 가져옴
 
@@ -276,6 +276,7 @@ public class ClientController {
 
         return DTOs;
     }
+
     public ArrayList<MenuDTO> getAllMenuDTO() throws IOException {
         Protocol searchMenuInfo = new Protocol(ProtocolType.SEARCH, ProtocolCode.MENU, 0, null);
         dos.write(searchMenuInfo.getBytes());
@@ -566,8 +567,9 @@ public class ClientController {
         int idx = viewer.getIdx();
         int curPage = 1;
 
-        if(idx >= storeDTOs.size())
+        if(idx >= storeDTOs.size()) {
             return;
+        }
 
         Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
         dos.write(requestReview.getBytes());
@@ -886,6 +888,9 @@ public class ClientController {
 
                         if (ans.equals("Y") || ans.equals("y")) {
                             viewer.showAcceptMessage();
+                            if (orderDTOs.get(idx).getStatusEnum().equals(OrdersStatus.IN_DELIVERY)) {
+                                orderDTOs.get(idx).setStatus(OrdersStatus.COMPLETE);
+                            }
                             Protocol orderAccept = new Protocol(ProtocolType.RESPONSE, (byte) (ProtocolCode.ORDER | ProtocolCode.ACCEPT), 0, orderDTOs.get(idx));
                             //전달한 DTO의 Status를 변경
                             dos.write(orderAccept.getBytes());
@@ -964,7 +969,7 @@ public class ClientController {
         }
     }
 
-    public <T> void modificationMenu(T info) throws IOException {
+    public void modificationMenu(DTO info) throws IOException {
         ArrayList<MenuDTO> menuDTOs = viewMenu(info);
         int idx = viewer.getIdx();
         MenuDTO selected = menuDTOs.get(idx);
@@ -1029,7 +1034,7 @@ public class ClientController {
         viewer.viewStoreDTOs(storeDTOs);
     }
 
-    public <T> ArrayList<MenuDTO> viewMenu(T info) throws IOException {
+    public ArrayList<MenuDTO> viewMenu(DTO info) throws IOException {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(info);
         viewer.viewStoreDTOs(storeDTOs);
         int idx = viewer.getIdx();

@@ -32,7 +32,9 @@ public class TotalOrdersDTO extends DTO {
     public void setStatus(String status) {
         this.status = OrdersStatus.of(status);
     }
-
+    public void setStatus(OrdersStatus status) {
+        this.status = status;
+    }
     public String getStatus() {
         return status.getCode();
     }

@@ -4,6 +4,7 @@ import persistence.MyBatisConnectionFactory;
 import persistence.dao.*;
 import persistence.dto.*;
 import persistence.enums.Authority;
+import persistence.enums.OrdersStatus;
 import service.AdminService;
 import service.OwnerService;
 import service.UserService;
@@ -221,7 +222,12 @@ class ClientThread extends Thread {
     }
 
     private void order_regist_accept(TotalOrdersDTO data) {
-        ownerService.acceptOrders(data.getId());
+        if (data.getStatusEnum().equals(OrdersStatus.COMPLETE)) {
+            ownerService.deliveryFinish(data.getId());
+        }
+        else {
+            ownerService.acceptOrders(data.getId());
+        }
     }
 
     private void order_regist_refuse(TotalOrdersDTO data) {

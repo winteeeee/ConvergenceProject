@@ -34,7 +34,7 @@ public class Viewer {
         System.out.println("[1] 가게 등록 신청");
         System.out.println("[2] 메뉴 등록 신청");
         System.out.println("[3] 운영 시간 설정");
-        System.out.println("[4] 주문 접수 / 거절");
+        System.out.println("[4] 주문 접수 / 거절 (다시 선택시 배달 완료)");
         System.out.println("[5] 리뷰/별점 조회");
         System.out.println("[6] 리뷰 답글 등록");
         System.out.println("[7] 통계정보 열람");
@@ -482,7 +482,7 @@ public class Viewer {
             System.out.print(1 + " ... ");
         }
 
-        for(int i = startPage; i < startPage + pageWidth; i++) {
+        for(int i = startPage; i < startPage + pageWidth && i <= maxPage; i++) {
             if(i == curPage) {
                 System.out.print("[" + i + "] ");
             } else {
