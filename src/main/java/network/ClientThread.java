@@ -631,7 +631,7 @@ class ClientThread extends Thread {
             flag = userService.insertUser(userDTO) != 0;
         }
         else if (userDTO.getAuthorityEnum().equals(Authority.OWNER)) {
-            flag = ownerService.insertOwner(userDTO) != 0;
+            flag = ownerService.insertOwner(userDTO) != null;
         }
 
         if (flag) {

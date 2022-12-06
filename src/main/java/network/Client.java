@@ -8,7 +8,8 @@ import persistence.enums.Authority;
 
 public class Client
 {
-    private final String IP = "127.0.0.1";
+    //private final String IP = "127.0.0.1";
+    private static final String IP = "192.168.223.197";
     private Socket cliSocket;
     private DataInputStream dis;
     private DataOutputStream dos;

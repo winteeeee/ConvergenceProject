@@ -566,6 +566,9 @@ public class ClientController {
         int idx = viewer.getIdx();
         int curPage = 1;
 
+        if(idx >= storeDTOs.size())
+            return;
+
         Protocol requestReview = new Protocol(ProtocolType.SEARCH, ProtocolCode.REVIEW, 0, storeDTOs.get(idx));
         dos.write(requestReview.getBytes());
 
@@ -1080,6 +1083,9 @@ public class ClientController {
         ArrayList<StoreDTO> storeDTOs = getAllStoreDTO(me);
         viewer.viewStoreDTOs(storeDTOs);
         int idx = viewer.getIdx();
+
+        if(idx >= storeDTOs.size())
+            return;
 
         Protocol requestReview = new Protocol(ProtocolType.SEARCH, (byte) (ProtocolCode.REVIEW | ProtocolCode.HISTORY), 0, storeDTOs.get(idx));
         dos.write(requestReview.getBytes());

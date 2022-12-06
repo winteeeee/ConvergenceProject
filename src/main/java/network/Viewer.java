@@ -474,8 +474,6 @@ public class Viewer {
 
         if(curPage <= gap) {
             startPage = 1;
-        } else if(maxPage - curPage < gap) {
-            startPage = maxPage - pageWidth + 1;
         } else {
             startPage = curPage - gap;
         }
