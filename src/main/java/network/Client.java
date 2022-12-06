@@ -7,6 +7,7 @@ import persistence.enums.Authority;
 
 public class Client
 {
+    private final String IP = "127.0.0.1";
     private Socket cliSocket;
     private DataInputStream dis;
     private DataOutputStream dos;
@@ -16,7 +17,7 @@ public class Client
 
     public Client() {
         try{
-            cliSocket = new Socket("localhost", 5000);
+            cliSocket = new Socket(IP, 5000);
             dis = new DataInputStream(cliSocket.getInputStream());
             dos = new DataOutputStream(cliSocket.getOutputStream());
             keyInput = new BufferedReader(new InputStreamReader(System.in));
