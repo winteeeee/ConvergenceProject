@@ -23,7 +23,7 @@
         UPDATE store
         SET review_count = review_count + 1,
             star_rating = star_rating + #{star_rating}
-        WHERE store.id = (
+        WHERE store.id IN (
             SELECT store_id
             FROM total_orders
             WHERE id = #{total_orders_id}

@@ -28,9 +28,11 @@ public class DTOToString {
     }
 
     public static String storeDTOToString(StoreDTO dto) {
+        double star_rating = (double) dto.getStar_rating() / (dto.getReview_count() == 0 ? 1 : dto.getReview_count());
+
         return "(가게) " + "이름 : " + dto.getName() + ", 점주 전화번호 : " + dto.getPhone() + ", 가게 주소 : " + dto.getAddress()
                 + "\n가게 소개 : " + dto.getComment()
-                + "\n리뷰 수 : " + dto.getReview_count() + ", 별점 : " + dto.getStar_rating() + ", 여는 시간 : " + dto.getOpen_time().toLocalTime() + ", 닫는 시간 : " + dto.getClose_time().toLocalTime();
+                + "\n리뷰 수 : " + dto.getReview_count() + ", 별점 : " + String.format("%.1f", star_rating) + ", 여는 시간 : " + dto.getOpen_time().toLocalTime() + ", 닫는 시간 : " + dto.getClose_time().toLocalTime();
     }
 
     public static String totalOrderDTOToString(TotalOrdersDTO dto) {
