@@ -442,7 +442,7 @@ public class Viewer {
 
     public void viewStoreDTOs(ArrayList<StoreDTO> DTOs) {
         for(int i = 0; i < DTOs.size(); i++) {
-            System.out.println("[" + i + "] " + DTOToString.storeDTOToString(DTOs.get(i)));
+            System.out.println("[" + i + "] " + DTOToString.storeDTOToString(DTOs.get(i)) + "\n");
         }
         System.out.println();
     }
